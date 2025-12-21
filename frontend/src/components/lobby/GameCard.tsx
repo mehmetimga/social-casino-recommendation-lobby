@@ -68,23 +68,23 @@ export default function GameCard({
       className={cn('game-card cursor-pointer group', sizeClasses[size])}
       onClick={handleClick}
     >
+      {/* Badges - Outside of image container so they can overflow */}
+      {game.badges && game.badges.length > 0 && (
+        <div className="absolute -top-1 -left-1 flex flex-col gap-1 z-50">
+          {game.badges.slice(0, 1).map((badge) => (
+            <GameBadge key={badge} type={badge} />
+          ))}
+        </div>
+      )}
+
       {/* Thumbnail */}
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-full overflow-hidden rounded-lg">
         <img
           src={thumbnailUrl || '/placeholder-game.jpg'}
           alt={game.title}
           className="w-full h-full object-cover"
           loading="lazy"
         />
-
-        {/* Badges */}
-        {game.badges && game.badges.length > 0 && (
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {game.badges.slice(0, 2).map((badge) => (
-              <GameBadge key={badge} type={badge} />
-            ))}
-          </div>
-        )}
 
         {/* Jackpot Amount */}
         {showJackpot && game.jackpotAmount && game.jackpotAmount > 0 && (

@@ -59,7 +59,7 @@ export default function GameGrid({
 
   if (isLoading) {
     return (
-      <section className="py-6">
+      <section className="py-8 mt-4">
         <div className="section-header">
           <div>
             <div className="h-6 w-40 bg-white/10 rounded animate-pulse" />
@@ -83,7 +83,7 @@ export default function GameGrid({
   }
 
   return (
-    <section className="py-6">
+    <section className="py-8 mt-4">
       {/* Header */}
       <div className="section-header">
         <div>
@@ -117,7 +117,7 @@ export default function GameGrid({
           {/* Scrollable Container */}
           <div
             id={`grid-${title}`}
-            className="flex gap-4 overflow-x-auto hide-scrollbar pb-4"
+            className="flex gap-4 overflow-x-auto overflow-y-visible hide-scrollbar pb-4 pt-4"
           >
             {games.map((game) => (
               <div key={game.id} className="flex-shrink-0">
@@ -133,7 +133,7 @@ export default function GameGrid({
           </div>
         </div>
       ) : (
-        <div className={cn('grid gap-4', gridCols[columns as keyof typeof gridCols])}>
+        <div className={cn('grid gap-4 pt-4', gridCols[columns as keyof typeof gridCols])}>
           {games.map((game) => (
             <GameCard
               key={game.id}

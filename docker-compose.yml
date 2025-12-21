@@ -79,6 +79,7 @@ services:
       PORT: 3001
     volumes:
       - cms_media:/app/media
+      - ./casino-images:/casino-images:ro
     ports:
       - "3001:3001"
     depends_on:
