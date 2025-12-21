@@ -14,7 +14,7 @@ export default function ChatWindow() {
   }, [messages]);
 
   return (
-    <div className="fixed bottom-24 right-6 z-50 w-96 h-[500px] bg-casino-bg-secondary rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden">
+    <div className="fixed bottom-24 right-6 z-[60] w-96 h-[500px] bg-casino-bg-secondary rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b border-white/10 bg-gradient-to-r from-casino-purple/20 to-transparent">
         <div className="w-10 h-10 rounded-full bg-casino-purple flex items-center justify-center">

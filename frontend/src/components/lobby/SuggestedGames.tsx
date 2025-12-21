@@ -8,10 +8,9 @@ import GameGrid from './GameGrid';
 
 interface SuggestedGamesProps {
   section: SuggestedGamesSectionBlock;
-  onPlayGame: (game: Game) => void;
 }
 
-export default function SuggestedGames({ section, onPlayGame }: SuggestedGamesProps) {
+export default function SuggestedGames({ section }: SuggestedGamesProps) {
   const { userId } = useUser();
 
   const fetchGames = async (): Promise<Game[]> => {
@@ -57,7 +56,6 @@ export default function SuggestedGames({ section, onPlayGame }: SuggestedGamesPr
         games={games || []}
         cardSize={section.cardSize}
         isHorizontal={true}
-        onPlay={onPlayGame}
         isLoading={isLoading}
         showMore={false}
       />

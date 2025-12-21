@@ -38,8 +38,8 @@ func (r *PostgresRepository) CreateEvent(event *model.UserEvent) error {
 	event.ID = uuid.New()
 	event.CreatedAt = time.Now()
 
-	var metadataJSON []byte
-	if event.Metadata != nil {
+	var metadataJSON interface{}
+	if event.Metadata != nil && len(event.Metadata) > 0 {
 		var err error
 		metadataJSON, err = json.Marshal(event.Metadata)
 		if err != nil {
@@ -165,6 +165,96 @@ func (r *PostgresRepository) GetUserRatings(userID string) ([]*model.UserRating,
 	}
 
 	return ratings, nil
+}
+
+// Reviews
+
+func (r *PostgresRepository) UpsertReview(review *model.UserReview) error {
+	review.ID = uuid.New()
+	now := time.Now()
+	review.CreatedAt = now
+	review.UpdatedAt = now
+
+	query := `
+		INSERT INTO user_reviews (id, user_id, game_slug, rating, review_text, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		ON CONFLICT (user_id, game_slug)
+		DO UPDATE SET rating = $4, review_text = $5, updated_at = $7
+		RETURNING id, created_at, updated_at
+	`
+
+	err := r.db.QueryRow(query,
+		review.ID,
+		review.UserID,
+		review.GameSlug,
+		review.Rating,
+		review.ReviewText,
+		review.CreatedAt,
+		review.UpdatedAt,
+	).Scan(&review.ID, &review.CreatedAt, &review.UpdatedAt)
+
+	return err
+}
+
+func (r *PostgresRepository) GetGameReviews(gameSlug string, limit int) ([]*model.UserReview, error) {
+	query := `
+		SELECT id, user_id, game_slug, rating, review_text, created_at, updated_at
+		FROM user_reviews
+		WHERE game_slug = $1
+		ORDER BY created_at DESC
+		LIMIT $2
+	`
+
+	rows, err := r.db.Query(query, gameSlug, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var reviews []*model.UserReview
+	for rows.Next() {
+		review := &model.UserReview{}
+		err := rows.Scan(
+			&review.ID,
+			&review.UserID,
+			&review.GameSlug,
+			&review.Rating,
+			&review.ReviewText,
+			&review.CreatedAt,
+			&review.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+
+	return reviews, nil
+}
+
+func (r *PostgresRepository) GetUserReview(userID, gameSlug string) (*model.UserReview, error) {
+	query := `
+		SELECT id, user_id, game_slug, rating, review_text, created_at, updated_at
+		FROM user_reviews
+		WHERE user_id = $1 AND game_slug = $2
+	`
+
+	review := &model.UserReview{}
+	err := r.db.QueryRow(query, userID, gameSlug).Scan(
+		&review.ID,
+		&review.UserID,
+		&review.GameSlug,
+		&review.Rating,
+		&review.ReviewText,
+		&review.CreatedAt,
+		&review.UpdatedAt,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	return review, err
 }
 
 // User Preferences

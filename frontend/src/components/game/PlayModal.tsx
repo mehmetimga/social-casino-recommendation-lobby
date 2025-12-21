@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import { Game } from '../../types/game';
 import { getMediaUrl } from '../../api/client';
 import { formatBetRange, formatRTP } from '../../utils/formatters';
-import { useUser } from '../../context/UserContext';
 import { useChat } from '../../context/ChatContext';
-import RatingStars from './RatingStars';
+import { useGamePlay } from '../../context/GamePlayContext';
 import ReviewForm from './ReviewForm';
 import GameBadge from './GameBadge';
 
@@ -15,11 +14,10 @@ interface PlayModalProps {
 }
 
 export default function PlayModal({ game, onClose }: PlayModalProps) {
-  const { trackEvent } = useUser();
   const { openChat, setContext } = useChat();
+  const { openGameDialog } = useGamePlay();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const playStartTime = useRef<number>(Date.now());
 
   // Get all images for slideshow
   const images = [
@@ -27,20 +25,10 @@ export default function PlayModal({ game, onClose }: PlayModalProps) {
     ...(game.gallery?.map((g) => g.image?.url) || []),
   ].filter(Boolean) as string[];
 
-  // Track play_start on mount
+  // Set chat context on mount
   useEffect(() => {
-    trackEvent(game.slug, 'play_start');
-    playStartTime.current = Date.now();
-
-    // Set chat context
     setContext({ currentPage: 'game', currentGame: game.slug });
-
-    // Track play_end on unmount
-    return () => {
-      const duration = Math.floor((Date.now() - playStartTime.current) / 1000);
-      trackEvent(game.slug, 'play_end', duration);
-    };
-  }, [game.slug, trackEvent, setContext]);
+  }, [game.slug, setContext]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -68,6 +56,11 @@ export default function PlayModal({ game, onClose }: PlayModalProps) {
 
   const handleOpenChat = () => {
     openChat();
+  };
+
+  const handlePlayNow = () => {
+    onClose(); // Close info dialog
+    openGameDialog(game); // Open play dialog with tracking
   };
 
   return (
@@ -189,18 +182,12 @@ export default function PlayModal({ game, onClose }: PlayModalProps) {
               )}
             </div>
 
-            {/* Rating Section */}
-            <div className="mb-6">
-              <p className="text-gray-400 text-sm mb-2">Rate this game</p>
-              <RatingStars gameSlug={game.slug} size="large" />
-            </div>
-
             {/* Review Button */}
             <button
               onClick={() => setShowReviewForm(!showReviewForm)}
               className="btn btn-secondary mb-4"
             >
-              {showReviewForm ? 'Hide Review Form' : 'Write a Review'}
+              {showReviewForm ? 'Hide Review Form' : 'Rate & Review'}
             </button>
 
             {/* Review Form */}
@@ -217,7 +204,10 @@ export default function PlayModal({ game, onClose }: PlayModalProps) {
 
             {/* Actions */}
             <div className="space-y-3 mt-4">
-              <button className="btn btn-gold w-full text-lg py-3">
+              <button
+                onClick={handlePlayNow}
+                className="btn btn-gold w-full text-lg py-3"
+              >
                 Play Now
               </button>
               <button

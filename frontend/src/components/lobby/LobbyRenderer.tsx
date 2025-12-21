@@ -10,10 +10,9 @@ import SuggestedGames from './SuggestedGames';
 
 interface LobbyRendererProps {
   layoutSlug?: string;
-  onPlayGame: (game: Game) => void;
 }
 
-export default function LobbyRenderer({ layoutSlug = 'web-default', onPlayGame }: LobbyRendererProps) {
+export default function LobbyRenderer({ layoutSlug = 'web-default' }: LobbyRendererProps) {
   const { data: layout, isLoading, error } = useQuery({
     queryKey: ['lobby-layout', layoutSlug],
     queryFn: () => cmsApi.getLobbyLayout(layoutSlug),
@@ -49,7 +48,6 @@ export default function LobbyRenderer({ layoutSlug = 'web-default', onPlayGame }
         <SectionRenderer
           key={`${section.blockType}-${index}`}
           section={section}
-          onPlayGame={onPlayGame}
         />
       ))}
     </div>
@@ -58,17 +56,16 @@ export default function LobbyRenderer({ layoutSlug = 'web-default', onPlayGame }
 
 interface SectionRendererProps {
   section: LobbySectionBlock;
-  onPlayGame: (game: Game) => void;
 }
 
-function SectionRenderer({ section, onPlayGame }: SectionRendererProps) {
+function SectionRenderer({ section }: SectionRendererProps) {
   switch (section.blockType) {
     case 'carousel-section':
       return <CarouselSectionRenderer section={section} />;
     case 'suggested-games-section':
-      return <SuggestedGames section={section} onPlayGame={onPlayGame} />;
+      return <SuggestedGames section={section} />;
     case 'game-grid-section':
-      return <GameGridSectionRenderer section={section} onPlayGame={onPlayGame} />;
+      return <GameGridSectionRenderer section={section} />;
     case 'banner-section':
       return <BannerSectionRenderer section={section} />;
     default:
@@ -103,10 +100,8 @@ function CarouselSectionRenderer({ section }: { section: LobbySectionBlock & { b
 
 function GameGridSectionRenderer({
   section,
-  onPlayGame,
 }: {
   section: LobbySectionBlock & { blockType: 'game-grid-section' };
-  onPlayGame: (game: Game) => void;
 }) {
   const fetchGames = async () => {
     switch (section.filterType) {
@@ -147,7 +142,6 @@ function GameGridSectionRenderer({
         cardSize={section.cardSize}
         showJackpot={section.showJackpot}
         showProvider={section.showProvider}
-        onPlay={onPlayGame}
         isLoading={isLoading}
       />
     </div>

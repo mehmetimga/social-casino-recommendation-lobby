@@ -65,6 +65,9 @@ func main() {
 	r.Route("/v1", func(r chi.Router) {
 		r.Post("/events", eventsHandler.TrackEvent)
 		r.Post("/feedback/rating", feedbackHandler.SubmitRating)
+		r.Post("/feedback/review", feedbackHandler.SubmitReview)
+		r.Get("/feedback/reviews", feedbackHandler.GetGameReviews)
+		r.Get("/feedback/review", feedbackHandler.GetUserReview)
 		r.Get("/recommendations", recommendationsHandler.GetRecommendations)
 	})
 

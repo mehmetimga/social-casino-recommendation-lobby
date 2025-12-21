@@ -24,19 +24,13 @@ export default function RatingStars({
   readOnly = false,
   onRate,
 }: RatingStarsProps) {
-  const { trackRating } = useUser();
   const [rating, setRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
-  const [hasRated, setHasRated] = useState(false);
 
-  const handleClick = async (selectedRating: number) => {
-    if (readOnly || hasRated) return;
+  const handleClick = (selectedRating: number) => {
+    if (readOnly) return;
 
     setRating(selectedRating);
-    setHasRated(true);
-
-    // Track rating
-    await trackRating(gameSlug, selectedRating);
     onRate?.(selectedRating);
   };
 
@@ -48,14 +42,14 @@ export default function RatingStars({
         <button
           key={star}
           type="button"
-          disabled={readOnly || hasRated}
+          disabled={readOnly}
           onClick={() => handleClick(star)}
-          onMouseEnter={() => !readOnly && !hasRated && setHoverRating(star)}
+          onMouseEnter={() => !readOnly && setHoverRating(star)}
           onMouseLeave={() => setHoverRating(0)}
           className={cn(
             'transition-transform',
-            !readOnly && !hasRated && 'hover:scale-110 cursor-pointer',
-            (readOnly || hasRated) && 'cursor-default'
+            !readOnly && 'hover:scale-110 cursor-pointer',
+            readOnly && 'cursor-default'
           )}
         >
           <Star
@@ -69,9 +63,6 @@ export default function RatingStars({
           />
         </button>
       ))}
-      {hasRated && (
-        <span className="ml-2 text-sm text-casino-gold">Thanks for rating!</span>
-      )}
     </div>
   );
 }

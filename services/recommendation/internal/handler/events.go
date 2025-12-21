@@ -49,6 +49,8 @@ func (h *EventsHandler) TrackEvent(w http.ResponseWriter, r *http.Request) {
 	validTypes := map[model.EventType]bool{
 		model.EventTypeImpression: true,
 		model.EventTypeClick:      true,
+		model.EventTypeGameTime:   true,
+		// Support deprecated event types
 		model.EventTypePlayStart:  true,
 		model.EventTypePlayEnd:    true,
 	}
@@ -67,12 +69,14 @@ func (h *EventsHandler) TrackEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.postgresRepo.CreateEvent(event); err != nil {
+		// Log the actual error for debugging
+		println("Error creating event:", err.Error())
 		http.Error(w, "Failed to create event", http.StatusInternalServerError)
 		return
 	}
 
 	// Update user vector asynchronously for certain event types
-	if req.EventType == model.EventTypePlayEnd || req.EventType == model.EventTypeClick {
+	if req.EventType == model.EventTypeGameTime || req.EventType == model.EventTypePlayEnd || req.EventType == model.EventTypeClick {
 		go h.recommendationService.UpdateUserVector(req.UserID)
 	}
 

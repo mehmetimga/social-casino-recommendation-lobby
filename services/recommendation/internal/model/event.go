@@ -11,6 +11,8 @@ type EventType string
 const (
 	EventTypeImpression EventType = "impression"
 	EventTypeClick      EventType = "click"
+	EventTypeGameTime   EventType = "game_time"
+	// Deprecated: Use EventTypeGameTime instead
 	EventTypePlayStart  EventType = "play_start"
 	EventTypePlayEnd    EventType = "play_end"
 )
@@ -34,14 +36,26 @@ type UserRating struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type UserReview struct {
+	ID         uuid.UUID `json:"id"`
+	UserID     string    `json:"userId"`
+	GameSlug   string    `json:"gameSlug"`
+	Rating     int       `json:"rating"`
+	ReviewText *string   `json:"reviewText,omitempty"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+}
+
 // Weighting constants for recommendation algorithm
 const (
-	ImpressionWeight = 0.2
-	ClickWeight      = 1.0
-	PlayStartWeight  = 2.0
+	ImpressionWeight  = 0.2
+	ClickWeight       = 1.0
+	GameTimeBaseWeight = 2.0
+	// Deprecated weights
+	PlayStartWeight   = 2.0
 	PlayEndBaseWeight = 2.0
-	Rating5Weight    = 8.0
-	Rating1Weight    = -6.0
+	Rating5Weight     = 8.0
+	Rating1Weight     = -6.0
 
 	// Time decay half-life in days
 	BehaviorHalfLife = 7
@@ -54,6 +68,9 @@ func GetEventWeight(eventType EventType) float64 {
 		return ImpressionWeight
 	case EventTypeClick:
 		return ClickWeight
+	case EventTypeGameTime:
+		return GameTimeBaseWeight
+	// Support deprecated event types
 	case EventTypePlayStart:
 		return PlayStartWeight
 	case EventTypePlayEnd:

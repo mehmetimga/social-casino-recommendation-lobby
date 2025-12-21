@@ -1,4 +1,4 @@
-export type EventType = 'impression' | 'click' | 'play_start' | 'play_end';
+export type EventType = 'impression' | 'click' | 'game_time';
 
 export interface UserEvent {
   userId: string;

@@ -98,6 +98,48 @@ func (r *QdrantRepository) createCollectionIfNotExists(ctx context.Context, name
 	}
 }
 
+func (r *QdrantRepository) UpsertGame(slug string, vector []float32, metadata map[string]string) error {
+	if r.points == nil {
+		return nil
+	}
+
+	ctx := context.Background()
+
+	// Build payload
+	payload := map[string]*pb.Value{
+		"slug": {Kind: &pb.Value_StringValue{StringValue: slug}},
+	}
+	for key, value := range metadata {
+		payload[key] = &pb.Value{Kind: &pb.Value_StringValue{StringValue: value}}
+	}
+
+	// Generate numeric ID from slug hash (Qdrant supports uint64 IDs)
+	// Simple hash: sum of character codes
+	var idNum uint64
+	for _, c := range slug {
+		idNum = idNum*31 + uint64(c)
+	}
+
+	point := &pb.PointStruct{
+		Id: &pb.PointId{
+			PointIdOptions: &pb.PointId_Num{Num: idNum},
+		},
+		Vectors: &pb.Vectors{
+			VectorsOptions: &pb.Vectors_Vector{
+				Vector: &pb.Vector{Data: vector},
+			},
+		},
+		Payload: payload,
+	}
+
+	_, err := r.points.Upsert(ctx, &pb.UpsertPoints{
+		CollectionName: GamesCollection,
+		Points:         []*pb.PointStruct{point},
+	})
+
+	return err
+}
+
 func (r *QdrantRepository) UpsertGameVector(game *model.GameVector) error {
 	if r.points == nil {
 		return nil

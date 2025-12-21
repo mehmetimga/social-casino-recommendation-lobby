@@ -3,6 +3,7 @@ import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { Game } from '../../types/game';
 import { cn } from '../../utils/cn';
 import GameCard from './GameCard';
+import { useGamePlay } from '../../context/GamePlayContext';
 
 interface GameGridProps {
   title: string;
@@ -15,7 +16,6 @@ interface GameGridProps {
   showJackpot?: boolean;
   showProvider?: boolean;
   isHorizontal?: boolean;
-  onPlay?: (game: Game) => void;
   isLoading?: boolean;
 }
 
@@ -30,10 +30,10 @@ export default function GameGrid({
   showJackpot = true,
   showProvider = true,
   isHorizontal = false,
-  onPlay,
   isLoading = false,
 }: GameGridProps) {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const { openGameInfo } = useGamePlay();
 
   const handleScrollLeft = () => {
     const container = document.getElementById(`grid-${title}`);
@@ -49,6 +49,10 @@ export default function GameGrid({
       container.scrollBy({ left: 300, behavior: 'smooth' });
       setScrollPosition(container.scrollLeft + 300);
     }
+  };
+
+  const handlePlayGame = (game: Game) => {
+    openGameInfo(game);
   };
 
   const gridCols = {
@@ -126,7 +130,7 @@ export default function GameGrid({
                   size={cardSize}
                   showJackpot={showJackpot}
                   showProvider={showProvider}
-                  onPlay={onPlay}
+                  onPlay={handlePlayGame}
                 />
               </div>
             ))}
@@ -141,7 +145,7 @@ export default function GameGrid({
               size={cardSize}
               showJackpot={showJackpot}
               showProvider={showProvider}
-              onPlay={onPlay}
+              onPlay={handlePlayGame}
             />
           ))}
         </div>

@@ -48,7 +48,7 @@ export default function GameCard({
   }, [game.slug, trackEvent, hasTrackedImpression]);
 
   const handleClick = () => {
-    trackEvent(game.slug, 'click');
+    // No event tracking here - only track when actually playing
     onPlay?.(game);
   };
 

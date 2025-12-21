@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import { ChatProvider } from './context/ChatContext';
+import { GamePlayProvider } from './context/GamePlayContext';
 import Header from './components/layout/Header';
 import LobbyPage from './pages/LobbyPage';
 import SlotsPage from './pages/SlotsPage';
@@ -12,18 +13,20 @@ function App() {
   return (
     <UserProvider>
       <ChatProvider>
-        <div className="min-h-screen bg-gradient-casino">
-          <Header />
-          <main>
-            <Routes>
-              <Route path="/" element={<LobbyPage />} />
-              <Route path="/slots" element={<SlotsPage />} />
-              <Route path="/live-casino" element={<LiveCasinoPage />} />
-              <Route path="/table-games" element={<TableGamesPage />} />
-            </Routes>
-          </main>
-          <ChatWidget />
-        </div>
+        <GamePlayProvider>
+          <div className="min-h-screen bg-gradient-casino">
+            <Header />
+            <main>
+              <Routes>
+                <Route path="/" element={<LobbyPage />} />
+                <Route path="/slots" element={<SlotsPage />} />
+                <Route path="/live-casino" element={<LiveCasinoPage />} />
+                <Route path="/table-games" element={<TableGamesPage />} />
+              </Routes>
+            </main>
+            <ChatWidget />
+          </div>
+        </GamePlayProvider>
       </ChatProvider>
     </UserProvider>
   );

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { cmsApi } from '../../api/cms';
+import { recommendationApi } from '../../api/recommendation';
 import { useUser } from '../../context/UserContext';
 import RatingStars from './RatingStars';
 
@@ -19,14 +19,15 @@ export default function ReviewForm({ gameId, gameSlug, onSuccess }: ReviewFormPr
 
   const submitReview = useMutation({
     mutationFn: () =>
-      cmsApi.submitReview({
+      recommendationApi.submitReview({
         userId,
-        game: gameId,
+        gameSlug,
         rating,
         reviewText: reviewText.trim() || undefined,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['game-reviews', gameId] });
+      queryClient.invalidateQueries({ queryKey: ['game-reviews', gameSlug] });
+      queryClient.invalidateQueries({ queryKey: ['user-review', userId, gameSlug] });
       setReviewText('');
       setRating(0);
       onSuccess?.();
