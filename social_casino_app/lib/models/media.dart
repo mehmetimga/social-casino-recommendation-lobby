@@ -6,9 +6,12 @@ part 'media.g.dart';
 @freezed
 class MediaSize with _$MediaSize {
   const factory MediaSize({
-    required String url,
-    required int width,
-    required int height,
+    String? url,
+    int? width,
+    int? height,
+    String? mimeType,
+    int? filesize,
+    String? filename,
   }) = _MediaSize;
 
   factory MediaSize.fromJson(Map<String, dynamic> json) =>

@@ -21,9 +21,10 @@ class LobbyRenderer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Use current layout from CMS category selection, or specific slug, or default
     final layoutAsync = layoutSlug != null
         ? ref.watch(lobbyLayoutBySlugProvider(layoutSlug!))
-        : ref.watch(lobbyLayoutProvider);
+        : ref.watch(currentLobbyLayoutProvider);
 
     return layoutAsync.when(
       loading: () => _buildLoadingSkeleton(),

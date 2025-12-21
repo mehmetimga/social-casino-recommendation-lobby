@@ -30,7 +30,7 @@ export default function CategoryTabs() {
                   'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all',
                   category.disabled && 'opacity-50 cursor-not-allowed',
                   isActive
-                    ? 'bg-casino-accent text-white'
+                    ? 'bg-casino-gold text-black'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 )}
               >

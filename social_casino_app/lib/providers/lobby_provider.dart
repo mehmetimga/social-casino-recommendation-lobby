@@ -5,7 +5,57 @@ import '../models/promotion.dart';
 import 'services_provider.dart';
 import 'user_provider.dart';
 
-/// Lobby layout provider - fetches and caches the layout
+/// Lightweight layout info for category tabs (id, slug, name only)
+class LayoutTabInfo {
+  final String id;
+  final String slug;
+  final String name;
+  final String platform;
+  final bool isDefault;
+
+  LayoutTabInfo({
+    required this.id,
+    required this.slug,
+    required this.name,
+    required this.platform,
+    required this.isDefault,
+  });
+
+  factory LayoutTabInfo.fromMap(Map<String, dynamic> map) {
+    return LayoutTabInfo(
+      id: map['id'] as String,
+      slug: map['slug'] as String,
+      name: map['name'] as String,
+      platform: map['platform'] as String? ?? 'web',
+      isDefault: map['isDefault'] as bool? ?? false,
+    );
+  }
+}
+
+/// All lobby layouts for tabs (lightweight - just names)
+final lobbyLayoutTabsProvider = FutureProvider<List<LayoutTabInfo>>((ref) async {
+  final cmsService = ref.watch(cmsServiceProvider);
+  final layouts = await cmsService.getLobbyLayoutsForTabs();
+  return layouts.map((m) => LayoutTabInfo.fromMap(m)).toList();
+});
+
+/// Selected lobby layout slug
+final selectedLayoutSlugProvider = StateProvider<String?>((ref) => null);
+
+/// Current lobby layout provider - based on selected slug or default
+final currentLobbyLayoutProvider = FutureProvider<LobbyLayout?>((ref) async {
+  final cmsService = ref.watch(cmsServiceProvider);
+  final selectedSlug = ref.watch(selectedLayoutSlugProvider);
+
+  if (selectedSlug != null) {
+    return cmsService.getLobbyLayout(slug: selectedSlug);
+  }
+
+  // Default to the default layout
+  return cmsService.getDefaultLobbyLayout(platform: 'mobile');
+});
+
+/// Lobby layout provider - fetches and caches the default layout
 final lobbyLayoutProvider = FutureProvider<LobbyLayout?>((ref) async {
   final cmsService = ref.watch(cmsServiceProvider);
   return cmsService.getDefaultLobbyLayout(platform: 'mobile');

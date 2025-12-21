@@ -5,8 +5,17 @@ import '../providers/lobby_provider.dart';
 import '../widgets/game/play_modal.dart';
 import '../widgets/lobby/game_grid.dart';
 
-class TableGamesScreen extends ConsumerWidget {
-  const TableGamesScreen({super.key});
+class CategoryScreen extends ConsumerWidget {
+  final String categorySlug;
+  final String title;
+  final GameType? gameType;
+
+  const CategoryScreen({
+    super.key,
+    required this.categorySlug,
+    required this.title,
+    this.gameType,
+  });
 
   void _onGameTap(BuildContext context, Game game) {
     showPlayModal(context, game);
@@ -14,25 +23,28 @@ class TableGamesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gamesAsync = ref.watch(gamesByTypeProvider(GameType.table));
+    // Get games based on game type
+    final gamesAsync = gameType != null
+        ? ref.watch(gamesByTypeProvider(gameType!))
+        : ref.watch(popularGamesProvider);
 
     return SingleChildScrollView(
       child: Column(
         children: [
           const SizedBox(height: 16),
           gamesAsync.when(
-            loading: () => const GameGrid(
-              games: [],
-              title: 'All Table Games',
+            loading: () => GameGrid(
+              games: const [],
+              title: title,
               isLoading: true,
             ),
-            error: (error, stack) => const GameGrid(
-              games: [],
-              title: 'All Table Games',
+            error: (error, stack) => GameGrid(
+              games: const [],
+              title: title,
             ),
             data: (games) => GameGrid(
               games: games,
-              title: 'All Table Games',
+              title: title,
               subtitle: '${games.length} games available',
               onGameTap: (game) => _onGameTap(context, game),
             ),

@@ -114,19 +114,12 @@ class _GameCardState extends ConsumerState<GameCard> {
                   ),
                 ),
 
-                // Badges
+                // Badge (show only the first one)
                 if (game.badges != null && game.badges!.isNotEmpty)
                   Positioned(
                     top: 8,
                     left: 8,
-                    child: Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: game.badges!
-                          .take(2)
-                          .map((badge) => GameBadge(badge: badge, small: true))
-                          .toList(),
-                    ),
+                    child: GameBadge(badge: game.badges!.first, small: true),
                   ),
 
                 // Jackpot amount

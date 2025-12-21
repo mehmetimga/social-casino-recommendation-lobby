@@ -21,9 +21,12 @@ MediaSize _$MediaSizeFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$MediaSize {
-  String get url => throw _privateConstructorUsedError;
-  int get width => throw _privateConstructorUsedError;
-  int get height => throw _privateConstructorUsedError;
+  String? get url => throw _privateConstructorUsedError;
+  int? get width => throw _privateConstructorUsedError;
+  int? get height => throw _privateConstructorUsedError;
+  String? get mimeType => throw _privateConstructorUsedError;
+  int? get filesize => throw _privateConstructorUsedError;
+  String? get filename => throw _privateConstructorUsedError;
 
   /// Serializes this MediaSize to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +43,14 @@ abstract class $MediaSizeCopyWith<$Res> {
   factory $MediaSizeCopyWith(MediaSize value, $Res Function(MediaSize) then) =
       _$MediaSizeCopyWithImpl<$Res, MediaSize>;
   @useResult
-  $Res call({String url, int width, int height});
+  $Res call({
+    String? url,
+    int? width,
+    int? height,
+    String? mimeType,
+    int? filesize,
+    String? filename,
+  });
 }
 
 /// @nodoc
@@ -57,21 +67,40 @@ class _$MediaSizeCopyWithImpl<$Res, $Val extends MediaSize>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? url = null, Object? width = null, Object? height = null}) {
+  $Res call({
+    Object? url = freezed,
+    Object? width = freezed,
+    Object? height = freezed,
+    Object? mimeType = freezed,
+    Object? filesize = freezed,
+    Object? filename = freezed,
+  }) {
     return _then(
       _value.copyWith(
-            url: null == url
+            url: freezed == url
                 ? _value.url
                 : url // ignore: cast_nullable_to_non_nullable
-                      as String,
-            width: null == width
+                      as String?,
+            width: freezed == width
                 ? _value.width
                 : width // ignore: cast_nullable_to_non_nullable
-                      as int,
-            height: null == height
+                      as int?,
+            height: freezed == height
                 ? _value.height
                 : height // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as int?,
+            mimeType: freezed == mimeType
+                ? _value.mimeType
+                : mimeType // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            filesize: freezed == filesize
+                ? _value.filesize
+                : filesize // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            filename: freezed == filename
+                ? _value.filename
+                : filename // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -87,7 +116,14 @@ abstract class _$$MediaSizeImplCopyWith<$Res>
   ) = __$$MediaSizeImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String url, int width, int height});
+  $Res call({
+    String? url,
+    int? width,
+    int? height,
+    String? mimeType,
+    int? filesize,
+    String? filename,
+  });
 }
 
 /// @nodoc
@@ -103,21 +139,40 @@ class __$$MediaSizeImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? url = null, Object? width = null, Object? height = null}) {
+  $Res call({
+    Object? url = freezed,
+    Object? width = freezed,
+    Object? height = freezed,
+    Object? mimeType = freezed,
+    Object? filesize = freezed,
+    Object? filename = freezed,
+  }) {
     return _then(
       _$MediaSizeImpl(
-        url: null == url
+        url: freezed == url
             ? _value.url
             : url // ignore: cast_nullable_to_non_nullable
-                  as String,
-        width: null == width
+                  as String?,
+        width: freezed == width
             ? _value.width
             : width // ignore: cast_nullable_to_non_nullable
-                  as int,
-        height: null == height
+                  as int?,
+        height: freezed == height
             ? _value.height
             : height // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as int?,
+        mimeType: freezed == mimeType
+            ? _value.mimeType
+            : mimeType // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        filesize: freezed == filesize
+            ? _value.filesize
+            : filesize // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        filename: freezed == filename
+            ? _value.filename
+            : filename // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -127,24 +182,33 @@ class __$$MediaSizeImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$MediaSizeImpl implements _MediaSize {
   const _$MediaSizeImpl({
-    required this.url,
-    required this.width,
-    required this.height,
+    this.url,
+    this.width,
+    this.height,
+    this.mimeType,
+    this.filesize,
+    this.filename,
   });
 
   factory _$MediaSizeImpl.fromJson(Map<String, dynamic> json) =>
       _$$MediaSizeImplFromJson(json);
 
   @override
-  final String url;
+  final String? url;
   @override
-  final int width;
+  final int? width;
   @override
-  final int height;
+  final int? height;
+  @override
+  final String? mimeType;
+  @override
+  final int? filesize;
+  @override
+  final String? filename;
 
   @override
   String toString() {
-    return 'MediaSize(url: $url, width: $width, height: $height)';
+    return 'MediaSize(url: $url, width: $width, height: $height, mimeType: $mimeType, filesize: $filesize, filename: $filename)';
   }
 
   @override
@@ -154,12 +218,26 @@ class _$MediaSizeImpl implements _MediaSize {
             other is _$MediaSizeImpl &&
             (identical(other.url, url) || other.url == url) &&
             (identical(other.width, width) || other.width == width) &&
-            (identical(other.height, height) || other.height == height));
+            (identical(other.height, height) || other.height == height) &&
+            (identical(other.mimeType, mimeType) ||
+                other.mimeType == mimeType) &&
+            (identical(other.filesize, filesize) ||
+                other.filesize == filesize) &&
+            (identical(other.filename, filename) ||
+                other.filename == filename));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, url, width, height);
+  int get hashCode => Object.hash(
+    runtimeType,
+    url,
+    width,
+    height,
+    mimeType,
+    filesize,
+    filename,
+  );
 
   /// Create a copy of MediaSize
   /// with the given fields replaced by the non-null parameter values.
@@ -177,20 +255,29 @@ class _$MediaSizeImpl implements _MediaSize {
 
 abstract class _MediaSize implements MediaSize {
   const factory _MediaSize({
-    required final String url,
-    required final int width,
-    required final int height,
+    final String? url,
+    final int? width,
+    final int? height,
+    final String? mimeType,
+    final int? filesize,
+    final String? filename,
   }) = _$MediaSizeImpl;
 
   factory _MediaSize.fromJson(Map<String, dynamic> json) =
       _$MediaSizeImpl.fromJson;
 
   @override
-  String get url;
+  String? get url;
   @override
-  int get width;
+  int? get width;
   @override
-  int get height;
+  int? get height;
+  @override
+  String? get mimeType;
+  @override
+  int? get filesize;
+  @override
+  String? get filename;
 
   /// Create a copy of MediaSize
   /// with the given fields replaced by the non-null parameter values.

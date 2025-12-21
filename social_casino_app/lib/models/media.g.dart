@@ -8,9 +8,12 @@ part of 'media.dart';
 
 _$MediaSizeImpl _$$MediaSizeImplFromJson(Map<String, dynamic> json) =>
     _$MediaSizeImpl(
-      url: json['url'] as String,
-      width: (json['width'] as num).toInt(),
-      height: (json['height'] as num).toInt(),
+      url: json['url'] as String?,
+      width: (json['width'] as num?)?.toInt(),
+      height: (json['height'] as num?)?.toInt(),
+      mimeType: json['mimeType'] as String?,
+      filesize: (json['filesize'] as num?)?.toInt(),
+      filename: json['filename'] as String?,
     );
 
 Map<String, dynamic> _$$MediaSizeImplToJson(_$MediaSizeImpl instance) =>
@@ -18,6 +21,9 @@ Map<String, dynamic> _$$MediaSizeImplToJson(_$MediaSizeImpl instance) =>
       'url': instance.url,
       'width': instance.width,
       'height': instance.height,
+      'mimeType': instance.mimeType,
+      'filesize': instance.filesize,
+      'filename': instance.filename,
     };
 
 _$MediaSizesImpl _$$MediaSizesImplFromJson(Map<String, dynamic> json) =>

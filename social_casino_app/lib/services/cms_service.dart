@@ -206,23 +206,72 @@ class CmsService {
   }
 
   /// Get default lobby layout for platform
+  /// Falls back to web layout if mobile layout not found
   Future<LobbyLayout?> getDefaultLobbyLayout({String platform = 'mobile'}) async {
     try {
-      final response = await _dio.get('/api/lobby-layouts', queryParameters: {
+      // Try to get platform-specific layout first
+      var response = await _dio.get('/api/lobby-layouts', queryParameters: {
         'where[platform][equals]': platform,
         'where[isDefault][equals]': true,
         'depth': 2,
         'limit': 1,
       });
-      final data = response.data;
+      var data = response.data;
 
       if (data['docs'] != null && (data['docs'] as List).isNotEmpty) {
         return LobbyLayout.fromJson(data['docs'][0]);
       }
+
+      // Fallback to web layout if no mobile layout found
+      if (platform == 'mobile') {
+        response = await _dio.get('/api/lobby-layouts', queryParameters: {
+          'where[platform][equals]': 'web',
+          'where[isDefault][equals]': true,
+          'depth': 2,
+          'limit': 1,
+        });
+        data = response.data;
+
+        if (data['docs'] != null && (data['docs'] as List).isNotEmpty) {
+          return LobbyLayout.fromJson(data['docs'][0]);
+        }
+      }
+
       return null;
     } on DioException catch (e) {
       throw ApiException(
         e.message ?? 'Failed to fetch default lobby layout',
+        statusCode: e.response?.statusCode,
+        data: e.response?.data,
+      );
+    }
+  }
+
+  /// Get all lobby layouts for mobile (for category tabs)
+  /// Returns lightweight layout info (id, slug, name) without full sections
+  Future<List<Map<String, dynamic>>> getLobbyLayoutsForTabs() async {
+    try {
+      final response = await _dio.get('/api/lobby-layouts', queryParameters: {
+        'where[platform][in]': 'mobile,web',
+        'depth': 0,
+        'limit': 20,
+      });
+      final data = response.data;
+      if (data['docs'] != null) {
+        return (data['docs'] as List)
+            .map((doc) => {
+                  'id': doc['id'],
+                  'slug': doc['slug'],
+                  'name': doc['name'],
+                  'platform': doc['platform'],
+                  'isDefault': doc['isDefault'] ?? false,
+                })
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw ApiException(
+        e.message ?? 'Failed to fetch lobby layouts',
         statusCode: e.response?.statusCode,
         data: e.response?.data,
       );
