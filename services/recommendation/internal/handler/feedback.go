@@ -12,15 +12,18 @@ import (
 type FeedbackHandler struct {
 	postgresRepo          *repository.PostgresRepository
 	recommendationService *service.RecommendationService
+	embeddingService      *service.EmbeddingService
 }
 
 func NewFeedbackHandler(
 	postgresRepo *repository.PostgresRepository,
 	recommendationService *service.RecommendationService,
+	embeddingService *service.EmbeddingService,
 ) *FeedbackHandler {
 	return &FeedbackHandler{
 		postgresRepo:          postgresRepo,
 		recommendationService: recommendationService,
+		embeddingService:      embeddingService,
 	}
 }
 
@@ -94,12 +97,25 @@ func (h *FeedbackHandler) SubmitReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Analyze sentiment if review text is provided
+	var sentimentScore *float64
+	if req.ReviewText != nil && *req.ReviewText != "" {
+		score, err := h.embeddingService.AnalyzeSentiment(*req.ReviewText)
+		if err != nil {
+			// Log error but don't fail the request - sentiment is optional
+			println("Warning: Failed to analyze sentiment:", err.Error())
+		} else {
+			sentimentScore = &score
+		}
+	}
+
 	// Create or update review
 	review := &model.UserReview{
-		UserID:     req.UserID,
-		GameSlug:   req.GameSlug,
-		Rating:     req.Rating,
-		ReviewText: req.ReviewText,
+		UserID:         req.UserID,
+		GameSlug:       req.GameSlug,
+		Rating:         req.Rating,
+		ReviewText:     req.ReviewText,
+		SentimentScore: sentimentScore,
 	}
 
 	if err := h.postgresRepo.UpsertReview(review); err != nil {

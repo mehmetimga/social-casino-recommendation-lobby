@@ -176,10 +176,10 @@ func (r *PostgresRepository) UpsertReview(review *model.UserReview) error {
 	review.UpdatedAt = now
 
 	query := `
-		INSERT INTO user_reviews (id, user_id, game_slug, rating, review_text, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO user_reviews (id, user_id, game_slug, rating, review_text, sentiment_score, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		ON CONFLICT (user_id, game_slug)
-		DO UPDATE SET rating = $4, review_text = $5, updated_at = $7
+		DO UPDATE SET rating = $4, review_text = $5, sentiment_score = $6, updated_at = $8
 		RETURNING id, created_at, updated_at
 	`
 
@@ -189,6 +189,7 @@ func (r *PostgresRepository) UpsertReview(review *model.UserReview) error {
 		review.GameSlug,
 		review.Rating,
 		review.ReviewText,
+		review.SentimentScore,
 		review.CreatedAt,
 		review.UpdatedAt,
 	).Scan(&review.ID, &review.CreatedAt, &review.UpdatedAt)
@@ -198,7 +199,7 @@ func (r *PostgresRepository) UpsertReview(review *model.UserReview) error {
 
 func (r *PostgresRepository) GetGameReviews(gameSlug string, limit int) ([]*model.UserReview, error) {
 	query := `
-		SELECT id, user_id, game_slug, rating, review_text, created_at, updated_at
+		SELECT id, user_id, game_slug, rating, review_text, sentiment_score, created_at, updated_at
 		FROM user_reviews
 		WHERE game_slug = $1
 		ORDER BY created_at DESC
@@ -220,6 +221,7 @@ func (r *PostgresRepository) GetGameReviews(gameSlug string, limit int) ([]*mode
 			&review.GameSlug,
 			&review.Rating,
 			&review.ReviewText,
+			&review.SentimentScore,
 			&review.CreatedAt,
 			&review.UpdatedAt,
 		)
@@ -234,7 +236,7 @@ func (r *PostgresRepository) GetGameReviews(gameSlug string, limit int) ([]*mode
 
 func (r *PostgresRepository) GetUserReview(userID, gameSlug string) (*model.UserReview, error) {
 	query := `
-		SELECT id, user_id, game_slug, rating, review_text, created_at, updated_at
+		SELECT id, user_id, game_slug, rating, review_text, sentiment_score, created_at, updated_at
 		FROM user_reviews
 		WHERE user_id = $1 AND game_slug = $2
 	`
@@ -246,6 +248,7 @@ func (r *PostgresRepository) GetUserReview(userID, gameSlug string) (*model.User
 		&review.GameSlug,
 		&review.Rating,
 		&review.ReviewText,
+		&review.SentimentScore,
 		&review.CreatedAt,
 		&review.UpdatedAt,
 	)
@@ -255,6 +258,42 @@ func (r *PostgresRepository) GetUserReview(userID, gameSlug string) (*model.User
 	}
 
 	return review, err
+}
+
+func (r *PostgresRepository) GetUserReviews(userID string) ([]*model.UserReview, error) {
+	query := `
+		SELECT id, user_id, game_slug, rating, review_text, sentiment_score, created_at, updated_at
+		FROM user_reviews
+		WHERE user_id = $1
+		ORDER BY updated_at DESC
+	`
+
+	rows, err := r.db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var reviews []*model.UserReview
+	for rows.Next() {
+		review := &model.UserReview{}
+		err := rows.Scan(
+			&review.ID,
+			&review.UserID,
+			&review.GameSlug,
+			&review.Rating,
+			&review.ReviewText,
+			&review.SentimentScore,
+			&review.CreatedAt,
+			&review.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+
+	return reviews, nil
 }
 
 // User Preferences

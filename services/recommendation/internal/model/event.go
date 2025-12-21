@@ -37,13 +37,14 @@ type UserRating struct {
 }
 
 type UserReview struct {
-	ID         uuid.UUID `json:"id"`
-	UserID     string    `json:"userId"`
-	GameSlug   string    `json:"gameSlug"`
-	Rating     int       `json:"rating"`
-	ReviewText *string   `json:"reviewText,omitempty"`
-	CreatedAt  time.Time `json:"createdAt"`
-	UpdatedAt  time.Time `json:"updatedAt"`
+	ID             uuid.UUID `json:"id"`
+	UserID         string    `json:"userId"`
+	GameSlug       string    `json:"gameSlug"`
+	Rating         int       `json:"rating"`
+	ReviewText     *string   `json:"reviewText,omitempty"`
+	SentimentScore *float64  `json:"sentimentScore,omitempty"`
+	CreatedAt      time.Time `json:"createdAt"`
+	UpdatedAt      time.Time `json:"updatedAt"`
 }
 
 // Weighting constants for recommendation algorithm

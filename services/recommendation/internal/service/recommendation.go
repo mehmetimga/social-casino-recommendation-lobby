@@ -62,12 +62,18 @@ func (s *RecommendationService) UpdateUserVector(userID string) error {
 		return err
 	}
 
-	if len(events) == 0 && len(ratings) == 0 {
+	// Get user reviews (which include sentiment scores)
+	reviews, err := s.postgresRepo.GetUserReviews(userID)
+	if err != nil {
+		return err
+	}
+
+	if len(events) == 0 && len(ratings) == 0 && len(reviews) == 0 {
 		return nil // No data to create vector from
 	}
 
 	// Calculate weighted game preferences
-	gameWeights := s.calculateGameWeights(events, ratings)
+	gameWeights := s.calculateGameWeights(events, ratings, reviews)
 
 	if len(gameWeights) == 0 {
 		return nil
@@ -97,7 +103,7 @@ func (s *RecommendationService) UpdateUserVector(userID string) error {
 	return s.postgresRepo.UpdateUserPreferenceVectorTime(userID)
 }
 
-func (s *RecommendationService) calculateGameWeights(events []*model.UserEvent, ratings []*model.UserRating) map[string]float64 {
+func (s *RecommendationService) calculateGameWeights(events []*model.UserEvent, ratings []*model.UserRating, reviews []*model.UserReview) map[string]float64 {
 	weights := make(map[string]float64)
 	now := time.Now()
 
@@ -118,8 +124,19 @@ func (s *RecommendationService) calculateGameWeights(events []*model.UserEvent, 
 		weights[event.GameSlug] += weight
 	}
 
-	// Process ratings with time decay
+	// Create a map of games with reviews (to avoid double-counting)
+	reviewedGames := make(map[string]bool)
+	for _, review := range reviews {
+		reviewedGames[review.GameSlug] = true
+	}
+
+	// Process ratings with time decay (only for games without reviews)
 	for _, rating := range ratings {
+		// Skip if this game has a review (we'll use the review instead)
+		if reviewedGames[rating.GameSlug] {
+			continue
+		}
+
 		weight := model.GetRatingWeight(rating.Rating)
 
 		// Apply time decay (half-life = 90 days)
@@ -128,6 +145,29 @@ func (s *RecommendationService) calculateGameWeights(events []*model.UserEvent, 
 		weight *= decayFactor
 
 		weights[rating.GameSlug] += weight
+	}
+
+	// Process reviews with sentiment-adjusted weights
+	for _, review := range reviews {
+		weight := model.GetRatingWeight(review.Rating)
+
+		// Apply sentiment multiplier if available
+		if review.SentimentScore != nil {
+			// Sentiment score ranges from -1 to +1
+			// We use it as a multiplier:
+			// - Positive sentiment (0.5 to 1.0) increases weight by 10-50%
+			// - Negative sentiment (-1.0 to -0.5) decreases weight by 10-50%
+			// - Neutral sentiment (around 0) has minimal effect
+			sentimentMultiplier := 1.0 + (*review.SentimentScore * 0.5)
+			weight *= sentimentMultiplier
+		}
+
+		// Apply time decay (half-life = 90 days)
+		daysSince := now.Sub(review.UpdatedAt).Hours() / 24
+		decayFactor := math.Pow(0.5, daysSince/float64(model.RatingHalfLife))
+		weight *= decayFactor
+
+		weights[review.GameSlug] += weight
 	}
 
 	return weights

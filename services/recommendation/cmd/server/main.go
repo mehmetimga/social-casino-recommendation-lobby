@@ -36,7 +36,7 @@ func main() {
 
 	// Initialize handlers
 	eventsHandler := handler.NewEventsHandler(postgresRepo, recommendationService)
-	feedbackHandler := handler.NewFeedbackHandler(postgresRepo, recommendationService)
+	feedbackHandler := handler.NewFeedbackHandler(postgresRepo, recommendationService, embeddingService)
 	recommendationsHandler := handler.NewRecommendationsHandler(recommendationService)
 
 	// Setup router

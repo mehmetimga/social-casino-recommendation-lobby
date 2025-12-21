@@ -56,21 +56,28 @@ Stores user ratings for games:
 **Constraint:** One rating per user per game (UNIQUE on user_id, game_slug)
 
 #### **user_reviews** Table
-Stores user reviews with ratings:
+Stores user reviews with ratings and AI-generated sentiment analysis:
 
-| Column      | Type      | Description                         |
-|-------------|-----------|-------------------------------------|
-| id          | UUID      | Unique review ID                    |
-| user_id     | VARCHAR   | User identifier                     |
-| game_slug   | VARCHAR   | Game identifier                     |
-| rating      | INTEGER   | Rating value (1-5 stars)            |
-| review_text | TEXT      | Optional review text                |
-| created_at  | TIMESTAMP | First review timestamp              |
-| updated_at  | TIMESTAMP | Last update timestamp               |
+| Column          | Type         | Description                                      |
+|-----------------|--------------|--------------------------------------------------|
+| id              | UUID         | Unique review ID                                 |
+| user_id         | VARCHAR      | User identifier                                  |
+| game_slug       | VARCHAR      | Game identifier                                  |
+| rating          | INTEGER      | Rating value (1-5 stars)                         |
+| review_text     | TEXT         | Optional review text                             |
+| sentiment_score | DECIMAL(3,2) | AI-analyzed sentiment: -1.0 (negative) to +1.0 (positive) |
+| created_at      | TIMESTAMP    | First review timestamp                           |
+| updated_at      | TIMESTAMP    | Last update timestamp                            |
 
 **Constraint:** One review per user per game (UNIQUE on user_id, game_slug)
 
 **Note:** When a review is submitted, it updates both `user_reviews` and `user_ratings` tables for backwards compatibility.
+
+**Sentiment Score:**
+- Automatically generated using Ollama LLM when review text is provided
+- Range: -1.0 (very negative) to +1.0 (very positive)
+- NULL if no review text or analysis failed
+- Used to amplify or diminish the rating weight in recommendations
 
 #### **user_preferences** Table
 Tracks when user vectors were last updated:
@@ -168,6 +175,13 @@ const (
 )
 ```
 
+**Review Text Sentiment Analysis:**
+When a user submits a review with text, the system:
+1. Sends the review text to Ollama LLM (llama3.2:3b model)
+2. Asks the LLM to analyze sentiment on a scale of -1.0 to +1.0
+3. Stores the sentiment score in the database
+4. Uses sentiment to adjust the rating weight in recommendations
+
 **Game Time Weight Formula:**
 ```
 weight = GameTimeBaseWeight × (1 + min(duration_seconds / 300, 2))
@@ -186,6 +200,21 @@ weight = Rating1Weight + (Rating5Weight - Rating1Weight) × (rating - 1) / 4
 - 3 stars: +1.0 (neutral)
 - 4 stars: +4.5
 - 5 stars: +8.0 (strong like)
+
+**Sentiment-Adjusted Weight (when review text is provided):**
+```
+final_weight = rating_weight × (1 + sentiment_score × 0.5)
+```
+- Very positive sentiment (+1.0): increases weight by 50%
+  - Example: 4-star rating (4.5) with +1.0 sentiment = 6.75
+- Positive sentiment (+0.5): increases weight by 25%
+  - Example: 4-star rating (4.5) with +0.5 sentiment = 5.625
+- Neutral sentiment (0.0): no change to weight
+  - Example: 4-star rating (4.5) with 0.0 sentiment = 4.5
+- Negative sentiment (-0.5): decreases weight by 25%
+  - Example: 4-star rating (4.5) with -0.5 sentiment = 3.375
+- Very negative sentiment (-1.0): decreases weight by 50%
+  - Example: 1-star rating (-6.0) with -1.0 sentiment = -9.0
 
 ### Step 2: Apply Time Decay
 
@@ -367,13 +396,23 @@ Writes review text (optional)
   ↓
 Submits review
   ↓
+Backend analyzes sentiment using Ollama LLM
+  ↓
+Sentiment score calculated (-1.0 to +1.0)
+  ↓
 Stored in PostgreSQL (user_reviews + user_ratings)
   ↓
 User vector update triggered
   ↓
-High rating (5 stars) → +8.0 weight
+Rating weight calculated:
+  - 5 stars → +8.0 base weight
+  - 1 star → -6.0 base weight
   ↓
-Low rating (1 star) → -6.0 weight
+Sentiment adjusts weight:
+  - Positive sentiment (+0.5 to +1.0) increases by 25-50%
+  - Negative sentiment (-0.5 to -1.0) decreases by 25-50%
+  ↓
+Example: 4 stars (+4.5) + very positive text (+1.0) = 6.75 final weight
   ↓
 Negative weights push similar games away
   ↓
@@ -512,12 +551,35 @@ const (
 )
 ```
 
+## Current Features
+
+### 1. Review Text Sentiment Analysis ✅ (Implemented)
+The system now analyzes review text sentiment using Ollama LLM:
+- **Automatic Analysis**: When users submit review text, the system sends it to Ollama (llama3.2:3b)
+- **Sentiment Score**: LLM returns a score from -1.0 (very negative) to +1.0 (very positive)
+- **Weight Adjustment**: Sentiment multiplier applied to rating weight
+  - Formula: `final_weight = rating_weight × (1 + sentiment_score × 0.5)`
+  - Positive sentiment amplifies positive ratings
+  - Negative sentiment amplifies negative ratings
+- **Smart Handling**:
+  - If review has no text, sentiment is NULL (uses rating only)
+  - If LLM analysis fails, review still saves (sentiment is optional)
+  - Avoids double-counting (reviews override ratings for same game)
+
+**Example Impact:**
+- 5-star review with text "Amazing! Love it!" (sentiment: +0.9)
+  - Base weight: +8.0
+  - Adjusted weight: 8.0 × (1 + 0.9 × 0.5) = **11.6**
+- 2-star review with text "Terrible, waste of time" (sentiment: -0.8)
+  - Base weight: -2.5
+  - Adjusted weight: -2.5 × (1 + (-0.8) × 0.5) = **-1.5** → Less negative than numeric rating alone
+
 ## Future Enhancements
 
-### 1. Review Text Analysis
-- Use Ollama to analyze review sentiment
-- Extract keywords from review text
-- Incorporate sentiment scores into recommendations
+### 1. Keyword Extraction from Reviews
+- Extract game features mentioned in reviews (e.g., "graphics", "bonuses", "payouts")
+- Build feature preference vectors for users
+- Match users with games strong in their preferred features
 
 ### 2. Contextual Recommendations
 - Time-based (morning vs evening games)
