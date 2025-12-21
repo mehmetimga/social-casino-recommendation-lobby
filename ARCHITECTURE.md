@@ -22,7 +22,7 @@
 
 ## System Overview
 
-The Social Casino Recommendation Lobby is a full-stack web application that provides personalized game recommendations and AI-powered chat assistance. The system combines collaborative filtering, content-based recommendations, and RAG (Retrieval-Augmented Generation) to deliver a sophisticated user experience.
+The Social Casino Recommendation Lobby is a full-stack web and mobile application that provides personalized game recommendations and AI-powered chat assistance. The system combines collaborative filtering, content-based recommendations, and RAG (Retrieval-Augmented Generation) to deliver a sophisticated user experience across web and native mobile platforms.
 
 ### Key Features
 - **Personalized Game Recommendations**: AI-driven recommendations based on user behavior, ratings, and review sentiment
@@ -30,7 +30,8 @@ The Social Casino Recommendation Lobby is a full-stack web application that prov
 - **Review & Rating System**: Users can rate games and write reviews with AI sentiment analysis
 - **Game Management**: CMS-based content management for games, providers, and badges
 - **Real-time Tracking**: Event tracking for impressions, clicks, and play time
-- **Responsive UI**: Modern React-based frontend with Tailwind CSS
+- **Responsive Web UI**: Modern React-based frontend with Tailwind CSS
+- **Native Mobile App**: Flutter-based iOS/Android app with full feature parity
 
 ### System Goals
 - Provide accurate, personalized game recommendations
@@ -44,14 +45,19 @@ The Social Casino Recommendation Lobby is a full-stack web application that prov
 ## Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                           CLIENT LAYER                               │
-│  ┌────────────────────────────────────────────────────────────────┐ │
-│  │              React Frontend (Vite + TypeScript)                 │ │
-│  │  • Game Lobby  • Chat Widget  • Reviews  • User Profile        │ │
-│  └────────────────────────────────────────────────────────────────┘ │
-└───────────────────────┬─────────────────────────────────────────────┘
-                        │ HTTP/REST APIs
+┌────────────────────────────────────────────────────────────────────────────┐
+│                              CLIENT LAYER                                    │
+│  ┌────────────────────────────────┐    ┌────────────────────────────────┐  │
+│  │   React Web Frontend           │    │   Flutter Mobile App           │  │
+│  │   (Vite + TypeScript)          │    │   (iOS + Android)              │  │
+│  │   • Game Lobby                 │    │   • Game Lobby                 │  │
+│  │   • Chat Widget                │    │   • PlayModal with SafeArea    │  │
+│  │   • Reviews                    │    │   • Chat Assistant             │  │
+│  │                                │    │   • Reviews & Ratings          │  │
+│  └─────────────┬──────────────────┘    └─────────────┬──────────────────┘  │
+└────────────────┼─────────────────────────────────────┼──────────────────────┘
+                 └──────────────────┬──────────────────┘
+                                    │ HTTP/REST APIs
 ┌───────────────────────┴─────────────────────────────────────────────┐
 │                        APPLICATION LAYER                             │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌───────────────────┐ │
@@ -91,7 +97,7 @@ The Social Casino Recommendation Lobby is a full-stack web application that prov
 
 ## Core Components
 
-### 1. Frontend (React + Vite)
+### 1. Web Frontend (React + Vite)
 **Technology**: React 18, TypeScript, Vite, Tailwind CSS
 **Port**: 5173
 **Responsibilities**:
@@ -107,6 +113,24 @@ The Social Casino Recommendation Lobby is a full-stack web application that prov
 - Responsive design with Tailwind CSS
 - Component-based architecture
 - Real-time event tracking with IntersectionObserver
+
+### 1b. Mobile App (Flutter)
+**Technology**: Flutter 3.24, Dart, Riverpod, GoRouter
+**Platforms**: iOS, Android
+**Responsibilities**:
+- Native mobile experience for game lobby
+- Full-screen PlayModal with safe area handling
+- Game play tracking with duration
+- Review and rating submissions
+- AI chat assistant integration
+
+**Key Features**:
+- Riverpod for reactive state management
+- GoRouter for declarative navigation
+- CachedNetworkImage for efficient image loading
+- Safe area handling for notches and camera cutouts
+- PlayModal with rounded hero image and overlay close button
+- Bottom navigation with tab persistence
 
 ### 2. Recommendation Service (Go)
 **Technology**: Go 1.25, Chi router, PostgreSQL, Qdrant
@@ -221,7 +245,7 @@ The Social Casino Recommendation Lobby is a full-stack web application that prov
 
 ## Technology Stack
 
-### Frontend
+### Web Frontend
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | React | 18.2 | UI framework |
@@ -234,6 +258,18 @@ The Social Casino Recommendation Lobby is a full-stack web application that prov
 | Embla Carousel | 8.0 | Carousel component |
 | clsx & tailwind-merge | - | Conditional styling |
 | uuid | 9.0 | Unique ID generation |
+
+### Mobile App (Flutter)
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Flutter | 3.24 | Cross-platform framework |
+| Dart | 3.5 | Programming language |
+| flutter_riverpod | 2.5 | State management |
+| go_router | 14.2 | Navigation |
+| cached_network_image | 3.3 | Image caching |
+| dio | 5.4 | HTTP client |
+| intl | 0.19 | Formatting |
+| shimmer | 3.0 | Loading animations |
 
 ### Backend (Go Services)
 | Technology | Version | Purpose |
@@ -1605,13 +1641,14 @@ useEffect(() => {
 
 ```
 social-casino-recommendation-lobby/
-├── frontend/                      # React frontend
+├── frontend/                      # React web frontend
 │   ├── src/
 │   │   ├── api/                   # API clients
+│   │   ├── assets/                # Static assets
 │   │   ├── components/            # React components
 │   │   │   ├── chat/
 │   │   │   ├── game/
-│   │   │   └── layout/
+│   │   │   └── layout/            # Header 
 │   │   ├── context/               # Global state
 │   │   ├── hooks/                 # Custom hooks
 │   │   ├── pages/                 # Page components
@@ -1623,6 +1660,25 @@ social-casino-recommendation-lobby/
 │   ├── tsconfig.json
 │   ├── tailwind.config.js
 │   └── Dockerfile
+│
+├── social_casino_app/             # Flutter mobile app
+│   ├── lib/
+│   │   ├── config/                # API config, routes, theme
+│   │   │   ├── api_config.dart
+│   │   │   ├── routes.dart        # GoRouter setup
+│   │   │   └── theme/
+│   │   ├── models/                # Data models
+│   │   ├── providers/             # Riverpod providers
+│   │   ├── screens/               # Screen widgets
+│   │   ├── services/              # API services
+│   │   └── widgets/               # Reusable widgets
+│   │       ├── chat/              # Chat assistant
+│   │       ├── game/              # PlayModal, ReviewForm
+│   │       ├── layout/            # MainScaffold, BottomNav
+│   │       └── lobby/             # GameGrid, GameCard
+│   ├── ios/                       # iOS native code
+│   ├── android/                   # Android native code
+│   └── pubspec.yaml               # Dependencies
 │
 ├── services/
 │   ├── recommendation/            # Recommendation service (Go)
@@ -1875,7 +1931,8 @@ This architecture provides a solid foundation for a scalable, AI-powered casino 
 ### Key Strengths
 - **Microservices architecture**: Independent, scalable services
 - **AI-powered features**: Recommendations, chat, sentiment analysis
-- **Modern tech stack**: React, Go, Qdrant, Ollama
+- **Modern tech stack**: React, Flutter, Go, Qdrant, Ollama
+- **Cross-platform**: Web and native mobile (iOS/Android)
 - **Developer-friendly**: Docker Compose, clear APIs, good documentation
 - **Extensible design**: Easy to add new features
 

@@ -35,7 +35,7 @@ class AppHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // BetRivers Logo from asset
+          // Logo from asset
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: Image.asset(

@@ -5,35 +5,40 @@ A proof-of-concept social casino platform featuring:
 - AI-powered game recommendations (Go + Qdrant + Ollama)
 - RAG-powered chat support (Go + Qdrant + Ollama)
 - Modern React frontend (Vite + TypeScript + Tailwind)
+- Native Flutter mobile app (iOS/Android)
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                         Frontend                             │
-│                   (Vite + React + Tailwind)                  │
-└─────────────────────────┬───────────────────────────────────┘
-                          │
-        ┌─────────────────┼─────────────────┐
-        │                 │                 │
-        ▼                 ▼                 ▼
-┌───────────────┐ ┌───────────────┐ ┌───────────────┐
-│  PayloadCMS   │ │ Recommendation│ │  Chat + RAG   │
-│   (Node.js)   │ │   Service     │ │   Service     │
-│               │ │    (Go)       │ │    (Go)       │
-└───────┬───────┘ └───────┬───────┘ └───────┬───────┘
-        │                 │                 │
-        ▼                 ▼                 ▼
-┌───────────────┐ ┌───────────────┐ ┌───────────────┐
-│   MongoDB     │ │  PostgreSQL   │ │    Qdrant     │
-└───────────────┘ └───────────────┘ └───────────────┘
-                          │                 │
-                          └────────┬────────┘
-                                   ▼
-                          ┌───────────────┐
-                          │    Ollama     │
-                          │   (Local LLM) │
-                          └───────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            CLIENT LAYER                                   │
+│  ┌─────────────────────────────┐    ┌─────────────────────────────────┐ │
+│  │    React Web Frontend       │    │     Flutter Mobile App          │ │
+│  │  (Vite + TypeScript + TW)   │    │      (iOS + Android)            │ │
+│  └──────────────┬──────────────┘    └───────────────┬─────────────────┘ │
+└─────────────────┼───────────────────────────────────┼───────────────────┘
+                  └──────────────────┬────────────────┘
+                                     │
+            ┌────────────────────────┼────────────────────────┐
+            │                        │                        │
+            ▼                        ▼                        ▼
+    ┌───────────────┐       ┌───────────────┐       ┌───────────────┐
+    │  PayloadCMS   │       │ Recommendation│       │  Chat + RAG   │
+    │   (Node.js)   │       │   Service     │       │   Service     │
+    │               │       │    (Go)       │       │    (Go)       │
+    └───────┬───────┘       └───────┬───────┘       └───────┬───────┘
+            │                       │                       │
+            ▼                       ▼                       ▼
+    ┌───────────────┐       ┌───────────────┐       ┌───────────────┐
+    │   MongoDB     │       │  PostgreSQL   │       │    Qdrant     │
+    └───────────────┘       └───────────────┘       └───────────────┘
+                                    │                       │
+                                    └───────────┬───────────┘
+                                                ▼
+                                       ┌───────────────┐
+                                       │    Ollama     │
+                                       │   (Local LLM) │
+                                       └───────────────┘
 ```
 
 ## Quick Start
@@ -42,6 +47,7 @@ A proof-of-concept social casino platform featuring:
 - Docker & Docker Compose
 - Node.js 20+ (for local development)
 - Go 1.21+ (for local development)
+- Flutter 3.24+ (for mobile app development)
 
 ### Running with Docker Compose
 
@@ -75,7 +81,7 @@ social-casino-recommendation-lobby/
 │   │   └── seed/           # Sample data
 │   └── Dockerfile
 │
-├── frontend/               # Vite + React application
+├── frontend/               # Vite + React web application
 │   └── src/
 │       ├── components/
 │       │   ├── layout/     # Header, CategoryTabs
@@ -85,6 +91,19 @@ social-casino-recommendation-lobby/
 │       ├── api/            # API clients
 │       ├── context/        # User, Chat providers
 │       └── types/          # TypeScript definitions
+│
+├── social_casino_app/      # Flutter mobile application
+│   └── lib/
+│       ├── config/         # API config, routes, theme
+│       ├── models/         # Game, User, Review models
+│       ├── providers/      # Riverpod providers
+│       ├── screens/        # Lobby, Category, Game screens
+│       ├── services/       # API service layer
+│       └── widgets/        # Reusable widgets
+│           ├── chat/       # Chat assistant widgets
+│           ├── game/       # PlayModal, GameCard, ReviewForm
+│           ├── layout/     # MainScaffold, BottomNav
+│           └── lobby/      # GameGrid, CategoryTabs
 │
 ├── services/
 │   ├── recommendation/     # Go recommendation service
@@ -105,7 +124,7 @@ social-casino-recommendation-lobby/
 
 ## Features
 
-### Phase 1: CMS & Frontend
+### Phase 1: CMS & Web Frontend
 - PayloadCMS with game catalog, promotions, and lobby layouts
 - Dynamic lobby rendering based on CMS configuration
 - Netflix-style game cards with hover effects
@@ -123,6 +142,17 @@ social-casino-recommendation-lobby/
 - Vector search for relevant context
 - LLM-powered responses with citations
 - Session management and chat history
+
+### Phase 4: Flutter Mobile App
+- Native iOS and Android app with Flutter
+- Full game lobby with categories (Slots, Live Casino, Table Games, Instant Win)
+- PlayModal with game info, stats, and rounded hero image
+- Safe area handling for notches/camera cutouts
+- Game play tracking with time duration
+- Review system with star ratings
+- AI chat assistant integration
+- Countdown timer widgets for promotions
+- Bottom navigation with tab persistence
 
 ## API Endpoints
 
@@ -160,6 +190,13 @@ cd services/chat
 go run ./cmd/server
 ```
 
+### Flutter Mobile App
+```bash
+cd social_casino_app
+flutter pub get
+flutter run
+```
+
 ## Configuration
 
 ### Environment Variables
@@ -174,7 +211,8 @@ go run ./cmd/server
 
 ## Tech Stack
 
-- **Frontend**: Vite, React 18, TypeScript, Tailwind CSS, TanStack Query
+- **Web Frontend**: Vite, React 18, TypeScript, Tailwind CSS, TanStack Query
+- **Mobile App**: Flutter 3.24, Dart, Riverpod, GoRouter, CachedNetworkImage
 - **CMS**: PayloadCMS 2.x, MongoDB
 - **Backend**: Go 1.21, Chi router
 - **Databases**: PostgreSQL 16, MongoDB 7, Qdrant 1.7
