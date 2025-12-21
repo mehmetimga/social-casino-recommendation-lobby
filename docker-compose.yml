@@ -55,16 +55,16 @@ services:
     networks:
       - casino-network
 
-  # Ollama Local LLM
-  ollama:
-    image: ollama/ollama:latest
-    container_name: casino-ollama
-    volumes:
-      - ollama_data:/root/.ollama
-    ports:
-      - "11434:11434"
-    networks:
-      - casino-network
+  # Ollama Local LLM (Disabled - using host machine Ollama for better performance)
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: casino-ollama
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   ports:
+  #     - "11434:11434"
+  #   networks:
+  #     - casino-network
 
   # PayloadCMS
   cms:
@@ -98,14 +98,13 @@ services:
       PORT: 8081
       POSTGRES_URL: postgres://${POSTGRES_USER:-casino}:${POSTGRES_PASSWORD:-casino_secret}@postgres:5432/${POSTGRES_DB:-casino_db}?sslmode=disable
       QDRANT_URL: http://qdrant:6333
-      OLLAMA_URL: http://ollama:11434
+      OLLAMA_URL: http://host.docker.internal:11434
       CMS_URL: http://cms:3001
     ports:
       - "8081:8081"
     depends_on:
       - postgres
       - qdrant
-      - ollama
       - cms
     networks:
       - casino-network
@@ -120,13 +119,12 @@ services:
       PORT: 8082
       POSTGRES_URL: postgres://${POSTGRES_USER:-casino}:${POSTGRES_PASSWORD:-casino_secret}@postgres:5432/${POSTGRES_DB:-casino_db}?sslmode=disable
       QDRANT_URL: http://qdrant:6333
-      OLLAMA_URL: http://ollama:11434
+      OLLAMA_URL: http://host.docker.internal:11434
     ports:
       - "8082:8082"
     depends_on:
       - postgres
       - qdrant
-      - ollama
     networks:
       - casino-network
 

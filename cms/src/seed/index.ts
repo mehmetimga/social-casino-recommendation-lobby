@@ -4,7 +4,7 @@ import { seedGames } from './games'
 import { seedPromotions } from './promotions'
 import { seedLobbyLayout } from './lobby-layout'
 
-export async function seed(payload: Payload): Promise<void> {
+export async function seed(payload: Payload, reset = false): Promise<void> {
   console.log('Starting database seeding...')
 
   try {
@@ -12,7 +12,7 @@ export async function seed(payload: Payload): Promise<void> {
     await seedMedia(payload)
 
     // Then seed games and promotions (which reference the media)
-    await seedGames(payload)
+    await seedGames(payload, reset)
     await seedPromotions(payload)
 
     // Finally seed the lobby layout (which references games and promotions)

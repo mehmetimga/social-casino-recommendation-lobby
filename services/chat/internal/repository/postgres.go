@@ -40,13 +40,15 @@ func (r *PostgresRepository) CreateSession(session *model.ChatSession) error {
 	session.CreatedAt = now
 	session.UpdatedAt = now
 
-	var contextJSON []byte
+	var contextJSON interface{}
 	if session.Context != nil {
-		var err error
-		contextJSON, err = json.Marshal(session.Context)
+		data, err := json.Marshal(session.Context)
 		if err != nil {
 			return err
 		}
+		contextJSON = data
+	} else {
+		contextJSON = nil
 	}
 
 	query := `
@@ -105,13 +107,15 @@ func (r *PostgresRepository) CreateMessage(message *model.ChatMessage) error {
 	message.ID = uuid.New()
 	message.CreatedAt = time.Now()
 
-	var citationsJSON []byte
-	if message.Citations != nil {
-		var err error
-		citationsJSON, err = json.Marshal(message.Citations)
+	var citationsJSON interface{}
+	if message.Citations != nil && len(message.Citations) > 0 {
+		data, err := json.Marshal(message.Citations)
 		if err != nil {
 			return err
 		}
+		citationsJSON = data
+	} else {
+		citationsJSON = nil
 	}
 
 	query := `
@@ -175,4 +179,213 @@ func (r *PostgresRepository) GetSessionMessages(sessionID uuid.UUID, limit int) 
 	}
 
 	return messages, nil
+}
+
+// KB Sources
+
+func (r *PostgresRepository) CreateKBSource(source *model.KBSource) error {
+	source.ID = uuid.New()
+	source.CreatedAt = time.Now()
+
+	metadataJSON, err := json.Marshal(source.Metadata)
+	if err != nil {
+		return err
+	}
+
+	query := `
+		INSERT INTO kb_sources (id, name, source_type, metadata, created_at)
+		VALUES ($1, $2, $3, $4, $5)
+	`
+
+	_, err = r.db.Exec(query,
+		source.ID,
+		source.Name,
+		source.SourceType,
+		metadataJSON,
+		source.CreatedAt,
+	)
+
+	return err
+}
+
+func (r *PostgresRepository) GetKBSourceByName(name string) (*model.KBSource, error) {
+	source := &model.KBSource{}
+	var metadataJSON []byte
+
+	query := `SELECT id, name, source_type, metadata, created_at FROM kb_sources WHERE name = $1`
+	err := r.db.QueryRow(query, name).Scan(
+		&source.ID,
+		&source.Name,
+		&source.SourceType,
+		&metadataJSON,
+		&source.CreatedAt,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if metadataJSON != nil {
+		json.Unmarshal(metadataJSON, &source.Metadata)
+	}
+
+	return source, nil
+}
+
+// KB Documents
+
+func (r *PostgresRepository) CreateKBDocument(doc *model.KBDocument) error {
+	doc.ID = uuid.New()
+	now := time.Now()
+	doc.CreatedAt = now
+	doc.UpdatedAt = now
+
+	metadataJSON, err := json.Marshal(doc.Metadata)
+	if err != nil {
+		return err
+	}
+
+	query := `
+		INSERT INTO kb_documents (id, source_id, title, content_hash, metadata, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+	`
+
+	_, err = r.db.Exec(query,
+		doc.ID,
+		doc.SourceID,
+		doc.Title,
+		doc.ContentHash,
+		metadataJSON,
+		doc.CreatedAt,
+		doc.UpdatedAt,
+	)
+
+	return err
+}
+
+func (r *PostgresRepository) GetKBDocumentByHash(hash string) (*model.KBDocument, error) {
+	doc := &model.KBDocument{}
+	var metadataJSON []byte
+
+	query := `
+		SELECT id, source_id, title, content_hash, metadata, created_at, updated_at
+		FROM kb_documents
+		WHERE content_hash = $1
+	`
+	err := r.db.QueryRow(query, hash).Scan(
+		&doc.ID,
+		&doc.SourceID,
+		&doc.Title,
+		&doc.ContentHash,
+		&metadataJSON,
+		&doc.CreatedAt,
+		&doc.UpdatedAt,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if metadataJSON != nil {
+		json.Unmarshal(metadataJSON, &doc.Metadata)
+	}
+
+	return doc, nil
+}
+
+// KB Chunks
+
+func (r *PostgresRepository) CreateKBChunk(chunk *model.KBChunk) error {
+	chunk.ID = uuid.New()
+	chunk.CreatedAt = time.Now()
+
+	metadataJSON, err := json.Marshal(chunk.Metadata)
+	if err != nil {
+		return err
+	}
+
+	query := `
+		INSERT INTO kb_chunks (id, document_id, chunk_index, content, token_count, vector_id, metadata, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	`
+
+	_, err = r.db.Exec(query,
+		chunk.ID,
+		chunk.DocumentID,
+		chunk.ChunkIndex,
+		chunk.Content,
+		chunk.TokenCount,
+		chunk.VectorID,
+		metadataJSON,
+		chunk.CreatedAt,
+	)
+
+	return err
+}
+
+func (r *PostgresRepository) GetChunksByDocumentID(documentID uuid.UUID) ([]*model.KBChunk, error) {
+	query := `
+		SELECT id, document_id, chunk_index, content, token_count, vector_id, metadata, created_at
+		FROM kb_chunks
+		WHERE document_id = $1
+		ORDER BY chunk_index ASC
+	`
+
+	rows, err := r.db.Query(query, documentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var chunks []*model.KBChunk
+	for rows.Next() {
+		chunk := &model.KBChunk{}
+		var metadataJSON []byte
+		err := rows.Scan(
+			&chunk.ID,
+			&chunk.DocumentID,
+			&chunk.ChunkIndex,
+			&chunk.Content,
+			&chunk.TokenCount,
+			&chunk.VectorID,
+			&metadataJSON,
+			&chunk.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if metadataJSON != nil {
+			json.Unmarshal(metadataJSON, &chunk.Metadata)
+		}
+
+		chunks = append(chunks, chunk)
+	}
+
+	return chunks, nil
+}
+
+func (r *PostgresRepository) GetKBStats() (sources, documents, chunks int, err error) {
+	err = r.db.QueryRow(`SELECT COUNT(*) FROM kb_sources`).Scan(&sources)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	err = r.db.QueryRow(`SELECT COUNT(*) FROM kb_documents`).Scan(&documents)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	err = r.db.QueryRow(`SELECT COUNT(*) FROM kb_chunks`).Scan(&chunks)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	return sources, documents, chunks, nil
 }

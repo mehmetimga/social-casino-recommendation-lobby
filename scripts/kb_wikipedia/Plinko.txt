@@ -1,0 +1,27 @@
+Title: Plinko
+Source: Social Casino Knowledge Base
+License: Internal
+
+Plinko by BGaming is a modern take on the classic game show favorite, offering a 99% RTP and simple yet addictive gameplay. This social casino game perfectly blends luck and excitement as you watch a ball bounce down a pyramid of pegs.
+
+How to Play:
+Choose your risk level (low, medium, or high) and the number of rows (8-16). Drop the ball from the top and watch it bounce unpredictably through the pegs. The ball lands in one of the multiplier slots at the bottom, determining your win.
+
+Risk Levels Explained:
+- Low Risk: More consistent wins with lower multipliers. Great for beginners who want steady gameplay. Maximum multipliers are moderate but hit more frequently.
+
+- Medium Risk: Balanced gameplay with a good mix of small and medium wins. The middle path for players who want excitement without extreme volatility.
+
+- High Risk: Maximum volatility with the potential for huge multipliers (up to 1000x) but also more frequent losses. The edge multipliers offer the biggest rewards.
+
+Row Selection Strategy:
+More rows (16) create more unpredictable bounces and larger multiplier spreads. Fewer rows (8) mean quicker games with more predictable patterns. Most experienced players prefer 12-16 rows for maximum excitement.
+
+The Math Behind Plinko:
+Each peg bounce is independent, creating a Galton board effect. The ball statistically tends toward the center multipliers, but the beauty of Plinko is that any drop can result in an edge multiplier hit.
+
+Why Players Choose Plinko:
+The satisfaction of watching each bounce combined with adjustable risk levels makes Plinko perfect for all player types. The 99% RTP is among the highest in social casino games, offering excellent value.
+
+Pro Tips:
+Start with low risk to understand the game mechanics. Switch to high risk only when comfortable with volatility. Some players use auto-play to enjoy the visual spectacle of multiple balls dropping simultaneously.

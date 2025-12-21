@@ -1,0 +1,63 @@
+Title: Blackjack Complete Guide
+Source: Social Casino Knowledge Base
+License: Internal
+
+Blackjack is the most popular casino card game, combining skill, strategy, and luck. With a theoretical RTP of up to 99.5% when playing with optimal strategy, it offers some of the best odds in the casino.
+
+Basic Rules:
+The goal is to beat the dealer by getting a hand value as close to 21 as possible without going over (busting). Number cards count as their face value, face cards (Jack, Queen, King) count as 10, and Aces count as either 1 or 11.
+
+Game Flow:
+1. Players place their bets
+2. Dealer deals two cards to each player and themselves (one card face down)
+3. Players decide to Hit (take another card), Stand (keep current hand), Double Down (double bet and take one more card), or Split (if two cards match)
+4. After all players finish, dealer reveals hidden card and plays by fixed rules
+5. Dealer must hit on 16 or less, stand on 17 or higher
+
+Blackjack (Natural): An Ace and a 10-value card dealt as your first two cards. This usually pays 3:2, meaning a $10 bet wins $15.
+
+Basic Strategy:
+Optimal blackjack play follows a mathematically proven strategy chart:
+
+Hard Hands (no Ace):
+- Always hit on 8 or less
+- Always stand on 17 or higher
+- Double on 11 against dealer 2-10
+- Double on 10 against dealer 2-9
+- Hit on 12-16 against dealer 7-Ace
+
+Soft Hands (with Ace):
+- Always hit soft 17 or less
+- Stand on soft 19 or higher
+- Double soft 13-18 against dealer 5-6
+
+Pairs:
+- Always split Aces and 8s
+- Never split 5s and 10s
+- Split 2s, 3s, 6s, 7s, and 9s in certain situations
+
+Advanced Concepts:
+
+Insurance: When dealer shows an Ace, players can bet that dealer has blackjack. This side bet pays 2:1 but is generally not recommended.
+
+Surrender: Some tables allow early or late surrender, letting you give up half your bet. Surrender on 16 against dealer 9, 10, or Ace.
+
+Side Bets: Perfect Pairs, 21+3, and other side bets add excitement but have higher house edges than the main game.
+
+Card Counting: In live dealer games with continuous shuffle machines, card counting is ineffective. It only works in games with multiple decks dealt before reshuffling.
+
+House Edge:
+Blackjack with optimal strategy has around 0.5% house edge, meaning the casino advantage is minimal. However, playing with poor strategy can increase the house edge to 2-4%.
+
+Bankroll Management:
+A general rule is to have at least 40 times your minimum bet as your session bankroll. This provides buffer for variance and bad beats.
+
+Common Mistakes to Avoid:
+- Taking insurance (except when counting cards)
+- Hitting on hard 17 or higher
+- Splitting 10s or 5s
+- Playing hunches instead of basic strategy
+- Not knowing when to double down
+
+Why Players Love Blackjack:
+The combination of skill and luck makes every hand interesting. Unlike pure luck games, your decisions matter in blackjack. The social aspect of playing with others against the dealer creates camaraderie. With excellent RTPs and straightforward rules, blackjack remains the thinking player's casino game of choice.

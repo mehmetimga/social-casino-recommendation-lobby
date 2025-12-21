@@ -2,12 +2,18 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { seed } from '../../../seed'
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const payload = await getPayload({ config })
-    await seed(payload)
+    const body = await request.json().catch(() => ({}))
+    const reset = body?.reset === true
 
-    return Response.json({ success: true, message: 'Database seeded successfully' })
+    const payload = await getPayload({ config })
+    await seed(payload, reset)
+
+    return Response.json({
+      success: true,
+      message: `Database seeded successfully${reset ? ' (with reset)' : ''}`
+    })
   } catch (error) {
     console.error('Seed error:', error)
     return Response.json(

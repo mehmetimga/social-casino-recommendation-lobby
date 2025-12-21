@@ -27,7 +27,7 @@ type ollamaGenerateResponse struct {
 func NewLLMService(ollamaURL string) *LLMService {
 	return &LLMService{
 		ollamaURL: ollamaURL,
-		model:     "llama2", // Default model, can be changed
+		model:     "llama3.2:3b", // Llama 3.2 3B - optimized for chat
 	}
 }
 

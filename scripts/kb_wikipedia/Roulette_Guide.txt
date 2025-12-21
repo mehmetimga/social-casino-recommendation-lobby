@@ -1,0 +1,71 @@
+Title: Complete Roulette Guide
+Source: Social Casino Knowledge Base
+License: Internal
+
+Roulette is one of the most iconic casino games, featuring a spinning wheel with numbered pockets. The game's elegance and variety of betting options make it a casino classic.
+
+Types of Roulette:
+
+European Roulette: Features numbers 1-36 and a single zero (37 pockets total). House edge: 2.70%. Most favorable version for players with RTP of 97.3%.
+
+American Roulette: Includes numbers 1-36, single zero AND double zero (38 pockets total). House edge: 5.26%. The extra zero doubles the house advantage.
+
+French Roulette: Similar to European but with special rules like La Partage (returns half stake on even-money bets when zero hits). House edge: 1.35% on even-money bets.
+
+Understanding the Wheel:
+The roulette wheel alternates red and black numbers, with strategic positioning to prevent number patterns. The zero (and double zero in American) is green. The ball spins opposite to wheel rotation, eventually settling in a numbered pocket.
+
+Betting Options:
+
+Inside Bets (Higher Risk, Higher Payout):
+- Straight Up: Single number, pays 35:1
+- Split: Two adjacent numbers, pays 17:1
+- Street: Three numbers in a row, pays 11:1
+- Corner: Four numbers meeting at a corner, pays 8:1
+- Six Line: Six numbers (two rows), pays 5:1
+
+Outside Bets (Lower Risk, Smaller Payouts):
+- Red/Black: Pays 1:1 (even money)
+- Odd/Even: Pays 1:1
+- High/Low (1-18 or 19-36): Pays 1:1
+- Dozens (1-12, 13-24, 25-36): Pays 2:1
+- Columns: Pays 2:1
+
+Special Bets:
+Neighbor Bets: Cover a number and its neighbors on the wheel
+Announced Bets: Voisins du Zero, Tiers du Cylindre, Orphelins - covering specific wheel sections
+
+Popular Betting Systems:
+
+Martingale: Double your bet after each loss on even-money bets. Recover losses with one win but requires large bankroll. Risk: Table limits and bankroll depletion.
+
+Reverse Martingale: Double bet after wins, reset after losses. Capitalizes on winning streaks while protecting bankroll.
+
+D'Alembert: Increase bet by one unit after loss, decrease by one after win. More conservative than Martingale.
+
+Fibonacci: Follow Fibonacci sequence (1,1,2,3,5,8,13...) for bet progression. Slower growth than Martingale.
+
+Important: No betting system changes the house edge. They only affect how you manage your bankroll and risk.
+
+Roulette Odds Explained:
+Each number has equal probability (1/37 in European, 1/38 in American). The payouts are calculated to give the house its edge. Example: Straight up pays 35:1 but true odds are 36:1 (European).
+
+Common Mistakes:
+- Believing previous spins affect future outcomes (Gambler's Fallacy)
+- Using betting systems expecting to beat the house edge
+- Playing American roulette when European is available
+- Making five-number bet in American (worst bet at 7.89% house edge)
+- Chasing losses aggressively
+
+Smart Roulette Strategy:
+1. Always choose European or French roulette over American
+2. Mix inside and outside bets for balanced gameplay
+3. Set strict win/loss limits before playing
+4. Understand all bets are independent - no system guarantees wins
+5. Enjoy the social atmosphere and entertainment value
+
+Live Dealer Roulette:
+Modern live roulette streams professional dealers spinning real wheels in real-time from casino studios. Multiple camera angles, statistics, and chat features create authentic casino atmosphere from home. Games like Lightning Roulette add RNG multipliers to traditional gameplay.
+
+Why Roulette Endures:
+Simple rules, numerous betting options, social gameplay, and the pure excitement of watching the ball spin make roulette timeless. Whether playing traditional European roulette or innovative variations, the spinning wheel remains casino's most elegant game.

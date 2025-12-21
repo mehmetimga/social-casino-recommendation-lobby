@@ -1,0 +1,87 @@
+Title: Mines
+Source: Social Casino Knowledge Base
+License: Internal
+
+Mines by Spribe is the modern take on the classic Minesweeper game, adapted perfectly for casino play. This provably fair game combines skill, strategy, and nerve as you navigate a minefield seeking gems while avoiding explosive mines.
+
+Game Concept:
+You're presented with a 5x5 grid of 25 tiles. Hidden under the tiles are gems (safe) and mines (game over). You choose how many mines to play with (1-24), then reveal tiles one by one. Each safe tile increases your multiplier. Cash out anytime to claim your winnings, but hit a mine and lose everything.
+
+How to Play:
+1. Select number of mines (1-24 mines)
+2. Place your bet
+3. Click tiles to reveal gems
+4. Each gem increases your multiplier
+5. Cash out anytime to collect winnings
+6. Hit a mine and lose your bet
+
+The Risk-Reward Balance:
+- More mines = Higher multipliers but more dangerous
+- Fewer mines = Lower multipliers but safer
+- More tiles revealed = Higher multiplier but increased mine risk
+
+Mine Configuration Strategies:
+
+1 Mine (Easiest):
+Very safe, low multipliers. Good for grinding and learning. You can reveal 20+ tiles relatively safely. Multipliers grow slowly but steadily.
+
+3 Mines (Balanced):
+Popular choice offering good balance. Reasonable safety with decent multiplier growth. Most players start here.
+
+5-10 Mines (Moderate Risk):
+Serious multiplier potential. Requires strategic tile selection. Each reveal is meaningful. Popular with experienced players.
+
+15-20 Mines (High Risk):
+Only for thrill-seekers. Every click is dangerous. Revealing just 3-5 tiles can give massive multipliers. One wrong click and it's over.
+
+24 Mines (Extreme):
+The ultimate challenge. Only one safe tile exists. Finding it gives astronomical multipliers but requires incredible luck. More of a lottery than strategy.
+
+Multiplier Mathematics:
+The multiplier increases based on:
+- Number of mines selected
+- Number of safe tiles revealed
+- Probability of each successful reveal
+
+The formula ensures higher risk equals higher reward. With 10 mines, revealing 10 tiles might give 10x-20x multiplier. With 20 mines, revealing just 3 tiles could give 50x+.
+
+Strategic Tile Selection:
+While outcomes are random, players develop personal strategies:
+- Corner Start: Begin in corners, work inward
+- Pattern Play: Reveal tiles in specific patterns
+- Random Approach: Trust pure luck
+- Diagonal Method: Move diagonally across grid
+
+Note: The game is provably fair with RNG, so no strategy actually increases your chances - it's psychological comfort.
+
+Provably Fair System:
+Spribe's provably fair technology allows verification of each game round's fairness. The mine locations are determined by an encrypted seed before you start, verifiable after the round ends. This transparency builds trust.
+
+RTP: 97%
+The high RTP makes Mines one of the fairest crash/instant games available.
+
+Cashing Out:
+Knowing when to cash out is the game's primary skill:
+- Conservative: Cash out after 3-5 safe reveals
+- Moderate: Aim for 8-10 reveals based on mine count
+- Aggressive: Push deep into the grid for maximum multipliers
+
+The tension as your multiplier grows while mine probability increases creates incredible excitement.
+
+Auto Mode:
+Set specific cashout targets or tile reveal counts for automated play. Useful for consistent strategy execution without emotional decisions.
+
+Why Players Love Mines:
+The perfect blend of control and chance. Unlike pure luck games, you decide when to cash out, giving agency over outcomes. The simple graphics put focus on the gameplay. Fast rounds mean constant action. The transparent provably fair system ensures trust.
+
+Comparison to Crash Games:
+While Aviator (also by Spribe) is time-based, Mines is choice-based. You control the pace, making it less stressful for some players. Both offer similar RTP and provably fair mechanics.
+
+Perfect For:
+- Players who want control over risk
+- Minesweeper fans
+- Quick gaming sessions
+- Strategy-minded players
+- Anyone seeking provably fair games
+- Mobile gaming (simple controls)
+- Players who like cashing out on their terms

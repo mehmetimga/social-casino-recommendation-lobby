@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/casino/chat/internal/model"
@@ -24,7 +25,10 @@ type CreateSessionRequest struct {
 }
 
 type CreateSessionResponse struct {
-	SessionID string `json:"sessionId"`
+	ID        string `json:"id"`
+	UserID    string `json:"userId,omitempty"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (h *SessionsHandler) CreateSession(w http.ResponseWriter, r *http.Request) {
@@ -40,12 +44,22 @@ func (h *SessionsHandler) CreateSession(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if err := h.postgresRepo.CreateSession(session); err != nil {
+		log.Printf("Failed to create session: %v", err)
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return
 	}
+	log.Printf("Created session: %s", session.ID.String())
+
+	userID := ""
+	if session.UserID != nil {
+		userID = *session.UserID
+	}
 
 	response := CreateSessionResponse{
-		SessionID: session.ID.String(),
+		ID:        session.ID.String(),
+		UserID:    userID,
+		CreatedAt: session.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		UpdatedAt: session.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

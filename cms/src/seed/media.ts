@@ -14,39 +14,38 @@ export const bannerImages = [
   'fd5802cef4c8fb7902c728599617b86c8f7cdb98.avif',
 ]
 
-// Game images mapping: slug -> image prefix
+// Game images mapping: slug -> image prefix (numeric IDs from casino-images directory - 30 games)
 export const gameImageMap: Record<string, string> = {
-  // Slots
-  'starburst': 'vs20starlight',
-  'book-of-dead': 'vs10tut',
-  'gonzo-quest': 'vs10gizagods',
-  'mega-moolah': 'konami_gorillariches',
-  'sweet-bonanza': 'vs20sugarrushx',
-  'gates-of-olympus': 'vs10mayangods',
-  'wolf-gold': 'vs1024lionsd',
-  'big-bass-bonanza': 'vs10bblotgl',
-  'reactoonz': 'vs10floatdrg',
-  'dead-or-alive-2': 'vs20bigdawgs',
-
-  // Table Games
-  'european-roulette': 'EURoulette',
-  'blackjack-classic': 'BlackJack3H',
-  'baccarat-pro': 'AmericanBaccarat',
-  'casino-holdem': 'hardhitblackjack',
-
-  // Live Casino
-  'live-lightning-roulette': 'roulette_LightningTable01',
-  'live-crazy-time': 'moneywheel_MOWDream00000001',
-  'live-blackjack-vip': 'blackjack_mrfykemt5slanyi5',
-  'live-monopoly': 'megaball_MegaBall00000001',
-  'live-dream-catcher': 'rng-moneywheel_rng-dreamcatcher',
-
-  // Instant Win
-  'aviator': 'rakin_bacon',
-  'plinko': 'octogame',
-  'mines': 'blazin_bank_run',
-  'dice': 'SicBo',
-  'keno': 'slingo-pop',
+  'legendary-castle': '10031',
+  'divine-temple': '11042',
+  'magic-fortune': '11372',
+  'ruby-dynasty': '12388',
+  'blazing-carnival': '13752',
+  'magic-lion': '1638808',
+  'ruby-olympus': '1638810',
+  'crystal-vikings': '19249',
+  'emerald-kingdom': '197063',
+  'ancient-dynasty': '19937',
+  'ancient-gems': '19972',
+  'cosmic-dragons': '20132',
+  'golden-festival': '20807',
+  'sacred-dynasty': '22819',
+  'silver-dynasty': '386',
+  'royal-phoenix': '408',
+  'mystic-olympus': '413',
+  'bronze-sphinx': '419',
+  'ancient-stars': '426',
+  'emerald-riches': '446',
+  'sapphire-ocean': '449',
+  'crystal-pyramid': '451',
+  'magic-vikings': '453',
+  'legendary-empire': '465',
+  'super-treasure': '474',
+  'ruby-dragons': '524648',
+  'diamond-stars': '65938',
+  'diamond-castle': '65949',
+  'platinum-dragons': '65958',
+  'royal-festival': '65960',
 }
 
 // Additional game images for variety
