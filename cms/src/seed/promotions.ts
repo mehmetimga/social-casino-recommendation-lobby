@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { getBannerMediaId } from './media'
 
 interface PromotionSeedData {
   slug: string
@@ -18,6 +19,7 @@ interface PromotionSeedData {
   status: 'draft' | 'live'
   placement: 'hero' | 'banner' | 'featured'
   priority: number
+  bannerIndex: number // Index for banner image
 }
 
 const promotionsData: PromotionSeedData[] = [
@@ -34,6 +36,7 @@ const promotionsData: PromotionSeedData[] = [
     status: 'live',
     placement: 'hero',
     priority: 100,
+    bannerIndex: 0,
   },
   {
     slug: 'live-casino-promo',
@@ -48,6 +51,7 @@ const promotionsData: PromotionSeedData[] = [
     status: 'live',
     placement: 'hero',
     priority: 90,
+    bannerIndex: 1,
   },
   {
     slug: 'jackpot-mania',
@@ -66,6 +70,7 @@ const promotionsData: PromotionSeedData[] = [
     status: 'live',
     placement: 'hero',
     priority: 80,
+    bannerIndex: 2,
   },
   {
     slug: 'weekend-reload',
@@ -80,6 +85,7 @@ const promotionsData: PromotionSeedData[] = [
     status: 'live',
     placement: 'banner',
     priority: 70,
+    bannerIndex: 3,
   },
   {
     slug: 'vip-program',
@@ -94,26 +100,61 @@ const promotionsData: PromotionSeedData[] = [
     status: 'live',
     placement: 'banner',
     priority: 60,
+    bannerIndex: 4,
+  },
+  {
+    slug: 'slots-tournament',
+    title: 'Slots Tournament',
+    subtitle: '$50,000 Prize Pool Weekly',
+    description: 'Compete against other players in our weekly slots tournament. Top 100 players win!',
+    ctaText: 'Join Tournament',
+    ctaLink: {
+      type: 'category',
+      category: 'slot',
+    },
+    countdown: {
+      enabled: true,
+      label: 'Tournament ends in',
+    },
+    status: 'live',
+    placement: 'featured',
+    priority: 75,
+    bannerIndex: 5,
+  },
+  {
+    slug: 'table-games-bonus',
+    title: 'Table Games Special',
+    subtitle: 'Double your wins on Blackjack & Roulette',
+    description: 'Play table games this weekend and get 2x points on every win.',
+    ctaText: 'Play Now',
+    ctaLink: {
+      type: 'category',
+      category: 'table',
+    },
+    status: 'live',
+    placement: 'featured',
+    priority: 65,
+    bannerIndex: 6,
+  },
+  {
+    slug: 'instant-wins-promo',
+    title: 'Instant Wins Frenzy',
+    subtitle: 'Crash games with boosted multipliers',
+    description: 'All instant win games have boosted multipliers this week. Higher max wins!',
+    ctaText: 'Play Instant',
+    ctaLink: {
+      type: 'category',
+      category: 'instant',
+    },
+    status: 'live',
+    placement: 'featured',
+    priority: 55,
+    bannerIndex: 7,
   },
 ]
 
 export async function seedPromotions(payload: Payload): Promise<void> {
   console.log('Seeding promotions...')
-
-  // Get placeholder media
-  let placeholderMedia
-  try {
-    const existingMedia = await payload.find({
-      collection: 'media',
-      limit: 1,
-    })
-
-    if (existingMedia.docs.length > 0) {
-      placeholderMedia = existingMedia.docs[0]
-    }
-  } catch (error) {
-    console.log('No media found for promotions')
-  }
 
   for (const promoData of promotionsData) {
     try {
@@ -130,12 +171,23 @@ export async function seedPromotions(payload: Payload): Promise<void> {
         continue
       }
 
+      // Get banner image from uploaded media
+      const imageId = getBannerMediaId(promoData.bannerIndex)
+
       const createData: Record<string, unknown> = {
-        ...promoData,
+        slug: promoData.slug,
+        title: promoData.title,
+        subtitle: promoData.subtitle,
+        description: promoData.description,
+        ctaText: promoData.ctaText,
+        ctaLink: promoData.ctaLink,
+        status: promoData.status,
+        placement: promoData.placement,
+        priority: promoData.priority,
       }
 
-      if (placeholderMedia) {
-        createData.image = placeholderMedia.id
+      if (imageId) {
+        createData.image = imageId
       }
 
       // Set countdown end time to 7 days from now if enabled
@@ -154,7 +206,7 @@ export async function seedPromotions(payload: Payload): Promise<void> {
         data: createData as any,
       })
 
-      console.log(`Created promotion: ${promoData.title}`)
+      console.log(`Created promotion: ${promoData.title}${imageId ? ' (with banner)' : ''}`)
     } catch (error) {
       console.error(`Failed to create promotion "${promoData.title}":`, error)
     }

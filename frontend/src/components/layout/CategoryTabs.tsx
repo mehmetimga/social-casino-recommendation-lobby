@@ -6,7 +6,6 @@ const categories = [
   { label: 'My Casino', href: '/', icon: Heart },
   { label: 'Slots', href: '/slots', icon: Sparkles },
   { label: 'Live Casino', href: '/live-casino', icon: Video },
-  { label: 'Races', href: '/races', icon: Gift, disabled: true },
   { label: 'Table Games', href: '/table-games', icon: Dice1 },
   { label: 'Instant Win', href: '/instant-win', icon: Zap, disabled: true },
 ];

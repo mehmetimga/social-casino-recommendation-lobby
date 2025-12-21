@@ -11,7 +11,7 @@ const mainNavItems = [
 ];
 
 const userNavItems = [
-  { label: 'PokerStars Rewards', href: '/rewards' },
+  { label: 'Rewards', href: '/rewards' },
   { label: 'Promotions', href: '/promotions' },
   { label: 'Challenges', href: '/challenges' },
   { label: 'Store', href: '/store' },

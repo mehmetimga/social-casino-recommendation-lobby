@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { getGameMediaId, gameImageMap } from './media'
 
 interface GameSeedData {
   slug: string
@@ -369,23 +370,6 @@ const gamesData: GameSeedData[] = [
 export async function seedGames(payload: Payload): Promise<void> {
   console.log('Seeding games...')
 
-  // First, create a placeholder media item for thumbnails
-  let placeholderMedia
-  try {
-    const existingMedia = await payload.find({
-      collection: 'media',
-      where: {
-        alt: { equals: 'Game Placeholder' },
-      },
-    })
-
-    if (existingMedia.docs.length > 0) {
-      placeholderMedia = existingMedia.docs[0]
-    }
-  } catch (error) {
-    console.log('No placeholder media found, games will be created without thumbnails')
-  }
-
   for (const gameData of gamesData) {
     try {
       // Check if game already exists
@@ -401,13 +385,16 @@ export async function seedGames(payload: Payload): Promise<void> {
         continue
       }
 
-      // Create game (thumbnail will be required, so we skip if no placeholder)
+      // Get thumbnail from uploaded media
+      const thumbnailId = getGameMediaId(gameData.slug)
+
+      // Create game
       const createData: Record<string, unknown> = {
         ...gameData,
       }
 
-      if (placeholderMedia) {
-        createData.thumbnail = placeholderMedia.id
+      if (thumbnailId) {
+        createData.thumbnail = thumbnailId
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -416,7 +403,7 @@ export async function seedGames(payload: Payload): Promise<void> {
         data: createData as any,
       })
 
-      console.log(`Created game: ${gameData.title}`)
+      console.log(`Created game: ${gameData.title}${thumbnailId ? ' (with image)' : ''}`)
     } catch (error) {
       console.error(`Failed to create game "${gameData.title}":`, error)
     }
@@ -425,4 +412,4 @@ export async function seedGames(payload: Payload): Promise<void> {
   console.log('Games seeding completed!')
 }
 
-export { gamesData }
+export { gamesData, gameImageMap }
