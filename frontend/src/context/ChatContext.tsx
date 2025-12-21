@@ -8,9 +8,11 @@ interface ChatContextValue {
   messages: ChatMessage[];
   isLoading: boolean;
   isOpen: boolean;
+  isMaximized: boolean;
   openChat: () => void;
   closeChat: () => void;
   toggleChat: () => void;
+  toggleMaximize: () => void;
   sendMessage: (content: string) => Promise<void>;
   setContext: (context: { currentPage?: string; currentGame?: string }) => void;
 }
@@ -23,6 +25,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
   const [chatContext, setChatContext] = useState<{ currentPage?: string; currentGame?: string }>({});
 
   const createSession = useCallback(async () => {
@@ -57,6 +60,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       openChat();
     }
   }, [isOpen, openChat, closeChat]);
+
+  const toggleMaximize = useCallback(() => {
+    setIsMaximized((prev) => !prev);
+  }, []);
 
   const sendMessage = useCallback(async (content: string) => {
     let currentSession = session;
@@ -119,9 +126,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         messages,
         isLoading,
         isOpen,
+        isMaximized,
         openChat,
         closeChat,
         toggleChat,
+        toggleMaximize,
         sendMessage,
         setContext,
       }}

@@ -5,51 +5,59 @@ import Citation from './Citation';
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  isMaximized?: boolean;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+export default function MessageBubble({ message, isMaximized = false }: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
   return (
     <div
       className={cn(
         'flex items-start gap-3',
-        isUser && 'flex-row-reverse'
+        isUser && 'flex-row-reverse',
+        isMaximized && 'gap-4'
       )}
     >
       {/* Avatar */}
       <div
         className={cn(
-          'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
+          'rounded-full flex items-center justify-center flex-shrink-0',
+          isMaximized ? 'w-10 h-10' : 'w-8 h-8',
           isUser ? 'bg-casino-gold' : 'bg-casino-purple'
         )}
       >
         {isUser ? (
-          <User className="w-4 h-4 text-black" />
+          <User className={cn('text-black', isMaximized ? 'w-5 h-5' : 'w-4 h-4')} />
         ) : (
-          <Bot className="w-4 h-4 text-white" />
+          <Bot className={cn('text-white', isMaximized ? 'w-5 h-5' : 'w-4 h-4')} />
         )}
       </div>
 
       {/* Message Content */}
       <div
         className={cn(
-          'max-w-[80%] rounded-2xl px-4 py-3',
+          'max-w-[80%] rounded-2xl',
+          isMaximized ? 'px-6 py-4' : 'px-4 py-3',
           isUser
             ? 'bg-casino-purple text-white rounded-tr-none'
             : 'bg-white/5 text-gray-100 rounded-tl-none'
         )}
       >
         {/* Message Text */}
-        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+        <p className={cn('whitespace-pre-wrap', isMaximized ? 'text-base leading-relaxed' : 'text-sm')}>
+          {message.content}
+        </p>
 
         {/* Citations */}
         {message.citations && message.citations.length > 0 && (
           <div className="mt-3 pt-3 border-t border-white/10">
-            <p className="text-xs text-gray-400 mb-2">Sources:</p>
+            <p className={cn('text-gray-400 mb-2', isMaximized ? 'text-sm' : 'text-xs')}>
+              Sources:
+            </p>
             <div className="space-y-2">
               {message.citations.map((citation, index) => (
-                <Citation key={index} citation={citation} />
+                <Citation key={index} citation={citation} isMaximized={isMaximized} />
               ))}
             </div>
           </div>
