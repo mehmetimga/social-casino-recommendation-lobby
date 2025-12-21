@@ -3,18 +3,25 @@ import { chatApi } from '../api/chat';
 import { ChatMessage, ChatSession } from '../types/chat';
 import { useUser } from './UserContext';
 
+interface ChatContextType {
+  currentPage?: string;
+  currentGame?: string;
+}
+
 interface ChatContextValue {
   session: ChatSession | null;
   messages: ChatMessage[];
   isLoading: boolean;
   isOpen: boolean;
   isMaximized: boolean;
+  context: ChatContextType;
   openChat: () => void;
   closeChat: () => void;
   toggleChat: () => void;
   toggleMaximize: () => void;
   sendMessage: (content: string) => Promise<void>;
-  setContext: (context: { currentPage?: string; currentGame?: string }) => void;
+  setContext: (context: ChatContextType) => void;
+  openWithGame: (gameSlug: string, gameTitle: string) => void;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
@@ -26,13 +33,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
-  const [chatContext, setChatContext] = useState<{ currentPage?: string; currentGame?: string }>({});
+  const [chatContext, setChatContext] = useState<ChatContextType>({});
 
-  const createSession = useCallback(async () => {
+  const createSession = useCallback(async (contextOverride?: ChatContextType) => {
     try {
+      const contextToUse = contextOverride ?? chatContext;
       const newSession = await chatApi.createSession({
         userId: userId || undefined,
-        context: chatContext,
+        context: contextToUse,
       });
       setSession(newSession);
       return newSession;
@@ -115,9 +123,31 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [session, createSession]);
 
-  const setContext = useCallback((context: { currentPage?: string; currentGame?: string }) => {
+  const setContext = useCallback((context: ChatContextType) => {
     setChatContext(context);
   }, []);
+
+  // Open chat with a specific game context - updates context without clearing history
+  const openWithGame = useCallback(async (gameSlug: string, gameTitle: string) => {
+    const newContext: ChatContextType = {
+      currentPage: 'game',
+      currentGame: gameTitle,
+    };
+
+    // Update local context state
+    setChatContext(newContext);
+
+    // If session exists, update the context on the server
+    if (session) {
+      try {
+        await chatApi.updateContext(session.id, { context: newContext });
+      } catch (error) {
+        console.error('Failed to update chat context:', error);
+      }
+    }
+
+    setIsOpen(true);
+  }, [session]);
 
   return (
     <ChatContext.Provider
@@ -127,12 +157,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         isLoading,
         isOpen,
         isMaximized,
+        context: chatContext,
         openChat,
         closeChat,
         toggleChat,
         toggleMaximize,
         sendMessage,
         setContext,
+        openWithGame,
       }}
     >
       {children}

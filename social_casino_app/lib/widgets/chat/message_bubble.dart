@@ -55,13 +55,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                       bottomRight: Radius.circular(isUser ? 4 : 16),
                     ),
                   ),
-                  child: Text(
+                  child: _buildFormattedText(
                     widget.message.content,
-                    style: TextStyle(
-                      color: isUser ? Colors.white : AppColors.textPrimary,
-                      fontSize: 14,
-                      height: 1.4,
-                    ),
+                    isUser ? Colors.white : AppColors.textPrimary,
                   ),
                 ),
               ),
@@ -81,6 +77,68 @@ class _MessageBubbleState extends State<MessageBubble> {
           ],
         ],
       ),
+    );
+  }
+
+  /// Builds formatted text with markdown bold (**text**) support
+  Widget _buildFormattedText(String text, Color textColor) {
+    final RegExp boldPattern = RegExp(r'\*\*([^*]+)\*\*');
+    final List<InlineSpan> spans = [];
+    int lastEnd = 0;
+
+    for (final match in boldPattern.allMatches(text)) {
+      // Add text before the match
+      if (match.start > lastEnd) {
+        spans.add(TextSpan(
+          text: text.substring(lastEnd, match.start),
+          style: TextStyle(
+            color: textColor,
+            fontSize: 14,
+            height: 1.4,
+          ),
+        ));
+      }
+
+      // Add bold text
+      spans.add(TextSpan(
+        text: match.group(1),
+        style: TextStyle(
+          color: textColor,
+          fontSize: 14,
+          height: 1.4,
+          fontWeight: FontWeight.bold,
+        ),
+      ));
+
+      lastEnd = match.end;
+    }
+
+    // Add remaining text after last match
+    if (lastEnd < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(lastEnd),
+        style: TextStyle(
+          color: textColor,
+          fontSize: 14,
+          height: 1.4,
+        ),
+      ));
+    }
+
+    // If no bold patterns found, return simple text
+    if (spans.isEmpty) {
+      return Text(
+        text,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 14,
+          height: 1.4,
+        ),
+      );
+    }
+
+    return RichText(
+      text: TextSpan(children: spans),
     );
   }
 

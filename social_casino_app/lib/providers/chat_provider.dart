@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/chat.dart';
 import 'services_provider.dart';
@@ -148,13 +149,27 @@ class ChatNotifier extends StateNotifier<ChatState> {
   }
 
   /// Open chat with a specific game context
-  void openWithGame(String gameSlug, String gameTitle) {
-    setContext(ChatContext(
+  /// Updates context without clearing chat history
+  Future<void> openWithGame(String gameSlug, String gameTitle) async {
+    final newContext = ChatContext(
       currentPage: 'game',
       currentGame: gameTitle,
       gameSlug: gameSlug,
-    ));
-    openChat();
+    );
+
+    // Update local context state
+    state = state.copyWith(context: newContext, isOpen: true);
+
+    // If session exists, update the context on the server
+    if (state.session != null) {
+      try {
+        final chatService = _ref.read(chatServiceProvider);
+        await chatService.updateContext(state.session!.id, newContext);
+      } catch (e) {
+        // Log error but don't fail - context will be used on next message
+        debugPrint('Failed to update chat context: $e');
+      }
+    }
   }
 }
 

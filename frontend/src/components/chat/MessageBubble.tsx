@@ -8,6 +8,21 @@ interface MessageBubbleProps {
   isMaximized?: boolean;
 }
 
+// Helper function to render text with markdown bold (**text**)
+function renderFormattedText(text: string): React.ReactNode {
+  // Split by **text** pattern
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  return parts.map((part, index) => {
+    // Check if this part is bold (wrapped in **)
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2);
+      return <strong key={index} className="font-semibold">{boldText}</strong>;
+    }
+    return part;
+  });
+}
+
 export default function MessageBubble({ message, isMaximized = false }: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
@@ -46,7 +61,7 @@ export default function MessageBubble({ message, isMaximized = false }: MessageB
       >
         {/* Message Text */}
         <p className={cn('whitespace-pre-wrap', isMaximized ? 'text-base leading-relaxed' : 'text-sm')}>
-          {message.content}
+          {renderFormattedText(message.content)}
         </p>
 
         {/* Citations */}

@@ -101,6 +101,23 @@ func (r *PostgresRepository) UpdateSessionTime(id uuid.UUID) error {
 	return err
 }
 
+func (r *PostgresRepository) UpdateSessionContext(id uuid.UUID, context *model.SessionContext) error {
+	var contextJSON interface{}
+	if context != nil {
+		data, err := json.Marshal(context)
+		if err != nil {
+			return err
+		}
+		contextJSON = data
+	} else {
+		contextJSON = nil
+	}
+
+	query := `UPDATE chat_sessions SET context = $1, updated_at = $2 WHERE id = $3`
+	_, err := r.db.Exec(query, contextJSON, time.Now(), id)
+	return err
+}
+
 // Messages
 
 func (r *PostgresRepository) CreateMessage(message *model.ChatMessage) error {

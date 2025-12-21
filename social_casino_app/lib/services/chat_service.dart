@@ -47,8 +47,8 @@ class ChatService {
   /// Update session context
   Future<void> updateContext(String sessionId, ChatContext context) async {
     try {
-      await _dio.patch(
-        '/v1/chat/sessions/$sessionId',
+      await _dio.put(
+        '/v1/chat/sessions/$sessionId/context',
         data: {'context': context.toJson()},
       );
     } on DioException catch (e) {

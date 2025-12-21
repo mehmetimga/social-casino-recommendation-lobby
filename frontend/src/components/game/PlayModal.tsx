@@ -14,7 +14,7 @@ interface PlayModalProps {
 }
 
 export default function PlayModal({ game, onClose }: PlayModalProps) {
-  const { openChat, setContext } = useChat();
+  const { openWithGame } = useChat();
   const { openGameDialog } = useGamePlay();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -24,11 +24,6 @@ export default function PlayModal({ game, onClose }: PlayModalProps) {
     game.heroImage?.url || game.thumbnail?.url,
     ...(game.gallery?.map((g) => g.image?.url) || []),
   ].filter(Boolean) as string[];
-
-  // Set chat context on mount
-  useEffect(() => {
-    setContext({ currentPage: 'game', currentGame: game.slug });
-  }, [game.slug, setContext]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -55,7 +50,7 @@ export default function PlayModal({ game, onClose }: PlayModalProps) {
   };
 
   const handleOpenChat = () => {
-    openChat();
+    openWithGame(game.slug, game.title);
   };
 
   const handlePlayNow = () => {

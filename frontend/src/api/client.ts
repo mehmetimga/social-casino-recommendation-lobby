@@ -65,6 +65,17 @@ export const apiClient = {
       }
       return response.json();
     },
+    async put<T>(endpoint: string, data: unknown): Promise<T> {
+      const response = await fetch(`${CHAT_URL}${endpoint}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`Chat API error: ${response.statusText}`);
+      }
+      return response.json();
+    },
   },
 };
 

@@ -66,6 +66,7 @@ func main() {
 	r.Route("/v1/chat", func(r chi.Router) {
 		r.Post("/sessions", sessionsHandler.CreateSession)
 		r.Route("/sessions/{sessionId}", func(r chi.Router) {
+			r.Put("/context", sessionsHandler.UpdateContext)
 			r.Post("/messages", messagesHandler.SendMessage)
 		})
 	})

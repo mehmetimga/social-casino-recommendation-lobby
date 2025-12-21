@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/google/uuid"
@@ -40,7 +41,20 @@ type ChatResponse struct {
 }
 
 func (s *ChatService) ProcessMessage(sessionID uuid.UUID, userMessage string) (*ChatResponse, error) {
-	// 1. Save user message
+	// 1. Get session to retrieve context (game info, etc.)
+	session, err := s.postgresRepo.GetSession(sessionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Debug: Log session context
+	if session != nil && session.Context != nil {
+		log.Printf("Session %s context: CurrentGame=%s, CurrentPage=%s", sessionID, session.Context.CurrentGame, session.Context.CurrentPage)
+	} else {
+		log.Printf("Session %s has no context", sessionID)
+	}
+
+	// 2. Save user message
 	userMsg := &model.ChatMessage{
 		SessionID: sessionID,
 		Role:      model.RoleUser,
@@ -50,29 +64,35 @@ func (s *ChatService) ProcessMessage(sessionID uuid.UUID, userMessage string) (*
 		return nil, err
 	}
 
-	// 2. Get recent chat history
+	// 3. Get recent chat history
 	history, err := s.postgresRepo.GetSessionMessages(sessionID, MaxHistoryMessages)
 	if err != nil {
 		return nil, err
 	}
 
-	// 3. Retrieve relevant KB context
-	chunks, err := s.ragService.RetrieveContext(userMessage, MaxContextChunks)
+	// 4. Retrieve relevant KB context
+	// Include game context in RAG query for better relevance
+	ragQuery := userMessage
+	if session != nil && session.Context != nil && session.Context.CurrentGame != "" {
+		ragQuery = fmt.Sprintf("%s %s", session.Context.CurrentGame, userMessage)
+		log.Printf("RAG query enhanced with game context: %s", ragQuery)
+	}
+	chunks, err := s.ragService.RetrieveContext(ragQuery, MaxContextChunks)
 	if err != nil {
 		// Continue without RAG context if retrieval fails
 		chunks = nil
 	}
 
-	// 4. Build prompt
-	prompt := s.buildPrompt(userMessage, history, chunks)
+	// 5. Build prompt with session context
+	prompt := s.buildPrompt(userMessage, history, chunks, session)
 
-	// 5. Generate response with LLM
+	// 6. Generate response with LLM
 	response, err := s.llmService.Generate(prompt)
 	if err != nil {
 		return nil, err
 	}
 
-	// 6. Extract citations from chunks
+	// 7. Extract citations from chunks
 	var citations []model.Citation
 	if chunks != nil {
 		for _, chunk := range chunks {
@@ -86,7 +106,7 @@ func (s *ChatService) ProcessMessage(sessionID uuid.UUID, userMessage string) (*
 		}
 	}
 
-	// 7. Save assistant message
+	// 8. Save assistant message
 	assistantMsg := &model.ChatMessage{
 		SessionID: sessionID,
 		Role:      model.RoleAssistant,
@@ -97,7 +117,7 @@ func (s *ChatService) ProcessMessage(sessionID uuid.UUID, userMessage string) (*
 		return nil, err
 	}
 
-	// 8. Update session timestamp
+	// 9. Update session timestamp
 	s.postgresRepo.UpdateSessionTime(sessionID)
 
 	return &ChatResponse{
@@ -107,7 +127,7 @@ func (s *ChatService) ProcessMessage(sessionID uuid.UUID, userMessage string) (*
 	}, nil
 }
 
-func (s *ChatService) buildPrompt(query string, history []*model.ChatMessage, chunks []*model.RetrievedChunk) string {
+func (s *ChatService) buildPrompt(query string, history []*model.ChatMessage, chunks []*model.RetrievedChunk, session *model.ChatSession) string {
 	var sb strings.Builder
 
 	// System prompt
@@ -122,6 +142,16 @@ func (s *ChatService) buildPrompt(query string, history []*model.ChatMessage, ch
 	sb.WriteString("6. Keep responses concise but informative (2-4 paragraphs)\n")
 	sb.WriteString("7. When discussing games, mention key features like RTP, volatility, and unique mechanics\n")
 	sb.WriteString("8. Always encourage responsible gaming\n\n")
+
+	// Game context from session
+	if session != nil && session.Context != nil && session.Context.CurrentGame != "" {
+		sb.WriteString("=== USER SELECTED GAME ===\n")
+		sb.WriteString(fmt.Sprintf("USER HAS SELECTED: %s\n", session.Context.CurrentGame))
+		sb.WriteString(fmt.Sprintf("The user clicked 'Ask about this game' button while viewing %s.\n", session.Context.CurrentGame))
+		sb.WriteString(fmt.Sprintf("YOU MUST answer about %s. Do NOT answer about any other game unless the user explicitly names a different game.\n", session.Context.CurrentGame))
+		sb.WriteString(fmt.Sprintf("If the knowledge base doesn't have info about %s, say so - do NOT substitute with info from another game.\n", session.Context.CurrentGame))
+		sb.WriteString("=== END USER SELECTED GAME ===\n\n")
+	}
 
 	// Knowledge base context
 	if chunks != nil && len(chunks) > 0 {

@@ -6,7 +6,7 @@ import ChatInput from './ChatInput';
 import { cn } from '../../utils/cn';
 
 export default function ChatWindow() {
-  const { messages, isLoading, isMaximized, toggleMaximize } = useChat();
+  const { messages, isLoading, isMaximized, toggleMaximize, context } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 384, height: 500 }); // Default: w-96 = 384px
   const [isResizing, setIsResizing] = useState(false);
@@ -101,6 +101,16 @@ export default function ChatWindow() {
           )}
         </button>
       </div>
+
+      {/* Game Context Banner */}
+      {context.currentGame && (
+        <div className="px-4 py-2 bg-casino-purple/20 border-b border-casino-purple/30 flex items-center gap-2">
+          <span className="text-casino-purple text-sm">🎰</span>
+          <span className="text-casino-purple text-sm font-medium truncate">
+            Asking about: {context.currentGame}
+          </span>
+        </div>
+      )}
 
       {/* Messages */}
       <div className={cn('flex-1 overflow-y-auto p-4', isMaximized && 'p-8')}>

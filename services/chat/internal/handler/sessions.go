@@ -7,6 +7,8 @@ import (
 
 	"github.com/casino/chat/internal/model"
 	"github.com/casino/chat/internal/repository"
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type SessionsHandler struct {
@@ -65,4 +67,35 @@ func (h *SessionsHandler) CreateSession(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
+}
+
+type UpdateContextRequest struct {
+	Context *model.SessionContext `json:"context"`
+}
+
+func (h *SessionsHandler) UpdateContext(w http.ResponseWriter, r *http.Request) {
+	sessionIDStr := chi.URLParam(r, "sessionId")
+	sessionID, err := uuid.Parse(sessionIDStr)
+	if err != nil {
+		http.Error(w, "Invalid session ID", http.StatusBadRequest)
+		return
+	}
+
+	var req UpdateContextRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.postgresRepo.UpdateSessionContext(sessionID, req.Context); err != nil {
+		log.Printf("Failed to update session context: %v", err)
+		http.Error(w, "Failed to update context", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Updated context for session: %s", sessionID.String())
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
