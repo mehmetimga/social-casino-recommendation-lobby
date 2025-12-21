@@ -72,3 +72,32 @@ test-results/
 
 # Vitest
 .vitest/
+
+# Flutter/Dart
+social_casino_app/.dart_tool/
+social_casino_app/.packages
+social_casino_app/.pub-cache/
+social_casino_app/.pub/
+social_casino_app/build/
+social_casino_app/.flutter-plugins
+social_casino_app/.flutter-plugins-dependencies
+social_casino_app/.metadata
+social_casino_app/*.iml
+social_casino_app/.idea/
+social_casino_app/android/.gradle/
+social_casino_app/android/local.properties
+social_casino_app/android/**/GeneratedPluginRegistrant.*
+social_casino_app/ios/Flutter/.last_build_id
+social_casino_app/ios/Flutter/flutter_export_environment.sh
+social_casino_app/ios/Flutter/Generated.xcconfig
+social_casino_app/ios/Pods/
+social_casino_app/ios/.symlinks/
+social_casino_app/macos/Flutter/GeneratedPluginRegistrant.swift
+social_casino_app/macos/Pods/
+social_casino_app/linux/flutter/
+social_casino_app/windows/flutter/
+social_casino_app/pubspec.lock
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
