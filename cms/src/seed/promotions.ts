@@ -148,9 +148,10 @@ export async function seedPromotions(payload: Payload): Promise<void> {
         }
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await payload.create({
         collection: 'promotions',
-        data: createData as Parameters<typeof payload.create>[0]['data'],
+        data: createData as any,
       })
 
       console.log(`Created promotion: ${promoData.title}`)

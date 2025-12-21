@@ -73,9 +73,9 @@ services:
       dockerfile: Dockerfile
     container_name: casino-cms
     environment:
-      MONGODB_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-admin_secret}@mongodb:27017/casino_cms?authSource=admin
+      DATABASE_URL: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-admin_secret}@mongodb:27017/casino_cms?authSource=admin
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:-your-payload-secret-key-change-in-production}
-      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3001}
+      NEXT_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3001}
       PORT: 3001
     volumes:
       - cms_media:/app/media

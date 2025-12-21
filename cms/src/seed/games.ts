@@ -410,9 +410,10 @@ export async function seedGames(payload: Payload): Promise<void> {
         createData.thumbnail = placeholderMedia.id
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await payload.create({
         collection: 'games',
-        data: createData as Parameters<typeof payload.create>[0]['data'],
+        data: createData as any,
       })
 
       console.log(`Created game: ${gameData.title}`)

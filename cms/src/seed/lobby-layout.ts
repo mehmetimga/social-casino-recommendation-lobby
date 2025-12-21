@@ -167,6 +167,7 @@ export async function seedLobbyLayout(payload: Payload): Promise<void> {
     })
 
     // Create the layout
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await payload.create({
       collection: 'lobby-layouts',
       data: {
@@ -175,7 +176,7 @@ export async function seedLobbyLayout(payload: Payload): Promise<void> {
         platform: 'web',
         isDefault: true,
         sections,
-      },
+      } as any,
     })
 
     console.log('Created default lobby layout')
