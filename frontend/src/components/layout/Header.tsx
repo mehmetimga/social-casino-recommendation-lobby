@@ -3,10 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { Search, Menu, X, User, LogIn } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import SearchBar from './SearchBar';
+import betriversBanner from '../../assets/betrivers_banner.png';
 
 const mainNavItems = [
   { label: 'Poker', href: '/poker', disabled: true },
-  { label: 'Casino', href: '/', active: true },
+  { label: 'Casino', href: '/', active: true, isGold: true },
   { label: 'Sports', href: '/sports', disabled: true },
 ];
 
@@ -29,9 +30,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-casino-accent rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">SC</span>
-            </div>
+            <img src={betriversBanner} alt="Betrivers" className="h-8 w-auto" />
             <span className="text-white font-bold text-xl hidden sm:block">Social Casino</span>
           </Link>
 
@@ -45,7 +44,9 @@ export default function Header() {
                   'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                   item.disabled && 'opacity-50 cursor-not-allowed',
                   location.pathname === item.href || (item.href === '/' && location.pathname === '/')
-                    ? 'bg-casino-accent text-white'
+                    ? item.isGold
+                      ? 'bg-casino-gold text-black'
+                      : 'bg-casino-accent text-white'
                     : 'text-gray-300 hover:text-white hover:bg-white/10'
                 )}
                 onClick={(e) => item.disabled && e.preventDefault()}
@@ -120,7 +121,9 @@ export default function Header() {
                     'px-4 py-2 rounded-lg text-sm font-medium',
                     item.disabled && 'opacity-50',
                     location.pathname === item.href
-                      ? 'bg-casino-accent text-white'
+                      ? item.isGold
+                        ? 'bg-casino-gold text-black'
+                        : 'bg-casino-accent text-white'
                       : 'text-gray-300'
                   )}
                   onClick={() => setIsMobileMenuOpen(false)}
