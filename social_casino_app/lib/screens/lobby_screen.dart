@@ -1,0 +1,100 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/layout/app_header.dart';
+import '../widgets/lobby/lobby_renderer.dart';
+import '../models/game.dart';
+
+class LobbyScreen extends ConsumerWidget {
+  const LobbyScreen({super.key});
+
+  void _onGameTap(BuildContext context, Game game) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildQuickGameInfo(context, game),
+    );
+  }
+
+  Widget _buildQuickGameInfo(BuildContext context, Game game) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.5,
+      decoration: const BoxDecoration(
+        color: Color(0xFF16162A),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    game.title,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'by ${game.provider}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  if (game.shortDescription != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      game.shortDescription!,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                  const Spacer(),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Play Now'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          const SliverToBoxAdapter(
+            child: AppHeader(title: 'My Casino'),
+          ),
+          SliverToBoxAdapter(
+            child: LobbyRenderer(
+              onGameTap: (game) => _onGameTap(context, game),
+            ),
+          ),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 100),
+          ),
+        ],
+      ),
+    );
+  }
+}
