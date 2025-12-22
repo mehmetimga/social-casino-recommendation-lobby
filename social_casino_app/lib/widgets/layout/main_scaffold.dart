@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme/app_colors.dart';
 import '../chat/chat_widget.dart';
+import '../search/search_modal.dart';
+import '../menu/casino_menu_drawer.dart';
 import 'app_header.dart';
 import 'category_tab_bar.dart';
 
@@ -59,7 +61,10 @@ class _MainScaffoldState extends State<MainScaffold> {
           Column(
             children: [
               // Top App Bar (pinned) - Logo + Login/Join + Search
-              const AppHeader(),
+              AppHeader(
+                onSearchTap: () => showSearchModal(context),
+                onMenuTap: () => showCasinoMenu(context),
+              ),
               // Category Tab Bar (pinned) - Layout categories
               const CategoryTabBar(),
               // Scrollable content area

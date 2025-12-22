@@ -91,6 +91,28 @@ class CmsService {
     return result.docs;
   }
 
+  /// Search games by title
+  Future<List<Game>> searchGames(String query, {int limit = 20}) async {
+    if (query.isEmpty) return [];
+
+    try {
+      final response = await _dio.get('/api/games', queryParameters: {
+        'where[title][contains]': query,
+        'where[status][equals]': 'enabled',
+        'sort': '-popularityScore',
+        'limit': limit,
+      });
+      final paginated = PaginatedGames.fromJson(response.data);
+      return paginated.docs;
+    } on DioException catch (e) {
+      throw ApiException(
+        e.message ?? 'Failed to search games',
+        statusCode: e.response?.statusCode,
+        data: e.response?.data,
+      );
+    }
+  }
+
   /// Get jackpot games
   Future<List<Game>> getJackpotGames({int limit = 12}) async {
     try {

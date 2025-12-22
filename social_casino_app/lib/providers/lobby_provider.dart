@@ -142,3 +142,9 @@ final gameBySlugProvider = FutureProvider.family<Game?, String>((ref, slug) asyn
   final cmsService = ref.watch(cmsServiceProvider);
   return cmsService.getGame(slug);
 });
+
+/// Search games provider
+final searchGamesProvider = FutureProvider.family<List<Game>, String>((ref, query) async {
+  final cmsService = ref.watch(cmsServiceProvider);
+  return cmsService.searchGames(query, limit: 30);
+});

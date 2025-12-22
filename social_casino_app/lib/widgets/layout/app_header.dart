@@ -7,6 +7,7 @@ class AppHeader extends StatelessWidget {
   final VoidCallback? onJoinTap;
   final VoidCallback? onLogoutTap;
   final VoidCallback? onSearchTap;
+  final VoidCallback? onMenuTap;
 
   const AppHeader({
     super.key,
@@ -15,6 +16,7 @@ class AppHeader extends StatelessWidget {
     this.onJoinTap,
     this.onLogoutTap,
     this.onSearchTap,
+    this.onMenuTap,
   });
 
   @override
@@ -80,30 +82,33 @@ class AppHeader extends StatelessWidget {
           Row(
             children: [
               // Casino menu button
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(
-                  color: AppColors.pillBg,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.menu,
-                      color: AppColors.textSecondary,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Casino',
-                      style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+              GestureDetector(
+                onTap: onMenuTap,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.pillBg,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.menu,
+                        color: AppColors.textSecondary,
+                        size: 18,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Text(
+                        'Casino',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
