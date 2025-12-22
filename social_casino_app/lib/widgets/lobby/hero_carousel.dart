@@ -43,7 +43,7 @@ class _HeroCarouselState extends State<HeroCarousel> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.92);
+    _pageController = PageController(viewportFraction: 1.0);
     _startAutoPlay();
   }
 
@@ -109,7 +109,7 @@ class _HeroCarouselState extends State<HeroCarousel> {
             },
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: _buildSlide(widget.promotions[index]),
