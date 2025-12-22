@@ -1323,6 +1323,7 @@ mixin _$BannerSectionBlock {
   BannerAlignment get alignment => throw _privateConstructorUsedError;
   bool get showCountdown => throw _privateConstructorUsedError;
   bool get rounded => throw _privateConstructorUsedError;
+  bool get showOverlay => throw _privateConstructorUsedError;
   int get marginTop => throw _privateConstructorUsedError;
   int get marginBottom => throw _privateConstructorUsedError;
 
@@ -1350,6 +1351,7 @@ abstract class $BannerSectionBlockCopyWith<$Res> {
     BannerAlignment alignment,
     bool showCountdown,
     bool rounded,
+    bool showOverlay,
     int marginTop,
     int marginBottom,
   });
@@ -1378,6 +1380,7 @@ class _$BannerSectionBlockCopyWithImpl<$Res, $Val extends BannerSectionBlock>
     Object? alignment = null,
     Object? showCountdown = null,
     Object? rounded = null,
+    Object? showOverlay = null,
     Object? marginTop = null,
     Object? marginBottom = null,
   }) {
@@ -1406,6 +1409,10 @@ class _$BannerSectionBlockCopyWithImpl<$Res, $Val extends BannerSectionBlock>
             rounded: null == rounded
                 ? _value.rounded
                 : rounded // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            showOverlay: null == showOverlay
+                ? _value.showOverlay
+                : showOverlay // ignore: cast_nullable_to_non_nullable
                       as bool,
             marginTop: null == marginTop
                 ? _value.marginTop
@@ -1451,6 +1458,7 @@ abstract class _$$BannerSectionBlockImplCopyWith<$Res>
     BannerAlignment alignment,
     bool showCountdown,
     bool rounded,
+    bool showOverlay,
     int marginTop,
     int marginBottom,
   });
@@ -1479,6 +1487,7 @@ class __$$BannerSectionBlockImplCopyWithImpl<$Res>
     Object? alignment = null,
     Object? showCountdown = null,
     Object? rounded = null,
+    Object? showOverlay = null,
     Object? marginTop = null,
     Object? marginBottom = null,
   }) {
@@ -1508,6 +1517,10 @@ class __$$BannerSectionBlockImplCopyWithImpl<$Res>
             ? _value.rounded
             : rounded // ignore: cast_nullable_to_non_nullable
                   as bool,
+        showOverlay: null == showOverlay
+            ? _value.showOverlay
+            : showOverlay // ignore: cast_nullable_to_non_nullable
+                  as bool,
         marginTop: null == marginTop
             ? _value.marginTop
             : marginTop // ignore: cast_nullable_to_non_nullable
@@ -1531,6 +1544,7 @@ class _$BannerSectionBlockImpl implements _BannerSectionBlock {
     this.alignment = BannerAlignment.center,
     this.showCountdown = false,
     this.rounded = true,
+    this.showOverlay = true,
     this.marginTop = 16,
     this.marginBottom = 16,
   });
@@ -1557,6 +1571,9 @@ class _$BannerSectionBlockImpl implements _BannerSectionBlock {
   final bool rounded;
   @override
   @JsonKey()
+  final bool showOverlay;
+  @override
+  @JsonKey()
   final int marginTop;
   @override
   @JsonKey()
@@ -1564,7 +1581,7 @@ class _$BannerSectionBlockImpl implements _BannerSectionBlock {
 
   @override
   String toString() {
-    return 'BannerSectionBlock(blockType: $blockType, promotion: $promotion, size: $size, alignment: $alignment, showCountdown: $showCountdown, rounded: $rounded, marginTop: $marginTop, marginBottom: $marginBottom)';
+    return 'BannerSectionBlock(blockType: $blockType, promotion: $promotion, size: $size, alignment: $alignment, showCountdown: $showCountdown, rounded: $rounded, showOverlay: $showOverlay, marginTop: $marginTop, marginBottom: $marginBottom)';
   }
 
   @override
@@ -1582,6 +1599,8 @@ class _$BannerSectionBlockImpl implements _BannerSectionBlock {
             (identical(other.showCountdown, showCountdown) ||
                 other.showCountdown == showCountdown) &&
             (identical(other.rounded, rounded) || other.rounded == rounded) &&
+            (identical(other.showOverlay, showOverlay) ||
+                other.showOverlay == showOverlay) &&
             (identical(other.marginTop, marginTop) ||
                 other.marginTop == marginTop) &&
             (identical(other.marginBottom, marginBottom) ||
@@ -1598,6 +1617,7 @@ class _$BannerSectionBlockImpl implements _BannerSectionBlock {
     alignment,
     showCountdown,
     rounded,
+    showOverlay,
     marginTop,
     marginBottom,
   );
@@ -1627,6 +1647,7 @@ abstract class _BannerSectionBlock implements BannerSectionBlock {
     final BannerAlignment alignment,
     final bool showCountdown,
     final bool rounded,
+    final bool showOverlay,
     final int marginTop,
     final int marginBottom,
   }) = _$BannerSectionBlockImpl;
@@ -1646,6 +1667,8 @@ abstract class _BannerSectionBlock implements BannerSectionBlock {
   bool get showCountdown;
   @override
   bool get rounded;
+  @override
+  bool get showOverlay;
   @override
   int get marginTop;
   @override

@@ -175,6 +175,7 @@ _$BannerSectionBlockImpl _$$BannerSectionBlockImplFromJson(
       BannerAlignment.center,
   showCountdown: json['showCountdown'] as bool? ?? false,
   rounded: json['rounded'] as bool? ?? true,
+  showOverlay: json['showOverlay'] as bool? ?? true,
   marginTop: (json['marginTop'] as num?)?.toInt() ?? 16,
   marginBottom: (json['marginBottom'] as num?)?.toInt() ?? 16,
 );
@@ -188,6 +189,7 @@ Map<String, dynamic> _$$BannerSectionBlockImplToJson(
   'alignment': _$BannerAlignmentEnumMap[instance.alignment]!,
   'showCountdown': instance.showCountdown,
   'rounded': instance.rounded,
+  'showOverlay': instance.showOverlay,
   'marginTop': instance.marginTop,
   'marginBottom': instance.marginBottom,
 };

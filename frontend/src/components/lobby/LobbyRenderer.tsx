@@ -179,6 +179,7 @@ function BannerSectionRenderer({ section }: { section: LobbySectionBlock & { blo
         alignment={section.alignment}
         showCountdown={section.showCountdown}
         rounded={section.rounded}
+        showOverlay={section.showOverlay}
         marginTop={section.marginTop}
         marginBottom={section.marginBottom}
       />

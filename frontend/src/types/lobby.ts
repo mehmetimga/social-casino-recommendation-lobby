@@ -67,6 +67,7 @@ export interface BannerSectionBlock {
   alignment: 'left' | 'center' | 'right';
   showCountdown: boolean;
   rounded: boolean;
+  showOverlay: boolean;
   marginTop: number;
   marginBottom: number;
 }

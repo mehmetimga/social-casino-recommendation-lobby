@@ -13,6 +13,7 @@ class PromotionBanner extends StatelessWidget {
   final BannerAlignment alignment;
   final bool showCountdown;
   final bool rounded;
+  final bool showOverlay;
   final double marginTop;
   final double marginBottom;
 
@@ -23,6 +24,7 @@ class PromotionBanner extends StatelessWidget {
     this.alignment = BannerAlignment.center,
     this.showCountdown = false,
     this.rounded = true,
+    this.showOverlay = true,
     this.marginTop = 16,
     this.marginBottom = 16,
   });
@@ -103,79 +105,81 @@ class PromotionBanner extends StatelessWidget {
                 ),
               ),
 
-            // Overlay gradient
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.7),
-                    Colors.black.withValues(alpha: 0.3),
+            // Overlay gradient - only show when showOverlay is true
+            if (showOverlay)
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.7),
+                      Colors.black.withValues(alpha: 0.3),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Content - only show when showOverlay is true
+            if (showOverlay)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: _getAlignment(),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            promotion.title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: size == BannerSize.small ? 14 : 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: alignment == BannerAlignment.center
+                                ? TextAlign.center
+                                : null,
+                          ),
+                          if (promotion.subtitle != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              promotion.subtitle!,
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.8),
+                                fontSize: size == BannerSize.small ? 12 : 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                          if (showCountdown &&
+                              promotion.countdown?.enabled == true &&
+                              promotion.countdown?.endTime != null) ...[
+                            const SizedBox(height: 8),
+                            CountdownTimer(
+                              endTime: DateTime.parse(promotion.countdown!.endTime!),
+                              compact: true,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    if (size != BannerSize.small) ...[
+                      const SizedBox(width: 16),
+                      GradientButton(
+                        text: promotion.ctaText,
+                        onPressed: () {
+                          // Handle CTA tap
+                        },
+                      ),
+                    ],
                   ],
                 ),
               ),
-            ),
-
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: _getAlignment(),
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          promotion.title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size == BannerSize.small ? 14 : 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: alignment == BannerAlignment.center
-                              ? TextAlign.center
-                              : null,
-                        ),
-                        if (promotion.subtitle != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            promotion.subtitle!,
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              fontSize: size == BannerSize.small ? 12 : 14,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                        if (showCountdown &&
-                            promotion.countdown?.enabled == true &&
-                            promotion.countdown?.endTime != null) ...[
-                          const SizedBox(height: 8),
-                          CountdownTimer(
-                            endTime: DateTime.parse(promotion.countdown!.endTime!),
-                            compact: true,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (size != BannerSize.small) ...[
-                    const SizedBox(width: 16),
-                    GradientButton(
-                      text: promotion.ctaText,
-                      onPressed: () {
-                        // Handle CTA tap
-                      },
-                    ),
-                  ],
-                ],
-              ),
-            ),
 
             // Tap handler
             Material(

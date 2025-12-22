@@ -162,6 +162,7 @@ class BannerSectionBlock with _$BannerSectionBlock {
     @Default(BannerAlignment.center) BannerAlignment alignment,
     @Default(false) bool showCountdown,
     @Default(true) bool rounded,
+    @Default(true) bool showOverlay,
     @Default(16) int marginTop,
     @Default(16) int marginBottom,
   }) = _BannerSectionBlock;

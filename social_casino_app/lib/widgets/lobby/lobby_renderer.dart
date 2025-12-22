@@ -260,6 +260,7 @@ class LobbyRenderer extends ConsumerWidget {
       alignment: section.alignment,
       showCountdown: section.showCountdown,
       rounded: section.rounded,
+      showOverlay: section.showOverlay,
       marginTop: section.marginTop.toDouble(),
       marginBottom: section.marginBottom.toDouble(),
     );

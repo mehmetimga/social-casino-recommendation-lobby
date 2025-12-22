@@ -53,6 +53,15 @@ export const BannerSection: Block = {
       },
     },
     {
+      name: 'showOverlay',
+      label: 'Show Text Overlay',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        description: 'Show text overlay (title, subtitle, CTA) on the banner. Uncheck to show only the image.',
+      },
+    },
+    {
       name: 'marginTop',
       type: 'number',
       defaultValue: 24,
