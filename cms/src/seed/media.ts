@@ -14,8 +14,9 @@ export const bannerImages = [
   'lions-wolf-bonus.png',
 ]
 
-// Game images mapping: slug -> image prefix (numeric IDs from casino-images directory - 30 games)
+// Game images mapping: slug -> image prefix (141 games total)
 export const gameImageMap: Record<string, string> = {
+  // Original 30 games
   'legendary-castle': '10031',
   'divine-temple': '11042',
   'magic-fortune': '11372',
@@ -46,73 +47,139 @@ export const gameImageMap: Record<string, string> = {
   'diamond-castle': '65949',
   'platinum-dragons': '65958',
   'royal-festival': '65960',
+
+  // Jackpot Slots (15 games)
+  'mega-jackpot-wheel': 'rakin_bacon_jackpots_bonus_wheel',
+  'rakin-bacon-gold': 'rakin_bacon',
+  'blazin-bank-run': 'blazin_bank_run',
+  'capital-gains-jackpot': 'capital_gains',
+  'cash-machine-deluxe': 'CashMachine',
+  'double-ruby-fortune': 'DoubleRuby',
+  'smokin-triples-jackpot': 'SmokinTriples',
+  'triple-threat-mega': 'TripleThreat',
+  'wild-wild-7s-jackpot': 'WildWild7s',
+  'spin-cycle-fortune': '2x_spin_cycle',
+  'ultra-diamond-jackpot': '3x_ultra_diamond',
+  'octo-jackpot': 'octogame',
+  'santa-rudolf-jackpot': 'slots_santavsrudolf000',
+  'triple-play-jackpot': 'trp',
+  'hot-teapots-jackpot': 'super_hot_teapots',
+
+  // Instant Win / Slingo Games (7 games)
+  'slingo-championship': 'slingo-championship',
+  'slingo-fire-and-ice': 'slingo-fireandice',
+  'slingo-honey-crew': 'slingo-honeycrew',
+  'slingo-journey-asgard': 'slingo-journeytoasgard',
+  'slingo-lucky-mcgold': 'slingo-luckymcgold',
+  'slingo-red-hot': 'slingo-redhot',
+  'slingo-pop': 'slingo-pop',
+
+  // Scientific Games (4 games)
+  'genies-showtime': 'SGGeniesShowtime',
+  'indiana-wolf': 'SGIndianaWolf',
+  'safari-rumble': 'SGSafariRumble',
+  'shivering-strings': 'SGShiveringStrings',
+
+  // Konami Games (6 games)
+  'china-shores': 'konami_chinashores',
+  'african-diamond': 'konami_africandiamond',
+  'dynamite-dash': 'konami_allaboarddynamitedash',
+  'abundant-fortune': 'konami_bafangjinbaoabundantfortune',
+  'fortune-mint': 'konami_fortunemintfuxinggaozhao',
+  'gorilla-riches': 'konami_gorillariches',
+
+  // Egyptian/Mystic Themed Slots (7 games)
+  'sun-of-egypt': 'sun_of_egypt',
+  'sun-of-egypt-5': 'sun_of_egypt_5',
+  'egypt-fire': 'egypt_fire',
+  'magic-apple': 'magic_apple',
+  'magic-clovers': 'magic_clovers',
+  'maya-lock': 'maya_lock',
+  'long-bao-bao': 'long_bao_bao',
+
+  // Table Games (12 games)
+  'american-baccarat': 'AmericanBaccarat',
+  'european-roulette': 'EURoulette',
+  'blackjack-multi-hand': 'bjmb',
+  'blackjack-classic': 'blackjack_mrfykemt5slanyi5',
+  'blackjack-xchange': 'blackjack-xchange',
+  'blackjack-3h': 'BlackJack3H',
+  'blackjack-double-exposure': 'BlackJack3HDoubleExposure',
+  'hard-hit-blackjack': 'hardhitblackjack',
+  'sic-bo-classic': 'SicBo',
+  'roulette-classic': 'roulette',
+  'blackjack-american': 'TGBlackjackAmerican',
+  'casino-war': 'TGWar',
+
+  // Live Casino Games (14 games)
+  'lightning-dice-live': 'lightningdice_LightningDice001',
+  'super-sic-bo': 'sicbo_SuperSicBo000001',
+  'mega-ball-live': 'megaball_MegaBall00000001',
+  'dream-catcher': 'moneywheel_MOWDream00000001',
+  'fun-an-fun': 'funanfunu',
+  'dragon-tiger': 'TGDragonTiger',
+  'rng-blackjack': 'rng-blackjack_rng-bj-standard0',
+  'rng-craps': 'rng-craps_RngCraps00000001',
+  'rng-mega-ball': 'rng-megaball_RngMegaBall00001',
+  'rng-dream-catcher': 'rng-moneywheel_rng-dreamcatcher',
+  'rng-european-roulette': 'rng-roulette_rng-rt-european0',
+  'rng-lightning-roulette': 'rng-roulette_rng-rt-lightning',
+  'instant-roulette': 'roulette_InstantRo0000001',
+  'lightning-roulette-table': 'roulette_LightningTable01',
+
+  // Pragmatic Play - Big Bass Series (6 games)
+  'big-bass-mission': 'vs10bbfmission',
+  'big-bass-brazil': 'vs10bbbrlact',
+  'big-bass-doubled': 'vs10bbdoubled',
+  'big-bass-lotgl': 'vs10bblotgl',
+  'big-bass-3reeler': 'vs5bb3reeler',
+  'big-bass-blitz': 'vswaysbblitz',
+
+  // Pragmatic Play - Other Slots (30 games)
+  'book-of-light': 'vs10booklight',
+  'dragon-gold-88': 'vs10dgold88',
+  'egypt-classic': 'vs10egyptcls',
+  'fortune-dragon': 'vs10fdsnake',
+  'floating-dragon': 'vs10floatdrg',
+  'fonzo-fortune': 'vs10fonzofff',
+  'giza-gods': 'vs10gizagods',
+  'john-montana': 'vs10jnmntzma',
+  'mayan-gods': 'vs10mayangods',
+  'fortune-noodles': 'vs10noodles',
+  'tutankhamun': 'vs10tut',
+  'bigger-splash': 'vs12bgrbspl',
+  'diamond-strike': 'vs15diamond',
+  'fight-multiplier': 'vs15fghtmultlv',
+  'fortune-tree': 'vs1fortunetree',
+  'bermuda-riches': 'vs20bermuda',
+  'big-dawgs': 'vs20bigdawgs',
+  'chicken-chase': 'vs20chicken',
+  'dh-cluster': 'vs20dhcluster',
+  'forge-of-olympus': 'vs20forge',
+  'starlight-princess': 'vs20starlight',
+  'sugar-rush-x': 'vs20sugarrushx',
+  'big-badge': 'vs25badge',
+  'joker-king': 'vs25jokerking',
+  'mustang-gold': 'vs25mustang',
+  'scarab-queen': 'vs25scarabqueen',
+  'mystery-4096': 'vs4096mystery',
+  'cleos-eye': 'vs40cleoeye',
+  'juicy-fruits': 'vs50juicyfr',
+  'lions-1024': 'vs1024lionsd',
+
+  // Pragmatic Play - Ways Slots (9 games)
+  '5-lions-2': 'vsways5lions2',
+  'aztec-ways': 'vswaysaztec',
+  'eternity-ways': 'vswayseternity',
+  'expanding-ways': 'vswaysexpandng',
+  'japan-ways': 'vswaysjapan',
+  'kraken-ways': 'vswayskrakenmw',
+  'mighty-freya': 'vswaysmfreya',
+  'modern-fruits': 'vswaysmodfr',
+  'pearls-ways': 'vswayspearls',
 }
 
-// Additional game images for variety
-export const additionalGameImages = [
-  'slingo-championship',
-  'slingo-fireandice',
-  'slingo-honeycrew',
-  'slingo-journeytoasgard',
-  'slingo-luckymcgold',
-  'slingo-redhot',
-  'konami_chinashores',
-  'konami_africandiamond',
-  'konami_allaboarddynamitedash',
-  'konami_bafangjinbaoabundantfortune',
-  'konami_fortunemintfuxinggaozhao',
-  'vs10bbfmission',
-  'vs10bbbrlact',
-  'vs10bbdoubled',
-  'vs10booklight',
-  'vs10dgold88',
-  'vs10egyptcls',
-  'vs10fdsnake',
-  'vs10fonzofff',
-  'vs10jnmntzma',
-  'vs10noodles',
-  'vs12bgrbspl',
-  'vs15diamond',
-  'vs15fghtmultlv',
-  'vs1fortunetree',
-  'vs20bermuda',
-  'vs20chicken',
-  'vs20dhcluster',
-  'vs20forge',
-  'vs25badge',
-  'sun_of_egypt',
-  'sun_of_egypt_5',
-  'super_hot_teapots',
-  'magic_apple',
-  'magic_clovers',
-  'maya_lock',
-  'long_bao_bao',
-  'egypt_fire',
-  'capital_gains',
-  'CashMachine',
-  'DoubleRuby',
-  'SmokinTriples',
-  'TripleThreat',
-  '2x_spin_cycle',
-  '3x_ultra_diamond',
-  'SGGeniesShowtime',
-  'SGIndianaWolf',
-  'SGSafariRumble',
-  'SGShiveringStrings',
-  'rng-roulette_rng-rt-lightning',
-  'rng-roulette_rng-rt-european0',
-  'rng-megaball_RngMegaBall00001',
-  'rng-blackjack_rng-bj-standard0',
-  'rng-craps_RngCraps00000001',
-  'sicbo_SuperSicBo000001',
-  'lightningdice_LightningDice001',
-  'funanfunu',
-  'TGBlackjackAmerican',
-  'TGDragonTiger',
-  'TGWar',
-  'blackjack-xchange',
-  'BlackJack3HDoubleExposure',
-]
+// Additional game images are now included in gameImageMap above
 
 export interface MediaRecord {
   id: string
@@ -190,7 +257,7 @@ export async function seedMedia(payload: Payload): Promise<Map<string, MediaReco
   }
 
   // Upload game images (use 268x168 size for better quality)
-  const allGamePrefixes = [...Object.values(gameImageMap), ...additionalGameImages]
+  const allGamePrefixes = Object.values(gameImageMap)
   const uniquePrefixes = [...new Set(allGamePrefixes)]
 
   for (const prefix of uniquePrefixes) {
