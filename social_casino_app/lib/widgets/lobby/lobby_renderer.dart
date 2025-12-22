@@ -120,15 +120,83 @@ class LobbyRenderer extends ConsumerWidget {
         subtitle: section.subtitle,
         onGameTap: onGameTap,
       ),
-      data: (games) => HorizontalGameList(
-        games: games.take(section.limit).toList(),
-        title: section.title,
-        subtitle: section.subtitle,
-        showProvider: section.showProvider,
-        showJackpot: section.showJackpot,
-        onGameTap: onGameTap,
-      ),
+      data: (games) => _buildGameGridContent(section, games),
     );
+  }
+
+  Widget _buildGameGridContent(GameGridSectionBlock section, List<Game> games) {
+    final limitedGames = games.take(section.limit).toList();
+
+    // Handle different display styles
+    switch (section.displayStyle) {
+      case DisplayStyle.horizontal:
+        return HorizontalGameList(
+          games: limitedGames,
+          title: section.title,
+          subtitle: section.subtitle,
+          showProvider: section.showProvider,
+          showJackpot: section.showJackpot,
+          onGameTap: onGameTap,
+        );
+
+      case DisplayStyle.grid:
+        // Calculate number of games based on rows and columns (default 3 columns on mobile)
+        final columns = int.tryParse(section.columns) ?? 3;
+        final gridGames = limitedGames.take(section.rows * columns).toList();
+        return GameGrid(
+          games: gridGames,
+          title: section.title,
+          subtitle: section.subtitle,
+          crossAxisCount: columns > 4 ? 3 : columns, // Cap at 3 for mobile
+          showProvider: section.showProvider,
+          showJackpot: section.showJackpot,
+          onGameTap: onGameTap,
+        );
+
+      case DisplayStyle.singleRow:
+        // Single row with no scroll - use grid with 1 row
+        final columns = int.tryParse(section.columns) ?? 3;
+        final rowGames = limitedGames.take(columns > 4 ? 3 : columns).toList();
+        return GameGrid(
+          games: rowGames,
+          title: section.title,
+          subtitle: section.subtitle,
+          crossAxisCount: rowGames.length,
+          showProvider: section.showProvider,
+          showJackpot: section.showJackpot,
+          onGameTap: onGameTap,
+        );
+
+      case DisplayStyle.featuredLeft:
+      case DisplayStyle.featuredRight:
+      case DisplayStyle.featuredTop:
+        // Get featured game - either from section or first game
+        final featuredGame = section.featuredGame ?? (limitedGames.isNotEmpty ? limitedGames.first : null);
+        if (featuredGame == null) {
+          return HorizontalGameList(
+            games: limitedGames,
+            title: section.title,
+            subtitle: section.subtitle,
+            showProvider: section.showProvider,
+            showJackpot: section.showJackpot,
+            onGameTap: onGameTap,
+          );
+        }
+
+        // Filter out featured game from others
+        final otherGames = limitedGames.where((g) => g.id != featuredGame.id).toList();
+
+        return FeaturedGameLayout(
+          featuredGame: featuredGame,
+          otherGames: otherGames,
+          style: section.displayStyle,
+          title: section.title,
+          subtitle: section.subtitle,
+          showProvider: section.showProvider,
+          showJackpot: section.showJackpot,
+          onGameTap: onGameTap,
+        );
+    }
   }
 
   AsyncValue<List<Game>> _getGamesForFilter(WidgetRef ref, GameGridSectionBlock section) {

@@ -7,6 +7,13 @@ export type CarouselHeight = 'small' | 'medium' | 'large' | 'full';
 export type BannerSize = 'small' | 'medium' | 'large';
 export type FilterType = 'manual' | 'type' | 'tag' | 'popular' | 'new' | 'jackpot' | 'featured';
 export type SuggestedMode = 'manual' | 'personalized';
+export type DisplayStyle =
+  | 'horizontal'
+  | 'grid'
+  | 'single-row'
+  | 'featured-left'
+  | 'featured-right'
+  | 'featured-top';
 
 export interface CarouselSectionBlock {
   blockType: 'carousel-section';
@@ -40,6 +47,9 @@ export interface GameGridSectionBlock {
   manualGames?: (Game | string)[];
   gameType?: string;
   tag?: string;
+  displayStyle: DisplayStyle;
+  rows?: number;
+  featuredGame?: Game | string;
   limit: number;
   columns: string;
   showMore: boolean;

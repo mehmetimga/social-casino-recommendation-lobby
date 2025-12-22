@@ -63,6 +63,46 @@ export const GameGridSection: Block = {
       },
     },
     {
+      name: 'displayStyle',
+      label: 'Display Style',
+      type: 'select',
+      defaultValue: 'horizontal',
+      options: [
+        { label: 'Horizontal Scroll', value: 'horizontal' },
+        { label: 'Grid (Multiple Rows)', value: 'grid' },
+        { label: 'Single Row (No Scroll)', value: 'single-row' },
+        { label: 'Featured Left (Large + Small)', value: 'featured-left' },
+        { label: 'Featured Right (Small + Large)', value: 'featured-right' },
+        { label: 'Featured Top (Large + Row)', value: 'featured-top' },
+      ],
+      admin: {
+        description: 'Choose how games are displayed in this section',
+      },
+    },
+    {
+      name: 'rows',
+      label: 'Number of Rows',
+      type: 'number',
+      defaultValue: 2,
+      min: 1,
+      max: 10,
+      admin: {
+        condition: (_, siblingData) => siblingData?.displayStyle === 'grid',
+        description: 'Number of rows to display in grid mode',
+      },
+    },
+    {
+      name: 'featuredGame',
+      label: 'Featured Game',
+      type: 'relationship',
+      relationTo: 'games',
+      admin: {
+        condition: (_, siblingData) =>
+          ['featured-left', 'featured-right', 'featured-top'].includes(siblingData?.displayStyle),
+        description: 'Select the game to display as the large featured card',
+      },
+    },
+    {
       name: 'limit',
       type: 'number',
       defaultValue: 12,
@@ -79,6 +119,10 @@ export const GameGridSection: Block = {
         { label: '5 columns', value: '5' },
         { label: '6 columns', value: '6' },
       ],
+      admin: {
+        condition: (_, siblingData) => ['grid', 'single-row'].includes(siblingData?.displayStyle),
+        description: 'Number of columns for grid/row display',
+      },
     },
     {
       name: 'showMore',

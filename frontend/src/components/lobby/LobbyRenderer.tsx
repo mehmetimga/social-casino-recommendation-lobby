@@ -130,6 +130,13 @@ function GameGridSectionRenderer({
     queryFn: fetchGames,
   });
 
+  // Get featured game if specified
+  const featuredGame = section.featuredGame
+    ? typeof section.featuredGame === 'string'
+      ? games?.find((g) => g.id === section.featuredGame)
+      : (section.featuredGame as Game)
+    : undefined;
+
   return (
     <div className="container-casino">
       <GameGrid
@@ -137,6 +144,9 @@ function GameGridSectionRenderer({
         subtitle={section.subtitle}
         games={games || []}
         columns={parseInt(section.columns)}
+        rows={section.rows}
+        displayStyle={section.displayStyle}
+        featuredGame={featuredGame}
         showMore={section.showMore}
         moreLink={section.moreLink}
         cardSize={section.cardSize}

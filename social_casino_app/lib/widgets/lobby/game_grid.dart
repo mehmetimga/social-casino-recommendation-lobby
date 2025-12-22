@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/game.dart';
+import '../../models/lobby_layout.dart';
 import '../../config/theme/app_colors.dart';
 import '../common/loading_shimmer.dart';
 import 'game_card.dart';
@@ -292,6 +293,191 @@ class _SectionHeader extends StatelessWidget {
               ],
             ),
           ),
+      ],
+    );
+  }
+}
+
+/// Featured game layout with one large card and smaller cards
+class FeaturedGameLayout extends StatelessWidget {
+  final Game featuredGame;
+  final List<Game> otherGames;
+  final DisplayStyle style;
+  final String? title;
+  final String? subtitle;
+  final bool showProvider;
+  final bool showJackpot;
+  final VoidCallback? onShowMore;
+  final Function(Game game)? onGameTap;
+
+  const FeaturedGameLayout({
+    super.key,
+    required this.featuredGame,
+    required this.otherGames,
+    required this.style,
+    this.title,
+    this.subtitle,
+    this.showProvider = false,
+    this.showJackpot = true,
+    this.onShowMore,
+    this.onGameTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _SectionHeader(
+              title: title!,
+              subtitle: subtitle,
+              onShowMore: onShowMore,
+            ),
+          ),
+        if (title != null) const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: _buildLayout(context, screenWidth),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLayout(BuildContext context, double screenWidth) {
+    switch (style) {
+      case DisplayStyle.featuredLeft:
+        return _buildFeaturedLeft(screenWidth);
+      case DisplayStyle.featuredRight:
+        return _buildFeaturedRight(screenWidth);
+      case DisplayStyle.featuredTop:
+        return _buildFeaturedTop(screenWidth);
+      default:
+        return _buildFeaturedLeft(screenWidth);
+    }
+  }
+
+  /// Large card on left, 2x2 small grid on right
+  Widget _buildFeaturedLeft(double screenWidth) {
+    final largeWidth = (screenWidth - 32) * 0.5;
+    final smallWidth = (screenWidth - 32 - largeWidth - 8) / 2;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Large featured card
+        GameCard(
+          game: featuredGame,
+          width: largeWidth,
+          height: largeWidth * 1.2,
+          showProvider: showProvider,
+          showJackpot: showJackpot,
+          onTap: onGameTap != null ? () => onGameTap!(featuredGame) : null,
+        ),
+        const SizedBox(width: 8),
+        // 2x2 small grid
+        SizedBox(
+          width: screenWidth - 32 - largeWidth - 8,
+          child: Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: otherGames.take(4).map((game) {
+              return GameCard(
+                game: game,
+                width: smallWidth - 3,
+                height: (largeWidth * 1.2 - 6) / 2,
+                showProvider: false,
+                showJackpot: showJackpot,
+                compact: true,
+                onTap: onGameTap != null ? () => onGameTap!(game) : null,
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 2x2 small grid on left, large card on right
+  Widget _buildFeaturedRight(double screenWidth) {
+    final largeWidth = (screenWidth - 32) * 0.5;
+    final smallWidth = (screenWidth - 32 - largeWidth - 8) / 2;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 2x2 small grid
+        SizedBox(
+          width: screenWidth - 32 - largeWidth - 8,
+          child: Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: otherGames.take(4).map((game) {
+              return GameCard(
+                game: game,
+                width: smallWidth - 3,
+                height: (largeWidth * 1.2 - 6) / 2,
+                showProvider: false,
+                showJackpot: showJackpot,
+                compact: true,
+                onTap: onGameTap != null ? () => onGameTap!(game) : null,
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(width: 8),
+        // Large featured card
+        GameCard(
+          game: featuredGame,
+          width: largeWidth,
+          height: largeWidth * 1.2,
+          showProvider: showProvider,
+          showJackpot: showJackpot,
+          onTap: onGameTap != null ? () => onGameTap!(featuredGame) : null,
+        ),
+      ],
+    );
+  }
+
+  /// Large card on top, row of small cards below
+  Widget _buildFeaturedTop(double screenWidth) {
+    final totalWidth = screenWidth - 24;
+    final smallWidth = (totalWidth - 16) / 3; // 3 small cards with spacing
+
+    return Column(
+      children: [
+        // Large featured card (full width)
+        GameCard(
+          game: featuredGame,
+          width: totalWidth,
+          height: totalWidth * 0.5,
+          showProvider: showProvider,
+          showJackpot: showJackpot,
+          onTap: onGameTap != null ? () => onGameTap!(featuredGame) : null,
+        ),
+        const SizedBox(height: 8),
+        // Row of small cards
+        Row(
+          children: otherGames.take(3).map((game) {
+            final index = otherGames.indexOf(game);
+            return Padding(
+              padding: EdgeInsets.only(right: index < 2 ? 8 : 0),
+              child: GameCard(
+                game: game,
+                width: smallWidth,
+                height: smallWidth,
+                showProvider: false,
+                showJackpot: showJackpot,
+                compact: true,
+                onTap: onGameTap != null ? () => onGameTap!(game) : null,
+              ),
+            );
+          }).toList(),
+        ),
       ],
     );
   }

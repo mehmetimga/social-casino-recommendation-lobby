@@ -765,6 +765,9 @@ mixin _$GameGridSectionBlock {
   List<Game>? get manualGames => throw _privateConstructorUsedError;
   String? get gameType => throw _privateConstructorUsedError;
   String? get tag => throw _privateConstructorUsedError;
+  DisplayStyle get displayStyle => throw _privateConstructorUsedError;
+  int get rows => throw _privateConstructorUsedError;
+  Game? get featuredGame => throw _privateConstructorUsedError;
   int get limit => throw _privateConstructorUsedError;
   String get columns => throw _privateConstructorUsedError;
   bool get showMore => throw _privateConstructorUsedError;
@@ -798,6 +801,9 @@ abstract class $GameGridSectionBlockCopyWith<$Res> {
     List<Game>? manualGames,
     String? gameType,
     String? tag,
+    DisplayStyle displayStyle,
+    int rows,
+    Game? featuredGame,
     int limit,
     String columns,
     bool showMore,
@@ -806,6 +812,8 @@ abstract class $GameGridSectionBlockCopyWith<$Res> {
     bool showJackpot,
     bool showProvider,
   });
+
+  $GameCopyWith<$Res>? get featuredGame;
 }
 
 /// @nodoc
@@ -833,6 +841,9 @@ class _$GameGridSectionBlockCopyWithImpl<
     Object? manualGames = freezed,
     Object? gameType = freezed,
     Object? tag = freezed,
+    Object? displayStyle = null,
+    Object? rows = null,
+    Object? featuredGame = freezed,
     Object? limit = null,
     Object? columns = null,
     Object? showMore = null,
@@ -871,6 +882,18 @@ class _$GameGridSectionBlockCopyWithImpl<
                 ? _value.tag
                 : tag // ignore: cast_nullable_to_non_nullable
                       as String?,
+            displayStyle: null == displayStyle
+                ? _value.displayStyle
+                : displayStyle // ignore: cast_nullable_to_non_nullable
+                      as DisplayStyle,
+            rows: null == rows
+                ? _value.rows
+                : rows // ignore: cast_nullable_to_non_nullable
+                      as int,
+            featuredGame: freezed == featuredGame
+                ? _value.featuredGame
+                : featuredGame // ignore: cast_nullable_to_non_nullable
+                      as Game?,
             limit: null == limit
                 ? _value.limit
                 : limit // ignore: cast_nullable_to_non_nullable
@@ -903,6 +926,20 @@ class _$GameGridSectionBlockCopyWithImpl<
           as $Val,
     );
   }
+
+  /// Create a copy of GameGridSectionBlock
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $GameCopyWith<$Res>? get featuredGame {
+    if (_value.featuredGame == null) {
+      return null;
+    }
+
+    return $GameCopyWith<$Res>(_value.featuredGame!, (value) {
+      return _then(_value.copyWith(featuredGame: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -922,6 +959,9 @@ abstract class _$$GameGridSectionBlockImplCopyWith<$Res>
     List<Game>? manualGames,
     String? gameType,
     String? tag,
+    DisplayStyle displayStyle,
+    int rows,
+    Game? featuredGame,
     int limit,
     String columns,
     bool showMore,
@@ -930,6 +970,9 @@ abstract class _$$GameGridSectionBlockImplCopyWith<$Res>
     bool showJackpot,
     bool showProvider,
   });
+
+  @override
+  $GameCopyWith<$Res>? get featuredGame;
 }
 
 /// @nodoc
@@ -953,6 +996,9 @@ class __$$GameGridSectionBlockImplCopyWithImpl<$Res>
     Object? manualGames = freezed,
     Object? gameType = freezed,
     Object? tag = freezed,
+    Object? displayStyle = null,
+    Object? rows = null,
+    Object? featuredGame = freezed,
     Object? limit = null,
     Object? columns = null,
     Object? showMore = null,
@@ -991,6 +1037,18 @@ class __$$GameGridSectionBlockImplCopyWithImpl<$Res>
             ? _value.tag
             : tag // ignore: cast_nullable_to_non_nullable
                   as String?,
+        displayStyle: null == displayStyle
+            ? _value.displayStyle
+            : displayStyle // ignore: cast_nullable_to_non_nullable
+                  as DisplayStyle,
+        rows: null == rows
+            ? _value.rows
+            : rows // ignore: cast_nullable_to_non_nullable
+                  as int,
+        featuredGame: freezed == featuredGame
+            ? _value.featuredGame
+            : featuredGame // ignore: cast_nullable_to_non_nullable
+                  as Game?,
         limit: null == limit
             ? _value.limit
             : limit // ignore: cast_nullable_to_non_nullable
@@ -1035,6 +1093,9 @@ class _$GameGridSectionBlockImpl implements _GameGridSectionBlock {
     final List<Game>? manualGames,
     this.gameType,
     this.tag,
+    this.displayStyle = DisplayStyle.horizontal,
+    this.rows = 2,
+    this.featuredGame,
     this.limit = 12,
     this.columns = '4',
     this.showMore = true,
@@ -1072,6 +1133,14 @@ class _$GameGridSectionBlockImpl implements _GameGridSectionBlock {
   final String? tag;
   @override
   @JsonKey()
+  final DisplayStyle displayStyle;
+  @override
+  @JsonKey()
+  final int rows;
+  @override
+  final Game? featuredGame;
+  @override
+  @JsonKey()
   final int limit;
   @override
   @JsonKey()
@@ -1093,7 +1162,7 @@ class _$GameGridSectionBlockImpl implements _GameGridSectionBlock {
 
   @override
   String toString() {
-    return 'GameGridSectionBlock(blockType: $blockType, title: $title, subtitle: $subtitle, filterType: $filterType, manualGames: $manualGames, gameType: $gameType, tag: $tag, limit: $limit, columns: $columns, showMore: $showMore, moreLink: $moreLink, cardSize: $cardSize, showJackpot: $showJackpot, showProvider: $showProvider)';
+    return 'GameGridSectionBlock(blockType: $blockType, title: $title, subtitle: $subtitle, filterType: $filterType, manualGames: $manualGames, gameType: $gameType, tag: $tag, displayStyle: $displayStyle, rows: $rows, featuredGame: $featuredGame, limit: $limit, columns: $columns, showMore: $showMore, moreLink: $moreLink, cardSize: $cardSize, showJackpot: $showJackpot, showProvider: $showProvider)';
   }
 
   @override
@@ -1115,6 +1184,11 @@ class _$GameGridSectionBlockImpl implements _GameGridSectionBlock {
             (identical(other.gameType, gameType) ||
                 other.gameType == gameType) &&
             (identical(other.tag, tag) || other.tag == tag) &&
+            (identical(other.displayStyle, displayStyle) ||
+                other.displayStyle == displayStyle) &&
+            (identical(other.rows, rows) || other.rows == rows) &&
+            (identical(other.featuredGame, featuredGame) ||
+                other.featuredGame == featuredGame) &&
             (identical(other.limit, limit) || other.limit == limit) &&
             (identical(other.columns, columns) || other.columns == columns) &&
             (identical(other.showMore, showMore) ||
@@ -1140,6 +1214,9 @@ class _$GameGridSectionBlockImpl implements _GameGridSectionBlock {
     const DeepCollectionEquality().hash(_manualGames),
     gameType,
     tag,
+    displayStyle,
+    rows,
+    featuredGame,
     limit,
     columns,
     showMore,
@@ -1176,6 +1253,9 @@ abstract class _GameGridSectionBlock implements GameGridSectionBlock {
     final List<Game>? manualGames,
     final String? gameType,
     final String? tag,
+    final DisplayStyle displayStyle,
+    final int rows,
+    final Game? featuredGame,
     final int limit,
     final String columns,
     final bool showMore,
@@ -1202,6 +1282,12 @@ abstract class _GameGridSectionBlock implements GameGridSectionBlock {
   String? get gameType;
   @override
   String? get tag;
+  @override
+  DisplayStyle get displayStyle;
+  @override
+  int get rows;
+  @override
+  Game? get featuredGame;
   @override
   int get limit;
   @override

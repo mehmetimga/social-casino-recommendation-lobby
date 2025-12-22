@@ -65,6 +65,21 @@ enum SuggestedMode {
   personalized,
 }
 
+enum DisplayStyle {
+  @JsonValue('horizontal')
+  horizontal,
+  @JsonValue('grid')
+  grid,
+  @JsonValue('single-row')
+  singleRow,
+  @JsonValue('featured-left')
+  featuredLeft,
+  @JsonValue('featured-right')
+  featuredRight,
+  @JsonValue('featured-top')
+  featuredTop,
+}
+
 enum BannerAlignment {
   @JsonValue('left')
   left,
@@ -120,6 +135,9 @@ class GameGridSectionBlock with _$GameGridSectionBlock {
     List<Game>? manualGames,
     String? gameType,
     String? tag,
+    @Default(DisplayStyle.horizontal) DisplayStyle displayStyle,
+    @Default(2) int rows,
+    Game? featuredGame,
     @Default(12) int limit,
     @Default('4') String columns,
     @Default(true) bool showMore,

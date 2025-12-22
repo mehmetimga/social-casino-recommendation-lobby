@@ -100,6 +100,13 @@ _$GameGridSectionBlockImpl _$$GameGridSectionBlockImplFromJson(
       .toList(),
   gameType: json['gameType'] as String?,
   tag: json['tag'] as String?,
+  displayStyle:
+      $enumDecodeNullable(_$DisplayStyleEnumMap, json['displayStyle']) ??
+      DisplayStyle.horizontal,
+  rows: (json['rows'] as num?)?.toInt() ?? 2,
+  featuredGame: json['featuredGame'] == null
+      ? null
+      : Game.fromJson(json['featuredGame'] as Map<String, dynamic>),
   limit: (json['limit'] as num?)?.toInt() ?? 12,
   columns: json['columns'] as String? ?? '4',
   showMore: json['showMore'] as bool? ?? true,
@@ -121,6 +128,9 @@ Map<String, dynamic> _$$GameGridSectionBlockImplToJson(
   'manualGames': instance.manualGames,
   'gameType': instance.gameType,
   'tag': instance.tag,
+  'displayStyle': _$DisplayStyleEnumMap[instance.displayStyle]!,
+  'rows': instance.rows,
+  'featuredGame': instance.featuredGame,
   'limit': instance.limit,
   'columns': instance.columns,
   'showMore': instance.showMore,
@@ -138,6 +148,15 @@ const _$FilterTypeEnumMap = {
   FilterType.newGames: 'new',
   FilterType.jackpot: 'jackpot',
   FilterType.featured: 'featured',
+};
+
+const _$DisplayStyleEnumMap = {
+  DisplayStyle.horizontal: 'horizontal',
+  DisplayStyle.grid: 'grid',
+  DisplayStyle.singleRow: 'single-row',
+  DisplayStyle.featuredLeft: 'featured-left',
+  DisplayStyle.featuredRight: 'featured-right',
+  DisplayStyle.featuredTop: 'featured-top',
 };
 
 _$BannerSectionBlockImpl _$$BannerSectionBlockImplFromJson(
