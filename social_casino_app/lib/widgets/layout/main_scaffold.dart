@@ -50,15 +50,17 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = _getSelectedBottomIndex(context);
+
     return Scaffold(
       backgroundColor: AppColors.casinoBg,
       body: Stack(
         children: [
           Column(
             children: [
-              // Top App Bar (pinned) - Logo + Login/Join
+              // Top App Bar (pinned) - Logo + Login/Join + Search
               const AppHeader(),
-              // Category Tab Bar (pinned) - Layout categories like web app
+              // Category Tab Bar (pinned) - Layout categories
               const CategoryTabBar(),
               // Scrollable content area
               Expanded(
@@ -70,84 +72,134 @@ class _MainScaffoldState extends State<MainScaffold> {
           const ChatWidget(),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.casinoBgSecondary,
-          border: Border(
-            top: BorderSide(
-              color: AppColors.casinoPurpleDark,
-              width: 1,
-            ),
+      bottomNavigationBar: _BottomNavBar(
+        selectedIndex: selectedIndex,
+        onTap: (index) => _onBottomNavTapped(context, index),
+      ),
+    );
+  }
+}
+
+class _BottomNavBar extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+
+  const _BottomNavBar({
+    required this.selectedIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.casinoBgSecondary,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
           ),
-        ),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: 70,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(
-                  context,
-                  index: 0,
-                  label: 'Casino',
-                  imagePath: 'assets/images/casino_banner.png',
-                ),
-                _buildNavItem(
-                  context,
-                  index: 1,
-                  label: 'Live Casino',
-                  imagePath: 'assets/images/live_casino.png',
-                ),
-                _buildNavItem(
-                  context,
-                  index: 2,
-                  label: 'Sports',
-                  imagePath: 'assets/images/sports_banner.png',
-                ),
-                _buildNavItem(
-                  context,
-                  index: 3,
-                  label: 'Poker',
-                  imagePath: 'assets/images/poker_banner.png',
-                ),
-              ],
-            ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Container(
+          height: 64,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _NavItem(
+                icon: Icons.casino_outlined,
+                activeIcon: Icons.casino,
+                label: 'Casino',
+                isSelected: selectedIndex == 0,
+                onTap: () => onTap(0),
+                isHighlighted: true,
+              ),
+              _NavItem(
+                icon: Icons.live_tv_outlined,
+                activeIcon: Icons.live_tv,
+                label: 'Live Casino',
+                isSelected: selectedIndex == 1,
+                onTap: () => onTap(1),
+              ),
+              _NavItem(
+                icon: Icons.sports_basketball_outlined,
+                activeIcon: Icons.sports_basketball,
+                label: 'Sports',
+                isSelected: selectedIndex == 2,
+                onTap: () => onTap(2),
+              ),
+              _NavItem(
+                icon: Icons.style_outlined,
+                activeIcon: Icons.style,
+                label: 'Poker',
+                isSelected: selectedIndex == 3,
+                onTap: () => onTap(3),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildNavItem(
-    BuildContext context, {
-    required int index,
-    required String label,
-    required String imagePath,
-  }) {
-    final isSelected = _getSelectedBottomIndex(context) == index;
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final bool isHighlighted;
+
+  const _NavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+    this.isHighlighted = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final Color activeColor = AppColors.casinoGold;
+    final Color inactiveColor = AppColors.textMuted;
 
     return GestureDetector(
-      onTap: () => _onBottomNavTapped(context, index),
+      onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 80,
+        width: 64,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              imagePath,
-              width: 28,
-              height: 28,
-              color: isSelected ? AppColors.casinoGold : AppColors.textMuted,
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isSelected && isHighlighted
+                    ? AppColors.casinoGold.withValues(alpha: 0.15)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                isSelected ? activeIcon : icon,
+                color: isSelected ? activeColor : inactiveColor,
+                size: 22,
+              ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? AppColors.casinoGold : AppColors.textMuted,
+                color: isSelected ? activeColor : inactiveColor,
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                letterSpacing: 0.2,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,

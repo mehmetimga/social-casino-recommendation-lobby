@@ -8,10 +8,10 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.casinoBg,
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.casinoPurple,
-        primaryContainer: AppColors.casinoPurpleDark,
-        secondary: AppColors.casinoGold,
-        secondaryContainer: AppColors.casinoGoldDark,
+        primary: AppColors.casinoGold,
+        primaryContainer: AppColors.casinoGoldDark,
+        secondary: AppColors.casinoPurple,
+        secondaryContainer: AppColors.casinoPurpleDark,
         surface: AppColors.casinoBgCard,
         error: AppColors.casinoAccent,
       ),
@@ -30,43 +30,47 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.casinoPurple,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          backgroundColor: AppColors.casinoGold,
+          foregroundColor: AppColors.textDark,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
+          elevation: 0,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.casinoPurple,
+          foregroundColor: AppColors.casinoGold,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.casinoBgSecondary,
+        fillColor: AppColors.pillBg,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.casinoPurple),
+          borderSide: const BorderSide(color: AppColors.casinoGold, width: 1),
         ),
         hintStyle: const TextStyle(color: AppColors.textMuted),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.casinoBgSecondary,
-        selectedItemColor: AppColors.casinoPurple,
+        selectedItemColor: AppColors.casinoGold,
         unselectedItemColor: AppColors.textMuted,
+        type: BottomNavigationBarType.fixed,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.casinoPurple,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.casinoGold,
+        foregroundColor: AppColors.textDark,
       ),
       dividerTheme: DividerThemeData(
-        color: AppColors.textMuted.withValues(alpha: 0.2),
+        color: AppColors.textMuted.withValues(alpha: 0.15),
+        thickness: 1,
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(

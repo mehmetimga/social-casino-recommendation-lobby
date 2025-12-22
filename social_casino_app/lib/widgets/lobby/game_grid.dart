@@ -22,9 +22,9 @@ class GameGrid extends StatelessWidget {
     this.title,
     this.subtitle,
     this.isLoading = false,
-    this.crossAxisCount = 2,
-    this.childAspectRatio = 0.75,
-    this.showProvider = true,
+    this.crossAxisCount = 3, // 3 columns
+    this.childAspectRatio = 1.0, // Square aspect ratio
+    this.showProvider = false,
     this.showJackpot = true,
     this.onShowMore,
     this.onGameTap,
@@ -38,33 +38,10 @@ class GameGrid extends StatelessWidget {
         if (title != null)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title!,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle!,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ],
-                ),
-                if (onShowMore != null)
-                  TextButton(
-                    onPressed: onShowMore,
-                    child: const Text('See All'),
-                  ),
-              ],
+            child: _SectionHeader(
+              title: title!,
+              subtitle: subtitle,
+              onShowMore: onShowMore,
             ),
           ),
         if (title != null) const SizedBox(height: 12),
@@ -74,15 +51,15 @@ class GameGrid extends StatelessWidget {
           _buildEmptyState(context)
         else
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
                 childAspectRatio: childAspectRatio,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
               ),
               itemCount: games.length,
               itemBuilder: (context, index) {
@@ -91,6 +68,7 @@ class GameGrid extends StatelessWidget {
                   game: game,
                   showProvider: showProvider,
                   showJackpot: showJackpot,
+                  compact: true,
                   onTap: onGameTap != null ? () => onGameTap!(game) : null,
                 );
               },
@@ -102,17 +80,17 @@ class GameGrid extends StatelessWidget {
 
   Widget _buildLoadingGrid() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           childAspectRatio: childAspectRatio,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
         ),
-        itemCount: 6,
+        itemCount: 9, // 3x3 grid
         itemBuilder: (context, index) {
           return const GameCardShimmer();
         },
@@ -128,7 +106,7 @@ class GameGrid extends StatelessWidget {
           children: [
             Icon(
               Icons.casino_outlined,
-              size: 48,
+              size: 40,
               color: AppColors.textMuted,
             ),
             const SizedBox(height: 12),
@@ -145,14 +123,14 @@ class GameGrid extends StatelessWidget {
   }
 }
 
-/// Horizontal scrollable game list
+/// Horizontal scrollable game list with 3-item visible grid
 class HorizontalGameList extends StatelessWidget {
   final List<Game> games;
   final String? title;
   final String? subtitle;
   final bool isLoading;
-  final double cardWidth;
-  final double cardHeight;
+  final double? cardWidth;
+  final double? cardHeight;
   final bool showProvider;
   final bool showJackpot;
   final VoidCallback? onShowMore;
@@ -164,9 +142,9 @@ class HorizontalGameList extends StatelessWidget {
     this.title,
     this.subtitle,
     this.isLoading = false,
-    this.cardWidth = 140,
-    this.cardHeight = 180,
-    this.showProvider = true,
+    this.cardWidth,
+    this.cardHeight,
+    this.showProvider = false,
     this.showJackpot = true,
     this.onShowMore,
     this.onGameTap,
@@ -174,64 +152,46 @@ class HorizontalGameList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate card size based on screen width to show ~3 items
+    final screenWidth = MediaQuery.of(context).size.width;
+    final calculatedWidth = cardWidth ?? ((screenWidth - 40) / 3);
+    final calculatedHeight = cardHeight ?? calculatedWidth; // Square
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (title != null)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title!,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle!,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ],
-                ),
-                if (onShowMore != null)
-                  TextButton(
-                    onPressed: onShowMore,
-                    child: const Text('See All'),
-                  ),
-              ],
+            child: _SectionHeader(
+              title: title!,
+              subtitle: subtitle,
+              onShowMore: onShowMore ?? () {},
             ),
           ),
         if (title != null) const SizedBox(height: 12),
         SizedBox(
-          height: cardHeight,
+          height: calculatedHeight,
           child: isLoading
-              ? _buildLoadingList()
+              ? _buildLoadingList(calculatedWidth, calculatedHeight)
               : games.isEmpty
                   ? _buildEmptyState(context)
                   : ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       itemCount: games.length,
                       separatorBuilder: (context, index) =>
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 8),
                       itemBuilder: (context, index) {
                         final game = games[index];
                         return GameCard(
                           game: game,
-                          width: cardWidth,
-                          height: cardHeight,
+                          width: calculatedWidth,
+                          height: calculatedHeight,
                           showProvider: showProvider,
                           showJackpot: showJackpot,
-                          onTap:
-                              onGameTap != null ? () => onGameTap!(game) : null,
+                          compact: true,
+                          onTap: onGameTap != null ? () => onGameTap!(game) : null,
                         );
                       },
                     ),
@@ -240,14 +200,14 @@ class HorizontalGameList extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingList() {
+  Widget _buildLoadingList(double width, double height) {
     return ListView.separated(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: 5,
-      separatorBuilder: (context, index) => const SizedBox(width: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      itemCount: 4,
+      separatorBuilder: (context, index) => const SizedBox(width: 8),
       itemBuilder: (context, index) {
-        return GameCardShimmer(width: cardWidth, height: cardHeight);
+        return GameCardShimmer(width: width, height: height);
       },
     );
   }
@@ -260,6 +220,79 @@ class HorizontalGameList extends StatelessWidget {
               color: AppColors.textMuted,
             ),
       ),
+    );
+  }
+}
+
+/// Section header with title and "See All" button
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onShowMore;
+
+  const _SectionHeader({
+    required this.title,
+    this.subtitle,
+    this.onShowMore,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle!,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        if (onShowMore != null)
+          GestureDetector(
+            onTap: onShowMore,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'See All',
+                  style: TextStyle(
+                    color: AppColors.casinoGold,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.chevron_right,
+                  color: AppColors.casinoGold,
+                  size: 18,
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

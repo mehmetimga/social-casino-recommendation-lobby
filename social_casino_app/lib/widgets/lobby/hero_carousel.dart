@@ -24,7 +24,7 @@ class HeroCarousel extends StatefulWidget {
     this.autoPlay = true,
     this.autoPlayInterval = 5000,
     this.showDots = true,
-    this.showArrows = true,
+    this.showArrows = false, // Hidden by default for cleaner look
     this.height = CarouselHeight.medium,
     this.isLoading = false,
   });
@@ -40,13 +40,13 @@ class _HeroCarouselState extends State<HeroCarousel> {
   double _getHeight() {
     switch (widget.height) {
       case CarouselHeight.small:
-        return 160;
+        return 140;
       case CarouselHeight.medium:
-        return 200;
+        return 180;
       case CarouselHeight.large:
-        return 260;
+        return 220;
       case CarouselHeight.full:
-        return 320;
+        return 280;
     }
   }
 
@@ -62,69 +62,55 @@ class _HeroCarouselState extends State<HeroCarousel> {
 
     return Column(
       children: [
-        Stack(
-          children: [
-            CarouselSlider(
-              carouselController: _controller,
-              items: widget.promotions.map((promo) => _buildSlide(promo)).toList(),
-              options: CarouselOptions(
-                height: _getHeight(),
-                viewportFraction: 0.92,
-                enlargeCenterPage: true,
-                autoPlay: widget.autoPlay,
-                autoPlayInterval: Duration(milliseconds: widget.autoPlayInterval),
-                onPageChanged: (index, reason) {
-                  setState(() => _currentIndex = index);
-                },
-              ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: SizedBox(
+            height: _getHeight(),
+            child: PageView.builder(
+              controller: PageController(viewportFraction: 0.92),
+              itemCount: widget.promotions.length,
+              onPageChanged: (index) {
+                setState(() => _currentIndex = index);
+              },
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: _buildSlide(widget.promotions[index]),
+                );
+              },
             ),
-            if (widget.showArrows && widget.promotions.length > 1) ...[
-              Positioned(
-                left: 8,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: _buildArrowButton(
-                    icon: Icons.chevron_left,
-                    onPressed: () => _controller.previousPage(),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 8,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: _buildArrowButton(
-                    icon: Icons.chevron_right,
-                    onPressed: () => _controller.nextPage(),
-                  ),
-                ),
-              ),
-            ],
-          ],
+          ),
         ),
         if (widget.showDots && widget.promotions.length > 1)
           Padding(
             padding: const EdgeInsets.only(top: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: widget.promotions.asMap().entries.map((entry) {
-                return Container(
-                  width: 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentIndex == entry.key
-                        ? AppColors.casinoPurple
-                        : AppColors.casinoPurple.withValues(alpha: 0.3),
-                  ),
-                );
-              }).toList(),
-            ),
+            child: _buildDotIndicators(),
           ),
       ],
+    );
+  }
+
+  Widget _buildDotIndicators() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        widget.promotions.length,
+        (index) {
+          final isActive = _currentIndex == index;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            width: isActive ? 20 : 6,
+            height: 6,
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3),
+              color: isActive
+                  ? AppColors.textPrimary
+                  : AppColors.textMuted.withValues(alpha: 0.4),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -136,13 +122,12 @@ class _HeroCarouselState extends State<HeroCarousel> {
             : null;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 12,
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 16,
             offset: const Offset(0, 6),
           ),
         ],
@@ -158,13 +143,17 @@ class _HeroCarouselState extends State<HeroCarousel> {
                 imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
-                  color: AppColors.casinoBgCard,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.gradientCard,
+                  ),
                 ),
                 errorWidget: (context, url, error) => Container(
-                  color: AppColors.casinoBgCard,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.gradientCard,
+                  ),
                   child: const Icon(
-                    Icons.image,
-                    color: AppColors.casinoPurple,
+                    Icons.casino,
+                    color: AppColors.casinoGold,
                     size: 48,
                   ),
                 ),
@@ -176,15 +165,15 @@ class _HeroCarouselState extends State<HeroCarousel> {
                 ),
               ),
 
-            // Gradient overlay
+            // Gradient overlay for text readability
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   colors: [
-                    Colors.black.withValues(alpha: 0.8),
-                    Colors.black.withValues(alpha: 0.2),
+                    Colors.black.withValues(alpha: 0.85),
+                    Colors.black.withValues(alpha: 0.1),
                   ],
                 ),
               ),
@@ -197,7 +186,7 @@ class _HeroCarouselState extends State<HeroCarousel> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Countdown timer
+                  // Countdown timer (if enabled)
                   if (promo.countdown?.enabled == true &&
                       promo.countdown?.endTime != null)
                     Padding(
@@ -214,8 +203,10 @@ class _HeroCarouselState extends State<HeroCarousel> {
                     promo.title,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: 0.3,
+                      height: 1.2,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -227,8 +218,9 @@ class _HeroCarouselState extends State<HeroCarousel> {
                     Text(
                       promo.subtitle!,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.75),
+                        fontSize: 12,
+                        letterSpacing: 0.2,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -243,36 +235,12 @@ class _HeroCarouselState extends State<HeroCarousel> {
                     onPressed: () {
                       // Handle CTA tap
                     },
-                    icon: Icons.play_arrow,
+                    compact: true,
                   ),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildArrowButton({
-    required IconData icon,
-    required VoidCallback onPressed,
-  }) {
-    return Material(
-      color: Colors.black.withValues(alpha: 0.5),
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          width: 36,
-          height: 36,
-          alignment: Alignment.center,
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 24,
-          ),
         ),
       ),
     );

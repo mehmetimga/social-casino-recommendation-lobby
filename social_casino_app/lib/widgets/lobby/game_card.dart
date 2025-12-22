@@ -6,24 +6,25 @@ import '../../config/api_config.dart';
 import '../../config/theme/app_colors.dart';
 import '../../models/game.dart';
 import '../../providers/user_provider.dart';
-import '../game/game_badge.dart';
 import 'package:intl/intl.dart';
 
 class GameCard extends ConsumerStatefulWidget {
   final Game game;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final bool showProvider;
   final bool showJackpot;
+  final bool compact;
   final VoidCallback? onTap;
 
   const GameCard({
     super.key,
     required this.game,
-    this.width = 160,
-    this.height = 200,
-    this.showProvider = true,
+    this.width,
+    this.height,
+    this.showProvider = false, // Hide by default for cleaner look
     this.showJackpot = true,
+    this.compact = false,
     this.onTap,
   });
 
@@ -63,9 +64,9 @@ class _GameCardState extends ConsumerState<GameCard> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
+                color: Colors.black.withValues(alpha: 0.35),
                 blurRadius: 8,
-                offset: const Offset(0, 4),
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -83,7 +84,7 @@ class _GameCardState extends ConsumerState<GameCard> {
                     child: const Center(
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.casinoPurple,
+                        color: AppColors.casinoGold,
                       ),
                     ),
                   ),
@@ -91,35 +92,36 @@ class _GameCardState extends ConsumerState<GameCard> {
                     color: AppColors.casinoBgCard,
                     child: const Icon(
                       Icons.casino,
-                      color: AppColors.casinoPurple,
-                      size: 48,
+                      color: AppColors.casinoGold,
+                      size: 40,
                     ),
                   ),
                 ),
 
-                // Gradient overlay
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.7),
-                        ],
-                        stops: const [0.5, 1.0],
+                // Gradient overlay for text (subtle)
+                if (widget.showProvider)
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.75),
+                          ],
+                          stops: const [0.6, 1.0],
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-                // Badge (show only the first one)
+                // Exclusive / Featured badge
                 if (game.badges != null && game.badges!.isNotEmpty)
                   Positioned(
-                    top: 8,
-                    left: 8,
-                    child: GameBadge(badge: game.badges!.first, small: true),
+                    top: 6,
+                    left: 6,
+                    child: _BadgeChip(badge: game.badges!.first.name),
                   ),
 
                 // Jackpot amount
@@ -127,66 +129,64 @@ class _GameCardState extends ConsumerState<GameCard> {
                     game.jackpotAmount != null &&
                     game.jackpotAmount! > 0)
                   Positioned(
-                    top: 8,
-                    right: 8,
+                    bottom: widget.showProvider ? 36 : 6,
+                    right: 6,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: 6,
+                        vertical: 3,
                       ),
                       decoration: BoxDecoration(
                         gradient: AppColors.gradientGold,
-                        borderRadius: BorderRadius.circular(6),
-                        boxShadow: AppColors.goldShadow,
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         currencyFormat.format(game.jackpotAmount),
                         style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
+                          color: AppColors.textDark,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
 
-                // Game info at bottom
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          game.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
+                // Game info at bottom (optional)
+                if (widget.showProvider)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            game.title,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (widget.showProvider) ...[
                           const SizedBox(height: 2),
                           Text(
                             game.provider,
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.7),
-                              fontSize: 11,
+                              color: Colors.white.withValues(alpha: 0.6),
+                              fontSize: 9,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
-                      ],
+                      ),
                     ),
                   ),
-                ),
 
                 // Play button overlay on hover/tap
                 Positioned.fill(
@@ -195,8 +195,8 @@ class _GameCardState extends ConsumerState<GameCard> {
                     child: InkWell(
                       onTap: widget.onTap,
                       borderRadius: BorderRadius.circular(12),
-                      splashColor: AppColors.casinoPurple.withValues(alpha: 0.3),
-                      highlightColor: AppColors.casinoPurple.withValues(alpha: 0.1),
+                      splashColor: AppColors.casinoGold.withValues(alpha: 0.2),
+                      highlightColor: AppColors.casinoGold.withValues(alpha: 0.1),
                     ),
                   ),
                 ),
@@ -206,5 +206,73 @@ class _GameCardState extends ConsumerState<GameCard> {
         ),
       ),
     );
+  }
+}
+
+class _BadgeChip extends StatelessWidget {
+  final String badge;
+
+  const _BadgeChip({required this.badge});
+
+  @override
+  Widget build(BuildContext context) {
+    // Determine badge style based on type
+    Color bgColor;
+    Color textColor;
+    String displayText;
+
+    switch (badge.toLowerCase()) {
+      case 'exclusive':
+        bgColor = AppColors.textDark.withValues(alpha: 0.85);
+        textColor = Colors.white;
+        displayText = 'Exclusive';
+        break;
+      case 'newbadge':
+      case 'new':
+        bgColor = AppColors.casinoGreen;
+        textColor = Colors.white;
+        displayText = 'New';
+        break;
+      case 'hot':
+        bgColor = AppColors.casinoRed;
+        textColor = Colors.white;
+        displayText = 'Hot';
+        break;
+      case 'jackpot':
+        bgColor = AppColors.casinoGold;
+        textColor = AppColors.textDark;
+        displayText = 'Jackpot';
+        break;
+      case 'featured':
+        bgColor = AppColors.casinoGold;
+        textColor = AppColors.textDark;
+        displayText = 'Featured';
+        break;
+      default:
+        bgColor = AppColors.textDark.withValues(alpha: 0.85);
+        textColor = Colors.white;
+        displayText = _formatBadgeText(badge);
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        displayText,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 9,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.3,
+        ),
+      ),
+    );
+  }
+
+  String _formatBadgeText(String badge) {
+    return badge[0].toUpperCase() + badge.substring(1).toLowerCase();
   }
 }

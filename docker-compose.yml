@@ -80,6 +80,7 @@ services:
     volumes:
       - cms_media:/app/media
       - ./casino-images:/casino-images:ro
+      - ./casino-banners:/casino-banners:ro
     ports:
       - "3001:3001"
     depends_on:

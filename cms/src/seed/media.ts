@@ -2,16 +2,16 @@ import type { Payload } from 'payload'
 import * as fs from 'fs'
 import * as path from 'path'
 
-// Banner images for hero carousel (large format)
+// Banner images for hero carousel (large format) - from casino-banners folder
 export const bannerImages = [
-  '9caa9b77a1ed74e90f14a784bc321317a105258f.avif',
-  '08e4fba3ea88d4894c062a77297572163773c329.avif',
-  '26c10e48096adcfdb03ea17363df98c08e654207.avif',
-  '29ac86a2ab90de027084110c593890afc7fb3116.avif',
-  '30de7e76366d8cedc5273b6694ce78067ee50ecb.avif',
-  'd31583c8e6fd97581a0b4be683a5b2da3612c9c9.avif',
-  'e51860be282052a4e7584a78eec10bf17e49a4c6.avif',
-  'fd5802cef4c8fb7902c728599617b86c8f7cdb98.avif',
+  'social-casino-main-banner.png',
+  '12-days-of-holidays.png',
+  'mega-ball.png',
+  'rakin-jackpot.png',
+  'live-dealer.png',
+  'lighting-roulette.png',
+  'black-jack.png',
+  'lions-wolf-bonus.png',
 ]
 
 // Game images mapping: slug -> image prefix (numeric IDs from casino-images directory - 30 games)
@@ -125,58 +125,68 @@ const uploadedMedia: Map<string, MediaRecord> = new Map()
 export async function seedMedia(payload: Payload): Promise<Map<string, MediaRecord>> {
   console.log('Seeding media...')
 
-  const imagesDir = path.resolve(process.cwd(), '..', 'casino-images')
+  // In Docker, these are mounted at root level; locally they're relative to cms folder
+  const imagesDir = fs.existsSync('/casino-images')
+    ? '/casino-images'
+    : path.resolve(process.cwd(), '..', 'casino-images')
+  const bannersDir = fs.existsSync('/casino-banners')
+    ? '/casino-banners'
+    : path.resolve(process.cwd(), '..', 'casino-banners')
 
   if (!fs.existsSync(imagesDir)) {
     console.log('Casino images directory not found, skipping media upload')
     return uploadedMedia
   }
 
-  // Upload banner images
-  for (const bannerFile of bannerImages) {
-    const filePath = path.join(imagesDir, bannerFile)
-    if (fs.existsSync(filePath)) {
-      try {
-        const existing = await payload.find({
-          collection: 'media',
-          where: { filename: { equals: bannerFile } },
-        })
-
-        if (existing.docs.length > 0) {
-          const doc = existing.docs[0]
-          uploadedMedia.set(`banner:${bannerFile}`, {
-            id: doc.id as string,
-            filename: bannerFile,
-            alt: doc.alt || `Banner ${bannerFile}`,
+  // Upload banner images from casino-banners folder
+  if (fs.existsSync(bannersDir)) {
+    for (const bannerFile of bannerImages) {
+      const filePath = path.join(bannersDir, bannerFile)
+      if (fs.existsSync(filePath)) {
+        try {
+          const existing = await payload.find({
+            collection: 'media',
+            where: { filename: { equals: bannerFile } },
           })
-          console.log(`Banner ${bannerFile} already exists, skipping...`)
-          continue
+
+          if (existing.docs.length > 0) {
+            const doc = existing.docs[0]
+            uploadedMedia.set(`banner:${bannerFile}`, {
+              id: doc.id as string,
+              filename: bannerFile,
+              alt: doc.alt || `Banner ${bannerFile}`,
+            })
+            console.log(`Banner ${bannerFile} already exists, skipping...`)
+            continue
+          }
+
+          const fileBuffer = fs.readFileSync(filePath)
+          const media = await payload.create({
+            collection: 'media',
+            data: {
+              alt: `Banner ${bannerFile.replace('.png', '').replace(/-/g, ' ')}`,
+            },
+            file: {
+              data: fileBuffer,
+              name: bannerFile,
+              mimetype: 'image/png',
+              size: fileBuffer.length,
+            },
+          })
+
+          uploadedMedia.set(`banner:${bannerFile}`, {
+            id: media.id as string,
+            filename: bannerFile,
+            alt: media.alt,
+          })
+          console.log(`Uploaded banner: ${bannerFile}`)
+        } catch (error) {
+          console.error(`Failed to upload banner ${bannerFile}:`, error)
         }
-
-        const fileBuffer = fs.readFileSync(filePath)
-        const media = await payload.create({
-          collection: 'media',
-          data: {
-            alt: `Banner ${bannerFile.replace('.avif', '')}`,
-          },
-          file: {
-            data: fileBuffer,
-            name: bannerFile,
-            mimetype: 'image/avif',
-            size: fileBuffer.length,
-          },
-        })
-
-        uploadedMedia.set(`banner:${bannerFile}`, {
-          id: media.id as string,
-          filename: bannerFile,
-          alt: media.alt,
-        })
-        console.log(`Uploaded banner: ${bannerFile}`)
-      } catch (error) {
-        console.error(`Failed to upload banner ${bannerFile}:`, error)
       }
     }
+  } else {
+    console.log('Casino banners directory not found, skipping banner upload')
   }
 
   // Upload game images (use 268x168 size for better quality)

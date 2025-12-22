@@ -10,6 +10,7 @@ class GradientButton extends StatelessWidget {
   final bool isLoading;
   final double? width;
   final IconData? icon;
+  final bool compact;
 
   const GradientButton({
     super.key,
@@ -19,6 +20,7 @@ class GradientButton extends StatelessWidget {
     this.isLoading = false,
     this.width,
     this.icon,
+    this.compact = false,
   });
 
   @override
@@ -35,21 +37,24 @@ class GradientButton extends StatelessWidget {
       width: width,
       decoration: BoxDecoration(
         gradient: gradient,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(compact ? 6 : 8),
         boxShadow: shadow,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: isLoading ? null : onPressed,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(compact ? 6 : 8),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 14 : 20,
+              vertical: compact ? 8 : 12,
+            ),
             child: isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
+                ? SizedBox(
+                    height: compact ? 16 : 20,
+                    width: compact ? 16 : 20,
+                    child: const CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
@@ -59,15 +64,16 @@ class GradientButton extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (icon != null) ...[
-                        Icon(icon, color: Colors.white, size: 18),
-                        const SizedBox(width: 8),
+                        Icon(icon, color: Colors.white, size: compact ? 14 : 18),
+                        SizedBox(width: compact ? 6 : 8),
                       ],
                       Text(
                         text,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: AppColors.textDark,
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: compact ? 12 : 14,
+                          letterSpacing: 0.3,
                         ),
                       ),
                     ],
