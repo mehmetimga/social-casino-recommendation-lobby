@@ -56,7 +56,6 @@ class CategoryTabBar extends StatelessWidget {
       name: 'Instant Win',
       icon: Icons.bolt_outlined,
       route: '/category/instant-win',
-      disabled: true,
     ),
   ];
 
