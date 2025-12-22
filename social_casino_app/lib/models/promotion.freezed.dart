@@ -603,6 +603,7 @@ mixin _$Promotion {
   String? get description => throw _privateConstructorUsedError;
   Media? get image => throw _privateConstructorUsedError;
   Media? get backgroundImage => throw _privateConstructorUsedError;
+  bool get showOverlay => throw _privateConstructorUsedError;
   String get ctaText => throw _privateConstructorUsedError;
   CtaLink? get ctaLink => throw _privateConstructorUsedError;
   PromotionSchedule? get schedule => throw _privateConstructorUsedError;
@@ -636,6 +637,7 @@ abstract class $PromotionCopyWith<$Res> {
     String? description,
     Media? image,
     Media? backgroundImage,
+    bool showOverlay,
     String ctaText,
     CtaLink? ctaLink,
     PromotionSchedule? schedule,
@@ -676,6 +678,7 @@ class _$PromotionCopyWithImpl<$Res, $Val extends Promotion>
     Object? description = freezed,
     Object? image = freezed,
     Object? backgroundImage = freezed,
+    Object? showOverlay = null,
     Object? ctaText = null,
     Object? ctaLink = freezed,
     Object? schedule = freezed,
@@ -716,6 +719,10 @@ class _$PromotionCopyWithImpl<$Res, $Val extends Promotion>
                 ? _value.backgroundImage
                 : backgroundImage // ignore: cast_nullable_to_non_nullable
                       as Media?,
+            showOverlay: null == showOverlay
+                ? _value.showOverlay
+                : showOverlay // ignore: cast_nullable_to_non_nullable
+                      as bool,
             ctaText: null == ctaText
                 ? _value.ctaText
                 : ctaText // ignore: cast_nullable_to_non_nullable
@@ -845,6 +852,7 @@ abstract class _$$PromotionImplCopyWith<$Res>
     String? description,
     Media? image,
     Media? backgroundImage,
+    bool showOverlay,
     String ctaText,
     CtaLink? ctaLink,
     PromotionSchedule? schedule,
@@ -889,6 +897,7 @@ class __$$PromotionImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? image = freezed,
     Object? backgroundImage = freezed,
+    Object? showOverlay = null,
     Object? ctaText = null,
     Object? ctaLink = freezed,
     Object? schedule = freezed,
@@ -929,6 +938,10 @@ class __$$PromotionImplCopyWithImpl<$Res>
             ? _value.backgroundImage
             : backgroundImage // ignore: cast_nullable_to_non_nullable
                   as Media?,
+        showOverlay: null == showOverlay
+            ? _value.showOverlay
+            : showOverlay // ignore: cast_nullable_to_non_nullable
+                  as bool,
         ctaText: null == ctaText
             ? _value.ctaText
             : ctaText // ignore: cast_nullable_to_non_nullable
@@ -981,6 +994,7 @@ class _$PromotionImpl implements _Promotion {
     this.description,
     this.image,
     this.backgroundImage,
+    this.showOverlay = true,
     this.ctaText = 'Play Now',
     this.ctaLink,
     this.schedule,
@@ -1011,6 +1025,9 @@ class _$PromotionImpl implements _Promotion {
   final Media? backgroundImage;
   @override
   @JsonKey()
+  final bool showOverlay;
+  @override
+  @JsonKey()
   final String ctaText;
   @override
   final CtaLink? ctaLink;
@@ -1032,7 +1049,7 @@ class _$PromotionImpl implements _Promotion {
 
   @override
   String toString() {
-    return 'Promotion(id: $id, slug: $slug, title: $title, subtitle: $subtitle, description: $description, image: $image, backgroundImage: $backgroundImage, ctaText: $ctaText, ctaLink: $ctaLink, schedule: $schedule, countdown: $countdown, status: $status, placement: $placement, priority: $priority, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Promotion(id: $id, slug: $slug, title: $title, subtitle: $subtitle, description: $description, image: $image, backgroundImage: $backgroundImage, showOverlay: $showOverlay, ctaText: $ctaText, ctaLink: $ctaLink, schedule: $schedule, countdown: $countdown, status: $status, placement: $placement, priority: $priority, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -1050,6 +1067,8 @@ class _$PromotionImpl implements _Promotion {
             (identical(other.image, image) || other.image == image) &&
             (identical(other.backgroundImage, backgroundImage) ||
                 other.backgroundImage == backgroundImage) &&
+            (identical(other.showOverlay, showOverlay) ||
+                other.showOverlay == showOverlay) &&
             (identical(other.ctaText, ctaText) || other.ctaText == ctaText) &&
             (identical(other.ctaLink, ctaLink) || other.ctaLink == ctaLink) &&
             (identical(other.schedule, schedule) ||
@@ -1078,6 +1097,7 @@ class _$PromotionImpl implements _Promotion {
     description,
     image,
     backgroundImage,
+    showOverlay,
     ctaText,
     ctaLink,
     schedule,
@@ -1112,6 +1132,7 @@ abstract class _Promotion implements Promotion {
     final String? description,
     final Media? image,
     final Media? backgroundImage,
+    final bool showOverlay,
     final String ctaText,
     final CtaLink? ctaLink,
     final PromotionSchedule? schedule,
@@ -1140,6 +1161,8 @@ abstract class _Promotion implements Promotion {
   Media? get image;
   @override
   Media? get backgroundImage;
+  @override
+  bool get showOverlay;
   @override
   String get ctaText;
   @override

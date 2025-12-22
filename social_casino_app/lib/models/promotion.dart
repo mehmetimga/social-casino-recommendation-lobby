@@ -75,6 +75,7 @@ class Promotion with _$Promotion {
     String? description,
     Media? image,
     Media? backgroundImage,
+    @Default(true) bool showOverlay,
     @Default('Play Now') String ctaText,
     CtaLink? ctaLink,
     PromotionSchedule? schedule,

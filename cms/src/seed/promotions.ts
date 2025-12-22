@@ -6,6 +6,7 @@ interface PromotionSeedData {
   title: string
   subtitle?: string
   description?: string
+  showOverlay?: boolean // Show text overlay on image (default true)
   ctaText: string
   ctaLink: {
     type: 'game' | 'url' | 'category'
@@ -28,6 +29,7 @@ const promotionsData: PromotionSeedData[] = [
     title: 'Welcome to Social Casino',
     subtitle: 'Your Ultimate Gaming Destination',
     description: 'Experience the thrill of casino gaming with free coins daily. Play slots, table games, and more!',
+    showOverlay: false, // Banner image already has text
     ctaText: 'Play Now',
     ctaLink: {
       type: 'url',
@@ -43,6 +45,7 @@ const promotionsData: PromotionSeedData[] = [
     title: '12 Days of Holidays',
     subtitle: 'Unwrap Daily Rewards & Surprises',
     description: 'Celebrate the season with 12 days of exclusive bonuses, free spins, and special prizes!',
+    showOverlay: false, // Banner image already has text
     ctaText: 'Claim Gift',
     ctaLink: {
       type: 'url',
@@ -62,6 +65,7 @@ const promotionsData: PromotionSeedData[] = [
     title: 'Mega Ball',
     subtitle: 'Multipliers Up to 1,000,000x',
     description: 'Experience the excitement of Mega Ball - the revolutionary live game show with massive multipliers!',
+    showOverlay: false, // Banner image already has text
     ctaText: 'Play Mega Ball',
     ctaLink: {
       type: 'category',
@@ -77,6 +81,7 @@ const promotionsData: PromotionSeedData[] = [
     title: "Rakin' Jackpot",
     subtitle: 'Progressive Jackpots Growing Every Second',
     description: 'Hit the ultimate jackpot! Watch the prize pool grow and take your shot at life-changing wins.',
+    showOverlay: false, // Banner image already has text
     ctaText: 'Chase Jackpot',
     ctaLink: {
       type: 'category',
@@ -96,6 +101,7 @@ const promotionsData: PromotionSeedData[] = [
     title: 'Live Dealer Games',
     subtitle: 'Real Dealers, Real Action, Real Fun',
     description: 'Join our professional live dealers for an authentic casino experience from the comfort of your home.',
+    showOverlay: false, // Banner image already has text
     ctaText: 'Go Live',
     ctaLink: {
       type: 'category',
@@ -111,6 +117,7 @@ const promotionsData: PromotionSeedData[] = [
     title: 'Lightning Roulette',
     subtitle: 'Electrifying Multipliers Every Round',
     description: 'Classic roulette with a twist! Lightning strikes random numbers for multiplied payouts up to 500x.',
+    showOverlay: false, // Banner image already has text
     ctaText: 'Spin Now',
     ctaLink: {
       type: 'category',
@@ -126,6 +133,7 @@ const promotionsData: PromotionSeedData[] = [
     title: 'Blackjack',
     subtitle: 'Beat the Dealer & Win Big',
     description: 'Test your skills at the classic card game. Multiple variants available with exciting side bets!',
+    showOverlay: false, // Banner image already has text
     ctaText: 'Deal Me In',
     ctaLink: {
       type: 'category',
@@ -141,6 +149,7 @@ const promotionsData: PromotionSeedData[] = [
     title: "Lion's Wolf Bonus",
     subtitle: 'Wild Wins Await in the Savanna',
     description: 'Unleash the power of the wild! Trigger bonus rounds for free spins and expanding wilds.',
+    showOverlay: false, // Banner image already has text
     ctaText: 'Play Now',
     ctaLink: {
       type: 'category',
@@ -179,6 +188,7 @@ export async function seedPromotions(payload: Payload): Promise<void> {
         title: promoData.title,
         subtitle: promoData.subtitle,
         description: promoData.description,
+        showOverlay: promoData.showOverlay ?? true,
         ctaText: promoData.ctaText,
         ctaLink: promoData.ctaLink,
         status: promoData.status,

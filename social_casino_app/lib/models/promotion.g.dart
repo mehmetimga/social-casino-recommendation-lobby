@@ -72,6 +72,7 @@ _$PromotionImpl _$$PromotionImplFromJson(
   backgroundImage: json['backgroundImage'] == null
       ? null
       : Media.fromJson(json['backgroundImage'] as Map<String, dynamic>),
+  showOverlay: json['showOverlay'] as bool? ?? true,
   ctaText: json['ctaText'] as String? ?? 'Play Now',
   ctaLink: json['ctaLink'] == null
       ? null
@@ -98,6 +99,7 @@ Map<String, dynamic> _$$PromotionImplToJson(_$PromotionImpl instance) =>
       'description': instance.description,
       'image': instance.image,
       'backgroundImage': instance.backgroundImage,
+      'showOverlay': instance.showOverlay,
       'ctaText': instance.ctaText,
       'ctaLink': instance.ctaLink,
       'schedule': instance.schedule,

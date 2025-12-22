@@ -52,6 +52,14 @@ export const Promotions: CollectionConfig = {
       },
     },
     {
+      name: 'showOverlay',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        description: 'Show text overlay (title, subtitle, description, CTA) on the image. Uncheck to show only the image.',
+      },
+    },
+    {
       name: 'ctaText',
       type: 'text',
       defaultValue: 'Play Now',

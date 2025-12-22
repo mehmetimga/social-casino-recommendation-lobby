@@ -17,7 +17,6 @@ class HeroCarousel extends StatefulWidget {
   final bool showArrows;
   final CarouselHeight height;
   final bool isLoading;
-  final bool showOverlay; // Show text and button overlay on banners
 
   const HeroCarousel({
     super.key,
@@ -28,7 +27,6 @@ class HeroCarousel extends StatefulWidget {
     this.showArrows = false, // Hidden by default for cleaner look
     this.height = CarouselHeight.medium,
     this.isLoading = false,
-    this.showOverlay = false, // Hide text/button by default
   });
 
   @override
@@ -197,6 +195,9 @@ class _HeroCarouselState extends State<HeroCarousel> {
             ? ApiConfig.getMediaUrl(promo.image!.url)
             : null;
 
+    // Use promotion's showOverlay setting (from CMS)
+    final shouldShowOverlay = promo.showOverlay;
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -229,7 +230,7 @@ class _HeroCarouselState extends State<HeroCarousel> {
           ),
 
         // Gradient overlay for text readability (only if showing overlay)
-        if (widget.showOverlay)
+        if (shouldShowOverlay)
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -244,7 +245,7 @@ class _HeroCarouselState extends State<HeroCarousel> {
           ),
 
         // Content (only if showing overlay)
-        if (widget.showOverlay)
+        if (shouldShowOverlay)
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(

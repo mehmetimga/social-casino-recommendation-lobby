@@ -11,6 +11,7 @@ export interface Promotion {
   description?: string;
   image: Media;
   backgroundImage?: Media;
+  showOverlay?: boolean;
   ctaText: string;
   ctaLink: {
     type: 'game' | 'url' | 'category';

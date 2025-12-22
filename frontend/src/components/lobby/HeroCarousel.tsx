@@ -83,59 +83,68 @@ export default function HeroCarousel({
       {/* Carousel Container */}
       <div ref={emblaRef} className="h-full">
         <div className="flex h-full">
-          {promotions.map((promo) => (
-            <div key={promo.id} className="flex-[0_0_100%] min-w-0 relative">
-              {/* Background Image */}
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${getMediaUrl(
-                    promo.backgroundImage?.url || promo.image?.url
-                  )})`,
-                }}
-              >
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-              </div>
+          {promotions.map((promo) => {
+            // Check if overlay should be shown (default to true for backwards compatibility)
+            const shouldShowOverlay = promo.showOverlay !== false;
 
-              {/* Content */}
-              <div className="relative h-full container-casino flex items-center">
-                <div className="max-w-xl">
-                  {/* Countdown Timer */}
-                  {promo.countdown?.enabled && promo.countdown.endTime && (
-                    <div className="mb-4">
-                      <CountdownTimer
-                        endTime={promo.countdown.endTime}
-                        label={promo.countdown.label}
-                      />
-                    </div>
+            return (
+              <div key={promo.id} className="flex-[0_0_100%] min-w-0 relative">
+                {/* Background Image */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url(${getMediaUrl(
+                      promo.backgroundImage?.url || promo.image?.url
+                    )})`,
+                  }}
+                >
+                  {/* Gradient Overlay - only show if overlay is enabled */}
+                  {shouldShowOverlay && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
                   )}
-
-                  {/* Subtitle */}
-                  {promo.subtitle && (
-                    <p className="text-casino-purple font-bold text-lg mb-2">
-                      {promo.subtitle}
-                    </p>
-                  )}
-
-                  {/* Title */}
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-                    {promo.title}
-                  </h1>
-
-                  {/* Description */}
-                  {promo.description && (
-                    <p className="text-gray-300 text-lg mb-6">{promo.description}</p>
-                  )}
-
-                  {/* CTA Button */}
-                  <button className="btn btn-gold text-lg px-8 py-3">
-                    {promo.ctaText}
-                  </button>
                 </div>
+
+                {/* Content - only show if overlay is enabled */}
+                {shouldShowOverlay && (
+                  <div className="relative h-full container-casino flex items-center">
+                    <div className="max-w-xl">
+                      {/* Countdown Timer */}
+                      {promo.countdown?.enabled && promo.countdown.endTime && (
+                        <div className="mb-4">
+                          <CountdownTimer
+                            endTime={promo.countdown.endTime}
+                            label={promo.countdown.label}
+                          />
+                        </div>
+                      )}
+
+                      {/* Subtitle */}
+                      {promo.subtitle && (
+                        <p className="text-casino-purple font-bold text-lg mb-2">
+                          {promo.subtitle}
+                        </p>
+                      )}
+
+                      {/* Title */}
+                      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+                        {promo.title}
+                      </h1>
+
+                      {/* Description */}
+                      {promo.description && (
+                        <p className="text-gray-300 text-lg mb-6">{promo.description}</p>
+                      )}
+
+                      {/* CTA Button */}
+                      <button className="btn btn-gold text-lg px-8 py-3">
+                        {promo.ctaText}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
