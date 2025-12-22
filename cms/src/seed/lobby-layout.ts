@@ -166,7 +166,7 @@ export async function seedLobbyLayout(payload: Payload): Promise<void> {
       showProvider: true,
     })
 
-    // Create the layout
+    // Create the web layout
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await payload.create({
       collection: 'lobby-layouts',
@@ -179,7 +179,30 @@ export async function seedLobbyLayout(payload: Payload): Promise<void> {
       } as any,
     })
 
-    console.log('Created default lobby layout')
+    console.log('Created web default lobby layout')
+
+    // Create mobile layout (same sections but optimized for mobile)
+    const mobileExisting = await payload.find({
+      collection: 'lobby-layouts',
+      where: {
+        slug: { equals: 'mobile-default' },
+      },
+    })
+
+    if (mobileExisting.docs.length === 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await payload.create({
+        collection: 'lobby-layouts',
+        data: {
+          slug: 'mobile-default',
+          name: 'Mobile Default Layout',
+          platform: 'mobile',
+          isDefault: true,
+          sections, // Same sections work for mobile
+        } as any,
+      })
+      console.log('Created mobile default lobby layout')
+    }
   } catch (error) {
     console.error('Failed to create lobby layout:', error)
   }
