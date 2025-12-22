@@ -271,6 +271,63 @@ export default function GameGrid({
     </div>
   );
 
+  // Render carousel rows - multiple rows that scroll together horizontally
+  const renderCarouselRows = () => {
+    const cardWidth = cardSize === 'small' ? 140 : cardSize === 'large' ? 220 : 180;
+    const gamesPerRow = Math.ceil(displayGames.length / rows);
+
+    // Split games into rows
+    const gameRows: Game[][] = [];
+    for (let i = 0; i < rows; i++) {
+      const rowGames = displayGames.slice(i * gamesPerRow, (i + 1) * gamesPerRow);
+      if (rowGames.length > 0) {
+        gameRows.push(rowGames);
+      }
+    }
+
+    return (
+      <div className="relative group">
+        {/* Scroll Buttons */}
+        <button
+          onClick={handleScrollLeft}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-black/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black"
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
+        <button
+          onClick={handleScrollRight}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-black/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black"
+        >
+          <ChevronRight className="w-6 h-6 text-white" />
+        </button>
+
+        {/* Scrollable Container with multiple rows */}
+        <div
+          id={`grid-${title}`}
+          className="overflow-x-auto overflow-y-visible hide-scrollbar pb-4 pt-4"
+        >
+          <div className="flex flex-col gap-4">
+            {gameRows.map((rowGames, rowIndex) => (
+              <div key={rowIndex} className="flex gap-4">
+                {rowGames.map((game) => (
+                  <div key={game.id} className="flex-shrink-0" style={{ width: cardWidth }}>
+                    <GameCard
+                      game={game}
+                      size={cardSize}
+                      showJackpot={showJackpot}
+                      showProvider={showProvider}
+                      onPlay={handlePlayGame}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Select render method based on displayStyle
   const renderContent = () => {
     switch (displayStyle) {
@@ -278,6 +335,8 @@ export default function GameGrid({
         return renderHorizontal();
       case 'grid':
         return renderGrid();
+      case 'carousel-rows':
+        return renderCarouselRows();
       case 'single-row':
         return renderSingleRow();
       case 'featured-left':

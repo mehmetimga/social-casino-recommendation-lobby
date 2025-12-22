@@ -153,6 +153,7 @@ const _$FilterTypeEnumMap = {
 const _$DisplayStyleEnumMap = {
   DisplayStyle.horizontal: 'horizontal',
   DisplayStyle.grid: 'grid',
+  DisplayStyle.carouselRows: 'carousel-rows',
   DisplayStyle.singleRow: 'single-row',
   DisplayStyle.featuredLeft: 'featured-left',
   DisplayStyle.featuredRight: 'featured-right',

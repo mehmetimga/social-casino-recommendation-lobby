@@ -298,6 +298,94 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
+/// Carousel rows layout - multiple rows that scroll together horizontally
+class CarouselRowsLayout extends StatelessWidget {
+  final List<Game> games;
+  final int rows;
+  final String? title;
+  final String? subtitle;
+  final bool showProvider;
+  final bool showJackpot;
+  final VoidCallback? onShowMore;
+  final Function(Game game)? onGameTap;
+
+  const CarouselRowsLayout({
+    super.key,
+    required this.games,
+    this.rows = 2,
+    this.title,
+    this.subtitle,
+    this.showProvider = false,
+    this.showJackpot = true,
+    this.onShowMore,
+    this.onGameTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = (screenWidth - 40) / 3; // ~3 cards visible
+    final cardHeight = cardWidth; // Square cards
+    final gamesPerRow = (games.length / rows).ceil();
+
+    // Split games into rows
+    final gameRows = <List<Game>>[];
+    for (int i = 0; i < rows; i++) {
+      final start = i * gamesPerRow;
+      final end = (start + gamesPerRow).clamp(0, games.length);
+      if (start < games.length) {
+        gameRows.add(games.sublist(start, end));
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _SectionHeader(
+              title: title!,
+              subtitle: subtitle,
+              onShowMore: onShowMore,
+            ),
+          ),
+        if (title != null) const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: gameRows.asMap().entries.map((entry) {
+              final rowIndex = entry.key;
+              final rowGames = entry.value;
+              return Padding(
+                padding: EdgeInsets.only(bottom: rowIndex < gameRows.length - 1 ? 8 : 0),
+                child: Row(
+                  children: rowGames.map((game) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GameCard(
+                        game: game,
+                        width: cardWidth,
+                        height: cardHeight,
+                        showProvider: showProvider,
+                        showJackpot: showJackpot,
+                        compact: true,
+                        onTap: onGameTap != null ? () => onGameTap!(game) : null,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// Featured game layout with one large card and smaller cards
 class FeaturedGameLayout extends StatelessWidget {
   final Game featuredGame;

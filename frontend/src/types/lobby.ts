@@ -10,6 +10,7 @@ export type SuggestedMode = 'manual' | 'personalized';
 export type DisplayStyle =
   | 'horizontal'
   | 'grid'
+  | 'carousel-rows'
   | 'single-row'
   | 'featured-left'
   | 'featured-right'

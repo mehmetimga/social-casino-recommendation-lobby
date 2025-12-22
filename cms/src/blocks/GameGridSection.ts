@@ -69,7 +69,8 @@ export const GameGridSection: Block = {
       defaultValue: 'horizontal',
       options: [
         { label: 'Horizontal Scroll', value: 'horizontal' },
-        { label: 'Grid (Multiple Rows)', value: 'grid' },
+        { label: 'Grid (Fixed Columns)', value: 'grid' },
+        { label: 'Carousel Rows (Auto-fit + Scroll)', value: 'carousel-rows' },
         { label: 'Single Row (No Scroll)', value: 'single-row' },
         { label: 'Featured Left (Large + Small)', value: 'featured-left' },
         { label: 'Featured Right (Small + Large)', value: 'featured-right' },
@@ -87,8 +88,8 @@ export const GameGridSection: Block = {
       min: 1,
       max: 10,
       admin: {
-        condition: (_, siblingData) => siblingData?.displayStyle === 'grid',
-        description: 'Number of rows to display in grid mode',
+        condition: (_, siblingData) => ['grid', 'carousel-rows'].includes(siblingData?.displayStyle),
+        description: 'Number of rows to display',
       },
     },
     {
@@ -120,8 +121,8 @@ export const GameGridSection: Block = {
         { label: '6 columns', value: '6' },
       ],
       admin: {
-        condition: (_, siblingData) => ['grid', 'single-row'].includes(siblingData?.displayStyle),
-        description: 'Number of columns for grid/row display',
+        condition: (_, siblingData) => siblingData?.displayStyle === 'grid',
+        description: 'Number of columns (only for fixed grid)',
       },
     },
     {

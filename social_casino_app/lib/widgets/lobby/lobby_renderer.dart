@@ -153,6 +153,18 @@ class LobbyRenderer extends ConsumerWidget {
           onGameTap: onGameTap,
         );
 
+      case DisplayStyle.carouselRows:
+        // Multiple rows that scroll together horizontally
+        return CarouselRowsLayout(
+          games: limitedGames,
+          rows: section.rows,
+          title: section.title,
+          subtitle: section.subtitle,
+          showProvider: section.showProvider,
+          showJackpot: section.showJackpot,
+          onGameTap: onGameTap,
+        );
+
       case DisplayStyle.singleRow:
         // Single row with no scroll - use grid with 1 row
         final columns = int.tryParse(section.columns) ?? 3;

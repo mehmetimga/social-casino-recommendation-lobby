@@ -70,6 +70,8 @@ enum DisplayStyle {
   horizontal,
   @JsonValue('grid')
   grid,
+  @JsonValue('carousel-rows')
+  carouselRows,
   @JsonValue('single-row')
   singleRow,
   @JsonValue('featured-left')
