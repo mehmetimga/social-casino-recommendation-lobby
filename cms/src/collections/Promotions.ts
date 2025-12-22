@@ -53,6 +53,7 @@ export const Promotions: CollectionConfig = {
     },
     {
       name: 'showOverlay',
+      label: 'Show Text Overlay',
       type: 'checkbox',
       defaultValue: true,
       admin: {
