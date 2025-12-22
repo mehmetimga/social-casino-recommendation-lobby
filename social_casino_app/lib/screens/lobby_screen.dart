@@ -15,6 +15,7 @@ class LobbyScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Content is now scrollable, top/bottom bars are handled by MainScaffold
     return SingleChildScrollView(
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
           LobbyRenderer(

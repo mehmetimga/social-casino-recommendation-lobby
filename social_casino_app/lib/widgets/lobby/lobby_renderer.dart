@@ -42,11 +42,17 @@ class LobbyRenderer extends ConsumerWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
       itemCount: layout.sections.length,
       itemBuilder: (context, index) {
         final section = layout.sections[index];
+        // No padding for first section (carousel), add spacing between other sections
+        final isFirstSection = index == 0;
         return Padding(
-          padding: const EdgeInsets.only(bottom: 24),
+          padding: EdgeInsets.only(
+            top: isFirstSection ? 0 : 16,
+            bottom: isFirstSection ? 0 : 8,
+          ),
           child: _buildSection(context, ref, section),
         );
       },

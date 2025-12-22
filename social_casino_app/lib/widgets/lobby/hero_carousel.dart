@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import '../../config/api_config.dart';
 import '../../config/theme/app_colors.dart';
 import '../../models/promotion.dart';
@@ -17,16 +17,18 @@ class HeroCarousel extends StatefulWidget {
   final bool showArrows;
   final CarouselHeight height;
   final bool isLoading;
+  final bool showOverlay; // Show text and button overlay on banners
 
   const HeroCarousel({
     super.key,
     required this.promotions,
     this.autoPlay = true,
-    this.autoPlayInterval = 5000,
+    this.autoPlayInterval = 3000,
     this.showDots = true,
     this.showArrows = false, // Hidden by default for cleaner look
     this.height = CarouselHeight.medium,
     this.isLoading = false,
+    this.showOverlay = false, // Hide text/button by default
   });
 
   @override
@@ -35,18 +37,53 @@ class HeroCarousel extends StatefulWidget {
 
 class _HeroCarouselState extends State<HeroCarousel> {
   int _currentIndex = 0;
-  final CarouselSliderController _controller = CarouselSliderController();
+  Timer? _autoPlayTimer;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.92);
+    _startAutoPlay();
+  }
+
+  @override
+  void dispose() {
+    _autoPlayTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoPlay() {
+    if (widget.autoPlay && widget.promotions.length > 1) {
+      _autoPlayTimer = Timer.periodic(
+        Duration(milliseconds: widget.autoPlayInterval),
+        (_) => _nextPage(),
+      );
+    }
+  }
+
+  void _nextPage() {
+    if (!mounted || widget.promotions.isEmpty) return;
+    final nextIndex = (_currentIndex + 1) % widget.promotions.length;
+    _pageController.animateToPage(
+      nextIndex,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+  }
 
   double _getHeight() {
+    // Heights reduced by ~20% for better mobile proportions
     switch (widget.height) {
       case CarouselHeight.small:
-        return 140;
+        return 112;
       case CarouselHeight.medium:
-        return 180;
+        return 144;
       case CarouselHeight.large:
-        return 220;
+        return 176;
       case CarouselHeight.full:
-        return 280;
+        return 224;
     }
   }
 
@@ -62,23 +99,23 @@ class _HeroCarouselState extends State<HeroCarousel> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: SizedBox(
-            height: _getHeight(),
-            child: PageView.builder(
-              controller: PageController(viewportFraction: 0.92),
-              itemCount: widget.promotions.length,
-              onPageChanged: (index) {
-                setState(() => _currentIndex = index);
-              },
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+        SizedBox(
+          height: _getHeight(),
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: widget.promotions.length,
+            onPageChanged: (index) {
+              setState(() => _currentIndex = index);
+            },
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
                   child: _buildSlide(widget.promotions[index]),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ),
         if (widget.showDots && widget.promotions.length > 1)
@@ -121,128 +158,115 @@ class _HeroCarouselState extends State<HeroCarousel> {
             ? ApiConfig.getMediaUrl(promo.image!.url)
             : null;
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Background image
-            if (imageUrl != null)
-              CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  decoration: BoxDecoration(
-                    gradient: AppColors.gradientCard,
-                  ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  decoration: BoxDecoration(
-                    gradient: AppColors.gradientCard,
-                  ),
-                  child: const Icon(
-                    Icons.casino,
-                    color: AppColors.casinoGold,
-                    size: 48,
-                  ),
-                ),
-              )
-            else
-              Container(
-                decoration: const BoxDecoration(
-                  gradient: AppColors.gradientCard,
-                ),
-              ),
-
-            // Gradient overlay for text readability
-            Container(
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Background image
+        if (imageUrl != null)
+          CachedNetworkImage(
+            imageUrl: imageUrl,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.85),
-                    Colors.black.withValues(alpha: 0.1),
-                  ],
-                ),
+                gradient: AppColors.gradientCard,
               ),
             ),
+            errorWidget: (context, url, error) => Container(
+              decoration: BoxDecoration(
+                gradient: AppColors.gradientCard,
+              ),
+              child: const Icon(
+                Icons.casino,
+                color: AppColors.casinoGold,
+                size: 48,
+              ),
+            ),
+          )
+        else
+          Container(
+            decoration: const BoxDecoration(
+              gradient: AppColors.gradientCard,
+            ),
+          ),
 
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // Countdown timer (if enabled)
-                  if (promo.countdown?.enabled == true &&
-                      promo.countdown?.endTime != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: CountdownTimer(
-                        endTime: DateTime.parse(promo.countdown!.endTime!),
-                        label: promo.countdown?.label,
-                        compact: true,
-                      ),
-                    ),
-
-                  // Title
-                  Text(
-                    promo.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.3,
-                      height: 1.2,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  // Subtitle
-                  if (promo.subtitle != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      promo.subtitle!,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.75),
-                        fontSize: 12,
-                        letterSpacing: 0.2,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-
-                  const SizedBox(height: 12),
-
-                  // CTA Button
-                  GradientButton(
-                    text: promo.ctaText,
-                    onPressed: () {
-                      // Handle CTA tap
-                    },
-                    compact: true,
-                  ),
+        // Gradient overlay for text readability (only if showing overlay)
+        if (widget.showOverlay)
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Colors.black.withValues(alpha: 0.85),
+                  Colors.black.withValues(alpha: 0.1),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+
+        // Content (only if showing overlay)
+        if (widget.showOverlay)
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Countdown timer (if enabled)
+                if (promo.countdown?.enabled == true &&
+                    promo.countdown?.endTime != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: CountdownTimer(
+                      endTime: DateTime.parse(promo.countdown!.endTime!),
+                      label: promo.countdown?.label,
+                      compact: true,
+                    ),
+                  ),
+
+                // Title
+                Text(
+                  promo.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.3,
+                    height: 1.2,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                // Subtitle
+                if (promo.subtitle != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    promo.subtitle!,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.75),
+                      fontSize: 12,
+                      letterSpacing: 0.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+
+                const SizedBox(height: 12),
+
+                // CTA Button
+                GradientButton(
+                  text: promo.ctaText,
+                  onPressed: () {
+                    // Handle CTA tap
+                  },
+                  compact: true,
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

@@ -25,45 +25,38 @@ class CategoryTabItem {
 class CategoryTabBar extends StatelessWidget {
   const CategoryTabBar({super.key});
 
-  // Game categories
+  // Game categories - matching web app
   static const List<CategoryTabItem> categories = [
-    CategoryTabItem(
-      slug: 'new',
-      name: 'New',
-      icon: Icons.auto_awesome,
-      route: '/category/new',
-      isNew: true,
-    ),
-    CategoryTabItem(
-      slug: 'jackpots',
-      name: 'Jackpots',
-      icon: Icons.diamond_outlined,
-      route: '/category/jackpots',
-    ),
-    CategoryTabItem(
-      slug: 'live-casino',
-      name: 'Live From Vegas',
-      icon: Icons.casino,
-      route: '/category/live-casino',
-      isHot: true,
-    ),
-    CategoryTabItem(
-      slug: 'slots',
-      name: 'Slots',
-      icon: Icons.grid_view_rounded,
-      route: '/category/slots',
-    ),
-    CategoryTabItem(
-      slug: 'table-games',
-      name: 'Table Games',
-      icon: Icons.table_bar_outlined,
-      route: '/category/table-games',
-    ),
     CategoryTabItem(
       slug: 'my-casino',
       name: 'My Casino',
       icon: Icons.favorite_border,
       route: '/',
+    ),
+    CategoryTabItem(
+      slug: 'slots',
+      name: 'Slots',
+      icon: Icons.auto_awesome,
+      route: '/category/slots',
+    ),
+    CategoryTabItem(
+      slug: 'live-casino',
+      name: 'Live Casino',
+      icon: Icons.videocam_outlined,
+      route: '/category/live-casino',
+    ),
+    CategoryTabItem(
+      slug: 'table-games',
+      name: 'Table Games',
+      icon: Icons.casino_outlined,
+      route: '/category/table-games',
+    ),
+    CategoryTabItem(
+      slug: 'instant-win',
+      name: 'Instant Win',
+      icon: Icons.bolt_outlined,
+      route: '/category/instant-win',
+      disabled: true,
     ),
   ];
 
@@ -72,20 +65,11 @@ class CategoryTabBar extends StatelessWidget {
     final currentPath = GoRouterState.of(context).uri.path;
 
     return Container(
-      height: 52,
-      decoration: BoxDecoration(
-        color: AppColors.casinoBg,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      height: 44,
+      color: AppColors.casinoBg,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         itemCount: categories.length,
         separatorBuilder: (context, index) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
