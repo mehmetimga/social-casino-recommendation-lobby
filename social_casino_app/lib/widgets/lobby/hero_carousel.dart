@@ -74,17 +74,27 @@ class _HeroCarouselState extends State<HeroCarousel> {
   }
 
   double _getHeight() {
-    // Heights reduced by ~20% for better mobile proportions
+    // Heights matching CMS values (adjusted for mobile)
     switch (widget.height) {
       case CarouselHeight.small:
-        return 112;
+        return 150;
       case CarouselHeight.medium:
-        return 144;
+        return 200;
       case CarouselHeight.large:
-        return 176;
+        return 250; // CMS says 500px but we scale for mobile
       case CarouselHeight.full:
-        return 224;
+        return 300;
     }
+  }
+
+  void _previousPage() {
+    if (!mounted || widget.promotions.isEmpty) return;
+    final prevIndex = (_currentIndex - 1 + widget.promotions.length) % widget.promotions.length;
+    _pageController.animateToPage(
+      prevIndex,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -101,21 +111,50 @@ class _HeroCarouselState extends State<HeroCarousel> {
       children: [
         SizedBox(
           height: _getHeight(),
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: widget.promotions.length,
-            onPageChanged: (index) {
-              setState(() => _currentIndex = index);
-            },
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: _buildSlide(widget.promotions[index]),
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _pageController,
+                itemCount: widget.promotions.length,
+                onPageChanged: (index) {
+                  setState(() => _currentIndex = index);
+                },
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: _buildSlide(widget.promotions[index]),
+                    ),
+                  );
+                },
+              ),
+              // Navigation arrows
+              if (widget.showArrows && widget.promotions.length > 1) ...[
+                Positioned(
+                  left: 20,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: _ArrowButton(
+                      icon: Icons.chevron_left,
+                      onTap: _previousPage,
+                    ),
+                  ),
                 ),
-              );
-            },
+                Positioned(
+                  right: 20,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: _ArrowButton(
+                      icon: Icons.chevron_right,
+                      onTap: _nextPage,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
         if (widget.showDots && widget.promotions.length > 1)
@@ -267,6 +306,37 @@ class _HeroCarouselState extends State<HeroCarousel> {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Arrow button for carousel navigation
+class _ArrowButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ArrowButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.5),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: 24,
+        ),
+      ),
     );
   }
 }
