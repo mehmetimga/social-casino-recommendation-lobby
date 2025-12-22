@@ -19,6 +19,8 @@ export default function SlotsPage() {
           subtitle="Spin to win on our best slot games"
           games={games || []}
           columns={6}
+          rows={10}
+          displayStyle="grid"
           showMore={false}
           isLoading={isLoading}
         />

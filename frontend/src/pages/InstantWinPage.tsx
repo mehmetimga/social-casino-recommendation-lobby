@@ -19,6 +19,8 @@ export default function InstantWinPage() {
           subtitle="Play and win instantly with Slingo and more"
           games={games || []}
           columns={6}
+          rows={10}
+          displayStyle="grid"
           showMore={false}
           isLoading={isLoading}
         />

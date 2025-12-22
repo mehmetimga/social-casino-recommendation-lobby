@@ -19,6 +19,8 @@ export default function LiveCasinoPage() {
           subtitle="Real dealers, real action - play live casino games"
           games={games || []}
           columns={6}
+          rows={10}
+          displayStyle="grid"
           showMore={false}
           isLoading={isLoading}
         />

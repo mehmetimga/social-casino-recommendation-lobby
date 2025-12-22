@@ -19,6 +19,8 @@ export default function TableGamesPage() {
           subtitle="Classic casino favorites - blackjack, roulette, and more"
           games={games || []}
           columns={6}
+          rows={10}
+          displayStyle="grid"
           showMore={false}
           isLoading={isLoading}
         />

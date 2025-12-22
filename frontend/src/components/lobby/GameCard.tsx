@@ -13,6 +13,8 @@ interface GameCardProps {
   showJackpot?: boolean;
   showProvider?: boolean;
   onPlay?: (game: Game) => void;
+  className?: string;
+  fillContainer?: boolean;
 }
 
 export default function GameCard({
@@ -21,6 +23,8 @@ export default function GameCard({
   showJackpot = true,
   showProvider = true,
   onPlay,
+  className,
+  fillContainer = false,
 }: GameCardProps) {
   const { trackEvent } = useUser();
   const [isVisible, setIsVisible] = useState(false);
@@ -58,6 +62,10 @@ export default function GameCard({
     large: 'w-52 h-64',
   };
 
+  const containerClass = fillContainer
+    ? 'w-full aspect-[4/5]'
+    : sizeClasses[size];
+
   const thumbnailUrl = getMediaUrl(
     game.thumbnail?.sizes?.card?.url || game.thumbnail?.url
   );
@@ -65,7 +73,7 @@ export default function GameCard({
   return (
     <div
       ref={cardRef}
-      className={cn('game-card cursor-pointer group', sizeClasses[size])}
+      className={cn('game-card cursor-pointer group', containerClass, className)}
       onClick={handleClick}
     >
       {/* Badges - Outside of image container so they can overflow */}

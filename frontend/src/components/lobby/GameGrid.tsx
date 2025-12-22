@@ -151,7 +151,7 @@ export default function GameGrid({
 
   // Render grid layout with configurable rows
   const renderGrid = () => (
-    <div className={cn('grid gap-4 pt-4', gridCols[columns as keyof typeof gridCols])}>
+    <div className={cn('grid gap-3 pt-4', gridCols[columns as keyof typeof gridCols])}>
       {displayGames.map((game) => (
         <GameCard
           key={game.id}
@@ -160,6 +160,7 @@ export default function GameGrid({
           showJackpot={showJackpot}
           showProvider={showProvider}
           onPlay={handlePlayGame}
+          fillContainer
         />
       ))}
     </div>
