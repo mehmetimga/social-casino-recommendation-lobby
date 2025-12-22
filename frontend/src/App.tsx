@@ -7,6 +7,7 @@ import LobbyPage from './pages/LobbyPage';
 import SlotsPage from './pages/SlotsPage';
 import LiveCasinoPage from './pages/LiveCasinoPage';
 import TableGamesPage from './pages/TableGamesPage';
+import InstantWinPage from './pages/InstantWinPage';
 import ChatWidget from './components/chat/ChatWidget';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/slots" element={<SlotsPage />} />
                 <Route path="/live-casino" element={<LiveCasinoPage />} />
                 <Route path="/table-games" element={<TableGamesPage />} />
+                <Route path="/instant-win" element={<InstantWinPage />} />
               </Routes>
             </main>
             <ChatWidget />
