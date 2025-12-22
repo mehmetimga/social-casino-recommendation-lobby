@@ -56,30 +56,36 @@ class GameCardShimmer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: height * 0.7,
-              decoration: BoxDecoration(
-                color: AppColors.casinoBgSecondary,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            Expanded(
+              flex: 7,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.casinoBgSecondary,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 12,
-                    width: width * 0.7,
-                    color: AppColors.casinoBgSecondary,
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    height: 10,
-                    width: width * 0.5,
-                    color: AppColors.casinoBgSecondary,
-                  ),
-                ],
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      height: 10,
+                      width: width * 0.7,
+                      color: AppColors.casinoBgSecondary,
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      height: 8,
+                      width: width * 0.5,
+                      color: AppColors.casinoBgSecondary,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
