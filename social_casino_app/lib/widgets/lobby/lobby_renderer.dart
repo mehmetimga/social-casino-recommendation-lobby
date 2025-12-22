@@ -46,11 +46,11 @@ class LobbyRenderer extends ConsumerWidget {
       itemCount: layout.sections.length,
       itemBuilder: (context, index) {
         final section = layout.sections[index];
-        // No padding for first section (carousel), add spacing between other sections
+        // Add smaller top padding for first section (carousel), more spacing between other sections
         final isFirstSection = index == 0;
         return Padding(
           padding: EdgeInsets.only(
-            top: isFirstSection ? 0 : 16,
+            top: isFirstSection ? 8 : 16,
             bottom: isFirstSection ? 0 : 8,
           ),
           child: _buildSection(context, ref, section),

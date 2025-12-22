@@ -26,7 +26,7 @@ class AppHeader extends StatelessWidget {
         left: 16,
         right: 16,
         top: MediaQuery.of(context).padding.top + 8,
-        bottom: 12,
+        bottom: 6,
       ),
       decoration: BoxDecoration(
         color: AppColors.casinoBg,
