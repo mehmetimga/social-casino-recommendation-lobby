@@ -1,0 +1,89 @@
+Title: Complete Guide to Baccarat
+Source: Social Casino Knowledge Base
+License: Internal
+
+Baccarat is one of the oldest and most elegant casino games, favored by high rollers worldwide. Despite its sophisticated reputation, baccarat is actually one of the simplest casino games to play.
+
+How Baccarat Works:
+Two hands are dealt - the Player hand and the Banker hand. Your goal is to bet on which hand will have a total closest to 9, or if they will tie. You don't play against the dealer; you're simply betting on the outcome.
+
+Card Values:
+- Aces: 1 point
+- 2-9: Face value
+- 10, Jack, Queen, King: 0 points
+
+If the total exceeds 9, only the second digit counts. Example: 7 + 8 = 15, which counts as 5.
+
+The Three Bets:
+
+Player Bet: Pays 1:1 (even money). House edge approximately 1.24%.
+
+Banker Bet: Pays 1:1 minus 5% commission. House edge approximately 1.06%. Despite the commission, this is statistically the best bet.
+
+Tie Bet: Pays 8:1 or 9:1 depending on casino. House edge approximately 14.4%. Generally considered a sucker bet due to high house edge.
+
+Drawing Rules:
+The game follows strict drawing rules that happen automatically:
+
+Player Hand:
+- 0-5: Draws a third card
+- 6-7: Stands
+- 8-9: Natural, no more cards
+
+Banker Hand (depends on Player's third card):
+- Complex rules determine if Banker draws
+- 0-2: Always draws
+- 7: Always stands
+- 8-9: Natural, stands
+- 3-6: Depends on Player's third card
+
+You don't need to memorize these rules - the dealer handles everything automatically.
+
+Baccarat Variants:
+
+Punto Banco: The most common version in casinos. Fully automatic rules with no player decisions beyond betting.
+
+Chemin de Fer: Players take turns being the Banker. More interactive with some drawing decisions.
+
+Baccarat Banque: Similar to Chemin de Fer but the Banker role is more permanent.
+
+Mini Baccarat: Smaller table, lower stakes, faster pace. Same rules as Punto Banco.
+
+Speed Baccarat: Faster dealing for online play. Results in about 25 seconds per round.
+
+No Commission Baccarat: No 5% commission on Banker wins, but Banker winning on 6 pays only 50%.
+
+Strategy Tips:
+
+1. Bet on Banker: Statistically the best bet with lowest house edge
+2. Avoid Tie bets: 14%+ house edge makes it unprofitable long-term
+3. No pattern tracking helps: Each hand is independent
+4. Manage your bankroll: Set win/loss limits
+5. Understand the commission: Factor 5% into Banker bet calculations
+
+Baccarat Etiquette:
+- Don't touch the cards in traditional baccarat
+- Squeeze cards slowly if given the privilege
+- Respect other players' superstitions
+- Tip dealers on big wins
+
+Why Baccarat Is Popular:
+- Simple rules, no complex decisions
+- Low house edge on main bets
+- Fast-paced gameplay
+- Elegant atmosphere
+- High betting limits for VIPs
+- Pure chance eliminates skill pressure
+
+Common Myths Debunked:
+- Scorecards don't predict outcomes
+- Streaks are random, not meaningful patterns
+- No betting system beats the house edge
+- Card counting doesn't work in baccarat
+
+Perfect For:
+- Players who want simple gameplay
+- Those seeking low house edge games
+- High rollers and VIP players
+- Anyone tired of complex strategy games
+- Players who enjoy elegant casino atmosphere

@@ -1,0 +1,140 @@
+Title: Understanding RTP (Return to Player)
+Source: Social Casino Knowledge Base
+License: Internal
+
+RTP is the most important number in casino gaming. It tells you how much of wagered money a game returns to players over time. Understanding RTP helps you make informed game choices and set realistic expectations.
+
+What Is RTP?
+RTP stands for Return to Player. It's expressed as a percentage showing the theoretical return of a game over millions of plays. An RTP of 96% means that for every $100 wagered, $96 is returned to players on average, and $4 goes to the house.
+
+Important: RTP is calculated over millions of spins. Individual sessions will vary significantly from the stated RTP.
+
+RTP vs House Edge:
+These are two sides of the same coin:
+- RTP 96% = House Edge 4%
+- RTP 99% = House Edge 1%
+- RTP 88% = House Edge 12%
+
+Lower house edge (higher RTP) is better for players.
+
+RTP Ranges by Game Type:
+
+Slots:
+- Low: 85-92% (avoid these)
+- Average: 94-96%
+- Good: 96-97%
+- Excellent: 97-99%
+
+Table Games:
+- Blackjack (basic strategy): 99.5%
+- Baccarat (Banker): 98.94%
+- Craps (Pass + Odds): 99.5%+
+- Roulette (European): 97.3%
+- Roulette (American): 94.7%
+
+Video Poker:
+- Jacks or Better (optimal): 99.54%
+- Deuces Wild (optimal): 100.76%
+- Double Bonus (optimal): 99.17%
+
+Live Casino:
+- Similar to table game equivalents
+- Some games have side bets with lower RTP
+
+High RTP Slots (97%+):
+
+Ugga Bugga (Playtech): 99.07%
+Mega Joker (NetEnt): 99% (at max bet)
+Blood Suckers (NetEnt): 98%
+1429 Uncharted Seas (Thunderkick): 98.6%
+Jokerizer (Yggdrasil): 98%
+White Rabbit (Big Time Gaming): 97.72%
+Starmania (NextGen): 97.87%
+Simsalabim (NetEnt): 97.5%
+
+What Affects Slot RTP:
+
+Bet Level:
+Some slots have higher RTP at maximum bet. Always check if RTP varies by bet size.
+
+Bonus Buy:
+Feature buy options often have different RTP than base game. Usually slightly lower.
+
+Progressive Contribution:
+Progressive jackpot slots have lower base RTP because portion feeds jackpot. The "complete" RTP includes average jackpot contribution.
+
+Operator Settings:
+Some providers allow operators to choose from RTP options (e.g., 94%, 95%, 96%). Always check the specific game's info.
+
+How to Find RTP:
+
+1. Game Info/Help: Click "i" or "?" button in game
+2. Paytable: Often listed in paytable section
+3. Provider Website: Official game pages list RTP
+4. Review Sites: Casino review sites compile RTP data
+5. Ask Support: Casino support should provide RTP
+
+RTP Myths Debunked:
+
+Myth: "This slot hasn't paid in a while, it's due"
+Reality: Every spin is independent. Past results don't affect future spins.
+
+Myth: "Higher bets mean better RTP"
+Reality: Usually false, unless specifically stated for that game.
+
+Myth: "Online slots pay worse than land-based"
+Reality: Online slots typically have higher RTP (96%+ vs 85-92%).
+
+Myth: "Time of day affects RTP"
+Reality: RNG doesn't know what time it is. RTP is constant.
+
+Myth: "New accounts get better RTP"
+Reality: RTP is identical for all players on the same game.
+
+Session Variance vs Long-Term RTP:
+
+Example with 96% RTP slot:
+- Session 1: Won 150% of bets (lucky session)
+- Session 2: Won 45% of bets (cold session)
+- Session 3: Won 98% of bets (average session)
+- Session 4: Won 280% of bets (very lucky)
+- Session 5: Won 72% of bets (below average)
+
+Average: 129% return (above RTP short-term)
+
+Over thousands of sessions, this will trend toward 96%.
+
+Using RTP Wisely:
+
+DO:
+- Choose games with 96%+ RTP when possible
+- Check RTP before playing new games
+- Factor RTP into game selection
+- Understand variance affects short-term results
+- Compare similar games by RTP
+
+DON'T:
+- Expect to achieve exact RTP in short sessions
+- Believe RTP guarantees any specific outcome
+- Ignore volatility (high RTP + high volatility still risky)
+- Chase losses because "RTP says I should win"
+- Overlook entertainment value for tiny RTP differences
+
+RTP and Wagering Requirements:
+
+When clearing bonuses:
+- Higher RTP = lose less while wagering
+- 96% RTP: Expect to lose ~4% of wagered amount
+- On $3000 wagering: ~$120 expected loss
+
+Choose high RTP, low volatility slots for efficient bonus clearing.
+
+Theoretical vs Actual RTP:
+- Theoretical RTP: Mathematical calculation
+- Actual RTP: What really happened over period
+- Variance: Gap between theoretical and actual
+
+Casinos report actual RTP monthly. Short-term actual RTP varies but long-term approaches theoretical.
+
+Key Takeaway:
+RTP matters, but it's a long-term statistic. Choose high RTP games for better value, but remember that short-term results will vary. Combine RTP knowledge with volatility understanding and bankroll management for the best gaming experience.

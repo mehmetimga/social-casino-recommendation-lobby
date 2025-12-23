@@ -1,0 +1,147 @@
+Title: Live Dealer Blackjack Guide
+Source: Social Casino Knowledge Base
+License: Internal
+
+Live dealer blackjack combines the convenience of online gaming with the authentic experience of a real casino. Professional dealers, real cards, and real-time streaming create an immersive atmosphere that's as close to Vegas as you can get from home.
+
+How Live Blackjack Works:
+Real dealers operate from professional studios or land-based casinos. Multiple HD cameras capture every angle. You place bets digitally while watching the action unfold in real-time. Chat features let you interact with dealers and sometimes other players.
+
+Game Flow:
+1. Join a table with available seats
+2. Place your bet during betting period
+3. Dealer deals physical cards
+4. Make decisions (hit, stand, double, split)
+5. Watch dealer complete their hand
+6. Winnings paid automatically
+
+Blackjack Basics Refresher:
+Goal: Get closer to 21 than dealer without busting
+Card Values: 2-10 face value, J/Q/K = 10, Ace = 1 or 11
+Blackjack: Ace + 10-value card = automatic win (pays 3:2 or 6:5)
+Bust: Going over 21 = instant loss
+
+Player Options:
+- Hit: Take another card
+- Stand: Keep current hand
+- Double Down: Double bet, receive one card only
+- Split: Separate matching cards into two hands
+- Insurance: Side bet when dealer shows Ace
+- Surrender: Give up half bet (some tables)
+
+Basic Strategy Highlights:
+- Always split Aces and 8s
+- Never split 10s or 5s
+- Double on 11 against dealer 2-10
+- Double on 10 against dealer 2-9
+- Stand on 17+ (hard totals)
+- Hit on soft 17 (A+6) against dealer 7+
+
+Following basic strategy reduces house edge to approximately 0.5%.
+
+Popular Live Blackjack Variants:
+
+Classic Live Blackjack:
+Standard rules, 7 seats per table, one-on-one feel with multiple players.
+
+Infinite Blackjack:
+Unlimited players can join. Everyone plays the same hand. Perfect for avoiding full tables.
+
+Speed Blackjack:
+Faster pace - first player to decide acts first. Cuts waiting time significantly.
+
+Blackjack Party:
+Entertainment-focused with upbeat hosts, music, and party atmosphere.
+
+Power Blackjack:
+Special options like triple down and quadruple down. First two cards can be dealt immediately for premium.
+
+Free Bet Blackjack:
+Free double downs on 9, 10, 11. Free splits on pairs (except 10s). Dealer pushes on 22 instead of busting.
+
+Lightning Blackjack:
+Random multipliers (up to 25x) applied to certain hands each round. Higher house edge but bigger potential wins.
+
+Side Bets Available:
+
+Perfect Pairs: Bet your first two cards are a pair
+- Mixed pair (different suits/colors): 5:1
+- Colored pair (same color): 12:1
+- Perfect pair (identical): 25:1
+
+21+3: Poker hand from your cards + dealer upcard
+- Flush: 5:1
+- Straight: 10:1
+- Three of a kind: 30:1
+- Straight flush: 40:1
+- Suited trips: 100:1
+
+Bet Behind:
+Bet on another player's hand when tables are full. You follow their decisions but win/lose independently.
+
+Choosing a Table:
+
+Consider:
+- Minimum/maximum bet limits
+- Number of decks (fewer = lower house edge)
+- Blackjack payout (3:2 better than 6:5)
+- Dealer rules (stand on soft 17 preferred)
+- Side bet options
+- Table availability/wait times
+
+Live Blackjack Etiquette:
+- Make decisions promptly (timers enforce this)
+- Use chat respectfully
+- Don't blame others for "taking your card"
+- Tip dealers if desired (optional)
+
+Advantages of Live Blackjack:
+
+Authenticity: Real cards, real dealers, real experience
+Transparency: Watch every card dealt
+Social Element: Chat with dealers and players
+Strategy Works: Same basic strategy applies
+Fair Play: Licensed and regulated streaming
+Convenience: Play from anywhere
+
+Disadvantages:
+- Slower than digital blackjack
+- Tables can be full
+- Internet connection dependent
+- No pause button
+- Betting limits may be higher
+
+Betting Strategies:
+
+Flat Betting: Same bet every hand. Simple, sustainable.
+
+Progressive Systems:
+- Martingale: Double after losses (risky)
+- Paroli: Increase after wins
+- 1-3-2-6: Profit-locking sequence
+
+Recommended: Flat betting with proper bankroll management. No system beats the house edge long-term.
+
+Bankroll Management:
+- Have 20-50x minimum bet
+- Set session limits
+- Don't chase losses
+- Take breaks during bad runs
+
+Technical Requirements:
+- Stable internet (5+ Mbps recommended)
+- Modern browser or casino app
+- HD stream uses more data
+- Low latency important for decisions
+
+Perfect For:
+- Players wanting authentic casino experience
+- Social gamblers who enjoy interaction
+- Strategic players using basic strategy
+- Those who want to watch real cards
+- Players who miss brick-and-mortar casinos
+
+Best Times to Play:
+- Off-peak hours for more table availability
+- Evenings for social atmosphere
+- Mornings for quieter sessions

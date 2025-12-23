@@ -1,0 +1,105 @@
+Title: Complete Guide to Craps
+Source: Social Casino Knowledge Base
+License: Internal
+
+Craps is the most exciting dice game in the casino, known for its energetic atmosphere and wide variety of betting options. While it looks intimidating, the core game is simple once you understand the basics.
+
+The Basics:
+One player (the "shooter") rolls two dice. Players bet on the outcome of the roll or series of rolls. The game revolves around the "Pass Line" bet and establishing a "Point."
+
+The Come-Out Roll:
+The first roll of a new round is the come-out roll:
+- Roll 7 or 11: Pass Line wins immediately (Natural)
+- Roll 2, 3, or 12: Pass Line loses immediately (Craps)
+- Roll 4, 5, 6, 8, 9, or 10: This number becomes the Point
+
+The Point Phase:
+Once a Point is established:
+- Roll the Point again before rolling 7: Pass Line wins
+- Roll 7 before the Point: Pass Line loses (Seven Out)
+- Any other number: Keep rolling
+
+Main Bets Explained:
+
+Pass Line (House Edge: 1.41%):
+The fundamental craps bet. Win on come-out 7/11, lose on 2/3/12. After Point established, win if Point rolls before 7. Best bet for beginners.
+
+Don't Pass (House Edge: 1.36%):
+Opposite of Pass Line. Win on come-out 2/3 (12 pushes), lose on 7/11. After Point, win if 7 rolls before Point. Slightly better odds but "betting against" other players.
+
+Come Bet (House Edge: 1.41%):
+Same as Pass Line but made after Point established. Your own personal point number. Can have multiple Come bets working.
+
+Don't Come (House Edge: 1.36%):
+Opposite of Come bet. Made after Point established.
+
+Odds Bets (House Edge: 0%):
+The best bet in the casino! Placed behind Pass/Don't Pass after Point. Pays true odds with zero house edge. Casino limits how much you can bet (3x, 4x, 5x, or more times your line bet).
+
+Odds Payouts:
+- Point 4 or 10: Pays 2:1
+- Point 5 or 9: Pays 3:2
+- Point 6 or 8: Pays 6:5
+
+Place Bets:
+Bet on specific numbers (4, 5, 6, 8, 9, 10) to roll before 7:
+- Place 6 or 8: House edge 1.52% (best place bets)
+- Place 5 or 9: House edge 4%
+- Place 4 or 10: House edge 6.67%
+
+Field Bet (One Roll):
+Win on 2, 3, 4, 9, 10, 11, 12. Lose on 5, 6, 7, 8. Usually 2 and 12 pay double or triple. House edge 2.78-5.56% depending on payouts.
+
+Proposition Bets (Avoid These):
+Center table bets with high house edges:
+- Any 7: 16.67% house edge
+- Any Craps: 11.11% house edge
+- Hardways: 9-11% house edge
+- Hop bets: 11-17% house edge
+
+Strategy for Best Odds:
+1. Stick to Pass/Don't Pass with maximum Odds
+2. Come/Don't Come bets with Odds
+3. Place 6 and 8 if you want more action
+4. Avoid all proposition bets
+5. Combined house edge can be under 0.5% with max Odds
+
+Craps Etiquette:
+- Don't say "seven" during play (superstition)
+- Keep hands out of the table during rolls
+- Handle dice with one hand only
+- Throw dice to back wall
+- Place bets, don't throw chips
+- Tip dealers on winning streaks
+
+Online vs Land-Based Craps:
+Online craps lacks the social energy but offers:
+- Lower table minimums
+- Play at your own pace
+- Easier to learn without pressure
+- Same odds and payouts
+
+Live Dealer Craps:
+Combines online convenience with real dice rolls. Real dealers, real dice, streamed live. Some versions let players shoot virtually.
+
+Why Craps Is Popular:
+- Best odds in casino (with Odds bets)
+- Exciting social atmosphere
+- Multiple ways to bet
+- Fast-paced action
+- Potential for hot streaks
+- Camaraderie among players
+
+Bankroll Tips:
+- Start with Pass Line + single Odds
+- Don't spread to many numbers
+- Set strict win/loss limits
+- Hot streaks don't last forever
+- Cold tables are just random variance
+
+Perfect For:
+- Social players who enjoy group excitement
+- Mathematically-minded players (best odds)
+- Those seeking varied betting options
+- Players who like dice games
+- Anyone wanting true casino atmosphere

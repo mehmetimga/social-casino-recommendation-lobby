@@ -1,0 +1,105 @@
+Title: Casino Poker Games Guide
+Source: Social Casino Knowledge Base
+License: Internal
+
+Casino poker differs from traditional poker - you play against the house, not other players. These games combine poker hand rankings with casino-style betting for exciting gameplay.
+
+Video Poker Basics:
+Video poker machines let you play draw poker against a paytable. You're dealt 5 cards, choose which to keep, and draw replacements. Winning hands pay according to the displayed paytable.
+
+Hand Rankings (Highest to Lowest):
+1. Royal Flush: A-K-Q-J-10 same suit (rarest, highest payout)
+2. Straight Flush: Five sequential cards same suit
+3. Four of a Kind: Four cards of same rank
+4. Full House: Three of a kind plus a pair
+5. Flush: Five cards same suit
+6. Straight: Five sequential cards any suit
+7. Three of a Kind: Three cards same rank
+8. Two Pair: Two different pairs
+9. Jacks or Better: Pair of Jacks, Queens, Kings, or Aces
+10. High Card: No combination (usually no payout)
+
+Popular Video Poker Variants:
+
+Jacks or Better: The classic. Minimum winning hand is pair of Jacks. RTP can reach 99.54% with perfect strategy. Best for beginners.
+
+Deuces Wild: All 2s are wild cards. Minimum winning hand is three of a kind. Changes strategy significantly. RTP up to 100.76% with perfect play.
+
+Joker Poker: Includes one or two Jokers as wild cards. Minimum hand usually two pair or Kings or better.
+
+Bonus Poker: Enhanced payouts for four of a kind hands. Different bonuses for different quad ranks.
+
+Double Bonus Poker: Even higher four of a kind payouts. Four Aces pays 160:1 instead of standard 25:1.
+
+Double Double Bonus: Adds kicker bonuses. Four Aces with 2-4 kicker pays 400:1.
+
+Video Poker Strategy:
+Unlike slots, video poker involves skill. Optimal strategy can reduce house edge to under 0.5%.
+
+Basic Strategy Tips:
+- Always hold a Royal Flush, Straight Flush, Four of a Kind
+- Hold any paying hand over a draw to better hand
+- Hold four to a Royal Flush over any made hand except Royal
+- Never break a Flush to draw to Straight Flush
+- Hold low pairs over single high cards
+- Hold suited connectors for straight flush potential
+
+Casino Table Poker Games:
+
+Caribbean Stud Poker:
+- Five cards dealt to player and dealer
+- Dealer needs Ace-King or better to qualify
+- Beat the dealer to win
+- Optional progressive jackpot side bet
+- House edge approximately 5.22%
+
+Three Card Poker:
+- Fast-paced with only three cards
+- Two games in one: Ante/Play and Pair Plus
+- Pair Plus pays on your hand regardless of dealer
+- Simple strategy: Play Q-6-4 or better
+- House edge 2-3% depending on bets
+
+Let It Ride:
+- Try to make poker hand from your cards plus community cards
+- Can pull back bets as cards are revealed
+- House edge approximately 3.51%
+- Bonus bets available for big hands
+
+Pai Gow Poker:
+- Seven cards split into 5-card and 2-card hands
+- Both hands must beat dealer to win
+- Split results in push (very common)
+- Low volatility, good for extending play
+- House edge approximately 2.84%
+
+Casino Hold'em:
+- Similar to Texas Hold'em vs dealer
+- Make best 5-card hand from your 2 plus 5 community
+- Ante and Call bets
+- Optional AA bonus side bet
+
+Mississippi Stud:
+- Community card poker game
+- Make best 5-card hand using your 2 cards plus 3 community
+- Multiple betting rounds as cards reveal
+- Can bet 1x-3x at each decision point
+
+Tips for Casino Poker:
+1. Learn basic strategy for video poker
+2. Check paytables - they vary significantly
+3. Always play maximum coins on video poker for Royal Flush bonus
+4. Start with Jacks or Better to learn fundamentals
+5. Table poker games have higher house edge than video poker
+6. Progressive jackpots can add value if large enough
+
+Bankroll Management:
+Video poker variance can be high. Budget for 1000+ hands per session minimum. Royal Flushes average once per 40,000 hands - don't chase them.
+
+Why Casino Poker Is Popular:
+- Skill element rewards good play
+- Some variants offer near 100% RTP
+- Variety of games and betting options
+- Familiar poker hand rankings
+- Can be played at own pace (video poker)
+- Exciting showdown element (table games)
