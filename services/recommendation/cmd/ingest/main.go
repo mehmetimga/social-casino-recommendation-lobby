@@ -24,6 +24,7 @@ type Game struct {
 	RTP              float64  `json:"rtp"`
 	MinBet           float64  `json:"minBet"`
 	MaxBet           float64  `json:"maxBet"`
+	MinVipLevel      string   `json:"minVipLevel"`
 }
 
 type Tag struct {
@@ -85,11 +86,16 @@ func main() {
 		}
 
 		// Create metadata
+		minVipLevel := game.MinVipLevel
+		if minVipLevel == "" {
+			minVipLevel = "bronze" // Default to bronze if not set
+		}
 		metadata := map[string]string{
-			"slug":     game.Slug,
-			"title":    game.Title,
-			"provider": game.Provider,
-			"type":     game.Type,
+			"slug":        game.Slug,
+			"title":       game.Title,
+			"provider":    game.Provider,
+			"type":        game.Type,
+			"minVipLevel": minVipLevel,
 		}
 
 		// Upsert to Qdrant
