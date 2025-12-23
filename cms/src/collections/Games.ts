@@ -151,6 +151,21 @@ export const Games: CollectionConfig = {
       ],
     },
     {
+      name: 'minVipLevel',
+      type: 'select',
+      defaultValue: 'bronze',
+      options: [
+        { label: 'Bronze', value: 'bronze' },
+        { label: 'Silver', value: 'silver' },
+        { label: 'Gold', value: 'gold' },
+        { label: 'Platinum', value: 'platinum' },
+      ],
+      admin: {
+        description: 'Minimum VIP tier required to see this game in recommendations',
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'badges',
       type: 'select',
       hasMany: true,

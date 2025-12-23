@@ -235,17 +235,64 @@ func (r *QdrantRepository) GetUserVector(userID string) ([]float32, error) {
 	return nil, nil
 }
 
-func (r *QdrantRepository) SearchSimilarGames(vector []float32, limit int) ([]string, error) {
+// getAllowedVipLevels returns all VIP levels that a user with the given level can access
+func getAllowedVipLevels(userLevel string) []string {
+	levels := []string{"bronze"}
+	if userLevel == "silver" || userLevel == "gold" || userLevel == "platinum" {
+		levels = append(levels, "silver")
+	}
+	if userLevel == "gold" || userLevel == "platinum" {
+		levels = append(levels, "gold")
+	}
+	if userLevel == "platinum" {
+		levels = append(levels, "platinum")
+	}
+	return levels
+}
+
+func (r *QdrantRepository) SearchSimilarGames(vector []float32, limit int, userVipLevel string) ([]string, error) {
 	if r.points == nil {
 		return nil, nil
 	}
 
 	ctx := context.Background()
 
+	// Build VIP level filter - user can see games at their level or below
+	allowedLevels := getAllowedVipLevels(userVipLevel)
+
+	// Create filter conditions for allowed VIP levels
+	var shouldConditions []*pb.Condition
+	for _, level := range allowedLevels {
+		shouldConditions = append(shouldConditions, &pb.Condition{
+			ConditionOneOf: &pb.Condition_Field{
+				Field: &pb.FieldCondition{
+					Key: "minVipLevel",
+					Match: &pb.Match{
+						MatchValue: &pb.Match_Keyword{Keyword: level},
+					},
+				},
+			},
+		})
+	}
+
+	// Also include games without minVipLevel set (default to bronze/accessible)
+	shouldConditions = append(shouldConditions, &pb.Condition{
+		ConditionOneOf: &pb.Condition_IsEmpty{
+			IsEmpty: &pb.IsEmptyCondition{
+				Key: "minVipLevel",
+			},
+		},
+	})
+
+	filter := &pb.Filter{
+		Should: shouldConditions,
+	}
+
 	result, err := r.points.Search(ctx, &pb.SearchPoints{
 		CollectionName: GamesCollection,
 		Vector:         vector,
 		Limit:          uint64(limit),
+		Filter:         filter,
 		WithPayload: &pb.WithPayloadSelector{
 			SelectorOptions: &pb.WithPayloadSelector_Enable{Enable: true},
 		},

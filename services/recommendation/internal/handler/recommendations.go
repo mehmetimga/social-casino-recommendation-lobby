@@ -39,8 +39,14 @@ func (h *RecommendationsHandler) GetRecommendations(w http.ResponseWriter, r *ht
 		}
 	}
 
+	// Parse VIP level (default to bronze)
+	vipLevel := r.URL.Query().Get("vipLevel")
+	if vipLevel == "" {
+		vipLevel = "bronze"
+	}
+
 	// Get recommendations
-	recommendations, err := h.recommendationService.GetRecommendations(userID, placement, limit)
+	recommendations, err := h.recommendationService.GetRecommendations(userID, placement, limit, vipLevel)
 	if err != nil {
 		http.Error(w, "Failed to get recommendations", http.StatusInternalServerError)
 		return

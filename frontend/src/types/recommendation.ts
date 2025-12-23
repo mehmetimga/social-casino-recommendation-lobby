@@ -18,6 +18,7 @@ export interface RecommendationParams {
   userId: string;
   placement?: string;
   limit?: number;
+  vipLevel?: 'bronze' | 'silver' | 'gold' | 'platinum';
 }
 
 export interface RecommendationResponse {

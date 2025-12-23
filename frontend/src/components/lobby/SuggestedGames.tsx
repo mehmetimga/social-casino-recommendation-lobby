@@ -11,7 +11,7 @@ interface SuggestedGamesProps {
 }
 
 export default function SuggestedGames({ section }: SuggestedGamesProps) {
-  const { userId } = useUser();
+  const { userId, vipLevel } = useUser();
 
   const fetchGames = async (): Promise<Game[]> => {
     if (section.mode === 'manual') {
@@ -25,6 +25,7 @@ export default function SuggestedGames({ section }: SuggestedGamesProps) {
         userId,
         placement: section.placement,
         limit: section.limit,
+        vipLevel,
       });
 
       if (recommendedSlugs.length > 0) {
@@ -43,7 +44,7 @@ export default function SuggestedGames({ section }: SuggestedGamesProps) {
   };
 
   const { data: games, isLoading } = useQuery({
-    queryKey: ['suggested-games', section.mode, section.placement, userId, section.limit],
+    queryKey: ['suggested-games', section.mode, section.placement, userId, section.limit, vipLevel],
     queryFn: fetchGames,
     enabled: !!userId,
   });

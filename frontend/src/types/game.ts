@@ -18,6 +18,7 @@ export type GameType = 'slot' | 'table' | 'live' | 'instant';
 export type GameStatus = 'enabled' | 'disabled';
 export type BadgeType = 'new' | 'exclusive' | 'hot' | 'jackpot' | 'featured';
 export type Volatility = 'low' | 'medium' | 'high';
+export type VipLevel = 'bronze' | 'silver' | 'gold' | 'platinum';
 
 export interface Game {
   id: string;
@@ -37,6 +38,7 @@ export interface Game {
   maxBet: number;
   rtp?: number;
   volatility?: Volatility;
+  minVipLevel?: VipLevel;
   badges?: BadgeType[];
   status: GameStatus;
   createdAt: string;

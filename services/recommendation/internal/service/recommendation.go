@@ -26,7 +26,7 @@ func NewRecommendationService(
 	}
 }
 
-func (s *RecommendationService) GetRecommendations(userID, placement string, limit int) ([]string, error) {
+func (s *RecommendationService) GetRecommendations(userID, placement string, limit int, vipLevel string) ([]string, error) {
 	// Get user vector from Qdrant
 	userVector, err := s.qdrantRepo.GetUserVector(userID)
 	if err != nil {
@@ -39,8 +39,8 @@ func (s *RecommendationService) GetRecommendations(userID, placement string, lim
 		return []string{}, nil
 	}
 
-	// Search for similar games in Qdrant
-	recommendations, err := s.qdrantRepo.SearchSimilarGames(userVector, limit)
+	// Search for similar games in Qdrant with VIP level filter
+	recommendations, err := s.qdrantRepo.SearchSimilarGames(userVector, limit, vipLevel)
 	if err != nil {
 		return nil, err
 	}

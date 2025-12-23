@@ -62,6 +62,9 @@ export const recommendationApi = {
     if (params.limit) {
       queryParams.append('limit', params.limit.toString());
     }
+    if (params.vipLevel) {
+      queryParams.append('vipLevel', params.vipLevel);
+    }
 
     const response = await apiClient.recommendation.get<RecommendationResponse>(
       `/v1/recommendations?${queryParams.toString()}`
