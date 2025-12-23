@@ -48,10 +48,35 @@ func (s *RAGService) FormatContextForPrompt(chunks []*model.RetrievedChunk) stri
 	for i, chunk := range chunks {
 		context += "---\n"
 		context += "Source: " + chunk.Source + "\n"
+
+		// Include game metadata if available
+		if chunk.Theme != "" {
+			context += "Theme: " + chunk.Theme + "\n"
+		}
+		if chunk.VipLevel != "" {
+			context += "VIP Tier Required: " + capitalizeFirst(chunk.VipLevel) + "\n"
+		}
+		if chunk.RTP != "" {
+			context += "RTP: " + chunk.RTP + "%\n"
+		}
+		if chunk.Volatility != "" {
+			context += "Volatility: " + capitalizeFirst(chunk.Volatility) + "\n"
+		}
+		if chunk.GameType != "" {
+			context += "Game Type: " + chunk.GameType + "\n"
+		}
+
 		context += chunk.Content + "\n"
 		if i < len(chunks)-1 {
 			context += "\n"
 		}
 	}
 	return context
+}
+
+func capitalizeFirst(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	return string(s[0]-32) + s[1:]
 }

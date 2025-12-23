@@ -1,6 +1,11 @@
 Title: Mystic Olympus
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Greek
+VIP Level: gold
+Game Type: slot
+RTP: 96.40
+Volatility: medium
 
 Mystic Olympus expands on the popular Greek mythology theme, exploring the mysterious and magical side of Mount Olympus. While similar titles focus on Zeus's power, this slot delves into the mystical abilities of lesser-known deities and magical artifacts.
 

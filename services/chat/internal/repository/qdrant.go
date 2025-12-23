@@ -126,6 +126,32 @@ func (r *QdrantRepository) SearchKBChunks(vector []float32, topK int) ([]*model.
 				chunk.DocumentID = s.StringValue
 			}
 		}
+		// Extract game metadata fields
+		if theme, ok := point.Payload["theme"]; ok {
+			if s, ok := theme.Kind.(*pb.Value_StringValue); ok {
+				chunk.Theme = s.StringValue
+			}
+		}
+		if vipLevel, ok := point.Payload["vip_level"]; ok {
+			if s, ok := vipLevel.Kind.(*pb.Value_StringValue); ok {
+				chunk.VipLevel = s.StringValue
+			}
+		}
+		if rtp, ok := point.Payload["rtp"]; ok {
+			if s, ok := rtp.Kind.(*pb.Value_StringValue); ok {
+				chunk.RTP = s.StringValue
+			}
+		}
+		if volatility, ok := point.Payload["volatility"]; ok {
+			if s, ok := volatility.Kind.(*pb.Value_StringValue); ok {
+				chunk.Volatility = s.StringValue
+			}
+		}
+		if gameType, ok := point.Payload["game_type"]; ok {
+			if s, ok := gameType.Kind.(*pb.Value_StringValue); ok {
+				chunk.GameType = s.StringValue
+			}
+		}
 
 		chunks = append(chunks, chunk)
 	}
@@ -133,12 +159,50 @@ func (r *QdrantRepository) SearchKBChunks(vector []float32, topK int) ([]*model.
 	return chunks, nil
 }
 
+// GameMetadata holds optional metadata for game-related KB chunks
+type GameMetadata struct {
+	Theme      string
+	VipLevel   string
+	RTP        string
+	Volatility string
+	GameType   string
+}
+
 func (r *QdrantRepository) UpsertKBChunk(chunkID string, vector []float32, content, source, documentID string) error {
+	return r.UpsertKBChunkWithMetadata(chunkID, vector, content, source, documentID, nil)
+}
+
+func (r *QdrantRepository) UpsertKBChunkWithMetadata(chunkID string, vector []float32, content, source, documentID string, metadata *GameMetadata) error {
 	if r.points == nil {
 		return nil
 	}
 
 	ctx := context.Background()
+
+	payload := map[string]*pb.Value{
+		"content":     {Kind: &pb.Value_StringValue{StringValue: content}},
+		"source":      {Kind: &pb.Value_StringValue{StringValue: source}},
+		"document_id": {Kind: &pb.Value_StringValue{StringValue: documentID}},
+	}
+
+	// Add game metadata if provided
+	if metadata != nil {
+		if metadata.Theme != "" {
+			payload["theme"] = &pb.Value{Kind: &pb.Value_StringValue{StringValue: metadata.Theme}}
+		}
+		if metadata.VipLevel != "" {
+			payload["vip_level"] = &pb.Value{Kind: &pb.Value_StringValue{StringValue: metadata.VipLevel}}
+		}
+		if metadata.RTP != "" {
+			payload["rtp"] = &pb.Value{Kind: &pb.Value_StringValue{StringValue: metadata.RTP}}
+		}
+		if metadata.Volatility != "" {
+			payload["volatility"] = &pb.Value{Kind: &pb.Value_StringValue{StringValue: metadata.Volatility}}
+		}
+		if metadata.GameType != "" {
+			payload["game_type"] = &pb.Value{Kind: &pb.Value_StringValue{StringValue: metadata.GameType}}
+		}
+	}
 
 	point := &pb.PointStruct{
 		Id: &pb.PointId{
@@ -149,11 +213,7 @@ func (r *QdrantRepository) UpsertKBChunk(chunkID string, vector []float32, conte
 				Vector: &pb.Vector{Data: vector},
 			},
 		},
-		Payload: map[string]*pb.Value{
-			"content":     {Kind: &pb.Value_StringValue{StringValue: content}},
-			"source":      {Kind: &pb.Value_StringValue{StringValue: source}},
-			"document_id": {Kind: &pb.Value_StringValue{StringValue: documentID}},
-		},
+		Payload: payload,
 	}
 
 	_, err := r.points.Upsert(ctx, &pb.UpsertPoints{

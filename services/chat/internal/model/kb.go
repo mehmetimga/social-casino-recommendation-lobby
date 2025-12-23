@@ -41,4 +41,10 @@ type RetrievedChunk struct {
 	Source     string  `json:"source"`
 	DocumentID string  `json:"documentId"`
 	Score      float32 `json:"score"`
+	// Game metadata fields
+	Theme      string `json:"theme,omitempty"`
+	VipLevel   string `json:"vipLevel,omitempty"`
+	RTP        string `json:"rtp,omitempty"`
+	Volatility string `json:"volatility,omitempty"`
+	GameType   string `json:"gameType,omitempty"`
 }

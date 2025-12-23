@@ -1,6 +1,11 @@
 Title: Mega Moolah
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Animals
+VIP Level: platinum
+Game Type: slot
+RTP: 88.12
+Volatility: high
 
 Mega Moolah by Microgaming is the legendary progressive jackpot slot known as "The Millionaire Maker." This African safari-themed game has created more millionaires than any other online slot, with its life-changing progressive jackpots.
 

@@ -1,6 +1,11 @@
 Title: Ancient Dynasty
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Asian
+VIP Level: silver
+Game Type: slot
+RTP: 96.20
+Volatility: medium
 
 Ancient Dynasty is a captivating Asian-themed slot game that transports players to the golden age of ancient Chinese emperors. This visually stunning game combines traditional oriental aesthetics with modern slot mechanics, offering an immersive journey through imperial palaces and legendary treasures.
 

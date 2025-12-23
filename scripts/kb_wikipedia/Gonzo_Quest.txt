@@ -1,6 +1,11 @@
 Title: Gonzo's Quest
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Adventure
+VIP Level: bronze
+Game Type: slot
+RTP: 95.97
+Volatility: medium
 
 Gonzo's Quest by NetEnt is the legendary adventure slot that introduced avalanche mechanics to online casinos. Released in 2011, this Mayan-themed masterpiece follows Spanish conquistador Gonzo's search for El Dorado and remains one of the most popular slots over a decade later.
 

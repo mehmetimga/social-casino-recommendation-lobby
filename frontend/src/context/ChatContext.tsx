@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { chatApi } from '../api/chat';
-import { ChatMessage, ChatSession } from '../types/chat';
+import { ChatMessage, ChatSession, VipLevel } from '../types/chat';
 import { useUser } from './UserContext';
 
 interface ChatContextType {
   currentPage?: string;
   currentGame?: string;
+  vipLevel?: VipLevel;
 }
 
 interface ChatContextValue {
@@ -27,7 +28,7 @@ interface ChatContextValue {
 const ChatContext = createContext<ChatContextValue | null>(null);
 
 export function ChatProvider({ children }: { children: ReactNode }) {
-  const { userId } = useUser();
+  const { userId, vipLevel } = useUser();
   const [session, setSession] = useState<ChatSession | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +38,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   const createSession = useCallback(async (contextOverride?: ChatContextType) => {
     try {
-      const contextToUse = contextOverride ?? chatContext;
+      const contextToUse = {
+        ...(contextOverride ?? chatContext),
+        vipLevel, // Always include user's VIP level
+      };
       const newSession = await chatApi.createSession({
         userId: userId || undefined,
         context: contextToUse,
@@ -48,7 +52,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       console.error('Failed to create chat session:', error);
       return null;
     }
-  }, [userId, chatContext]);
+  }, [userId, chatContext, vipLevel]);
 
   const openChat = useCallback(async () => {
     setIsOpen(true);
@@ -132,6 +136,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     const newContext: ChatContextType = {
       currentPage: 'game',
       currentGame: gameTitle,
+      vipLevel, // Include user's VIP level
     };
 
     // Update local context state
@@ -147,7 +152,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
 
     setIsOpen(true);
-  }, [session]);
+  }, [session, vipLevel]);
 
   return (
     <ChatContext.Provider

@@ -1,6 +1,11 @@
 Title: Sweet Bonanza
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Candy
+VIP Level: bronze
+Game Type: slot
+RTP: 96.51
+Volatility: high
 
 Sweet Bonanza by Pragmatic Play is the candy-themed sensation that proved fruit slots could be modern and exciting. With its cheerful aesthetic, tumble feature, and potential 21,000x max win, this high-volatility slot has become one of Pragmatic's most successful titles.
 

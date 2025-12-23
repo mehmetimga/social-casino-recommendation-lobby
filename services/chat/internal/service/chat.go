@@ -141,7 +141,33 @@ func (s *ChatService) buildPrompt(query string, history []*model.ChatMessage, ch
 	sb.WriteString("5. Use specific numbers, RTPs, and details when available in the context\n")
 	sb.WriteString("6. Keep responses concise but informative (2-4 paragraphs)\n")
 	sb.WriteString("7. When discussing games, mention key features like RTP, volatility, and unique mechanics\n")
-	sb.WriteString("8. Always encourage responsible gaming\n\n")
+	sb.WriteString("8. Always encourage responsible gaming\n")
+	sb.WriteString("9. VIP ACCESS RULES - VERY IMPORTANT:\n")
+	sb.WriteString("   - Games have VIP tier requirements: Bronze (basic), Silver, Gold, and Platinum (highest)\n")
+	sb.WriteString("   - The knowledge base includes 'VIP Tier Required' for each game\n")
+	sb.WriteString("   - When mentioning games above the user's tier, ALWAYS note the restriction like: '(available at Gold tier and above)'\n")
+	sb.WriteString("   - DO include restricted games in your recommendations - just mark them with their tier requirement\n")
+	sb.WriteString("   - Encourage users to upgrade their VIP tier to access premium games with better RTPs\n\n")
+
+	// User VIP status context
+	if session != nil && session.Context != nil {
+		vipLevel := session.Context.VipLevel
+		if vipLevel == "" {
+			vipLevel = model.VipLevelBronze // Default to Bronze
+		}
+		sb.WriteString("=== USER VIP STATUS ===\n")
+		sb.WriteString(fmt.Sprintf("Current VIP Tier: %s\n", strings.ToUpper(string(vipLevel))))
+		sb.WriteString("User can access: Bronze tier games")
+		switch vipLevel {
+		case model.VipLevelSilver:
+			sb.WriteString(" and Silver tier games")
+		case model.VipLevelGold:
+			sb.WriteString(", Silver tier games, and Gold tier games")
+		case model.VipLevelPlatinum:
+			sb.WriteString(", Silver tier games, Gold tier games, and Platinum tier games (full access)")
+		}
+		sb.WriteString("\n=== END VIP STATUS ===\n\n")
+	}
 
 	// Game context from session
 	if session != nil && session.Context != nil && session.Context.CurrentGame != "" {

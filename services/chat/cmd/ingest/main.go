@@ -21,6 +21,48 @@ const (
 	ChunkOverlap = 50  // Overlap between chunks
 )
 
+// GameMetadata holds extracted metadata from KB document headers
+type GameMetadata struct {
+	Theme      string
+	VipLevel   string
+	RTP        string
+	Volatility string
+	GameType   string
+}
+
+// parseMetadata extracts metadata headers from document content
+func parseMetadata(content string) *GameMetadata {
+	metadata := &GameMetadata{}
+	lines := strings.Split(content, "\n")
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			// Stop parsing headers at first blank line
+			break
+		}
+
+		if strings.HasPrefix(line, "Theme:") {
+			metadata.Theme = strings.TrimSpace(strings.TrimPrefix(line, "Theme:"))
+		} else if strings.HasPrefix(line, "VIP Level:") {
+			metadata.VipLevel = strings.ToLower(strings.TrimSpace(strings.TrimPrefix(line, "VIP Level:")))
+		} else if strings.HasPrefix(line, "RTP:") {
+			metadata.RTP = strings.TrimSpace(strings.TrimPrefix(line, "RTP:"))
+		} else if strings.HasPrefix(line, "Volatility:") {
+			metadata.Volatility = strings.ToLower(strings.TrimSpace(strings.TrimPrefix(line, "Volatility:")))
+		} else if strings.HasPrefix(line, "Game Type:") {
+			metadata.GameType = strings.ToLower(strings.TrimSpace(strings.TrimPrefix(line, "Game Type:")))
+		}
+	}
+
+	return metadata
+}
+
+// hasMetadata checks if any metadata fields are populated
+func hasMetadata(m *GameMetadata) bool {
+	return m.Theme != "" || m.VipLevel != "" || m.RTP != "" || m.Volatility != "" || m.GameType != ""
+}
+
 func main() {
 	log.Println("Starting KB ingestion...")
 
@@ -114,10 +156,17 @@ func main() {
 		}
 
 		// Extract title from file (first line or filename)
-		lines := strings.Split(string(content), "\n")
+		contentStr := string(content)
+		lines := strings.Split(contentStr, "\n")
 		title := strings.TrimPrefix(lines[0], "Title: ")
 		if title == "" || title == lines[0] {
 			title = strings.TrimSuffix(file.Name(), ".txt")
+		}
+
+		// Parse metadata headers from document
+		gameMetadata := parseMetadata(contentStr)
+		if hasMetadata(gameMetadata) {
+			log.Printf("  Found metadata - Theme: %s, VIP: %s, RTP: %s", gameMetadata.Theme, gameMetadata.VipLevel, gameMetadata.RTP)
 		}
 
 		// Create document
@@ -168,13 +217,24 @@ func main() {
 				continue
 			}
 
-			// Store vector in Qdrant
-			if err := qdrantRepo.UpsertKBChunk(
+			// Store vector in Qdrant with metadata
+			var qdrantMetadata *repository.GameMetadata
+			if hasMetadata(gameMetadata) {
+				qdrantMetadata = &repository.GameMetadata{
+					Theme:      gameMetadata.Theme,
+					VipLevel:   gameMetadata.VipLevel,
+					RTP:        gameMetadata.RTP,
+					Volatility: gameMetadata.Volatility,
+					GameType:   gameMetadata.GameType,
+				}
+			}
+			if err := qdrantRepo.UpsertKBChunkWithMetadata(
 				chunk.VectorID,
 				vector,
 				chunk.Content,
 				title,
 				doc.ID.String(),
+				qdrantMetadata,
 			); err != nil {
 				log.Printf("    Error storing vector for chunk %d: %v", i, err)
 				continue

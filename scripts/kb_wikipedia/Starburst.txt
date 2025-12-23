@@ -1,6 +1,11 @@
 Title: Starburst
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Space
+VIP Level: bronze
+Game Type: slot
+RTP: 96.10
+Volatility: low
 
 Starburst by NetEnt is the most iconic online slot ever created. This space-themed gem has been the gateway slot for millions of players worldwide since its 2012 release, maintaining its popularity for over a decade.
 

@@ -1,6 +1,11 @@
 Title: Big Bass Bonanza
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Underwater
+VIP Level: silver
+Game Type: slot
+RTP: 96.71
+Volatility: high
 
 Big Bass Bonanza by Pragmatic Play is the fishing-themed phenomenon that became one of the most played slots globally. With its catchy "reel 'em in" hook sound and potential 2,100x wins, this high-volatility game created an entire series of successful sequels.
 

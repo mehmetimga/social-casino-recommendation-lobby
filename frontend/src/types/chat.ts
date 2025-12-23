@@ -1,10 +1,15 @@
+export type VipLevel = 'bronze' | 'silver' | 'gold' | 'platinum';
+
+export interface SessionContext {
+  currentPage?: string;
+  currentGame?: string;
+  vipLevel?: VipLevel;
+}
+
 export interface ChatSession {
   id: string;
   userId?: string;
-  context?: {
-    currentPage?: string;
-    currentGame?: string;
-  };
+  context?: SessionContext;
   createdAt: string;
   updatedAt: string;
 }

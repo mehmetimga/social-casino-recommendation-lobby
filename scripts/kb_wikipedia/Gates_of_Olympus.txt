@@ -1,6 +1,11 @@
 Title: Gates of Olympus
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Greek
+VIP Level: silver
+Game Type: slot
+RTP: 96.50
+Volatility: high
 
 Gates of Olympus by Pragmatic Play, often called "Gates of Olympus 1000," is the Greek mythology slot that revolutionized the tumble mechanics genre. Featuring Zeus as the main character and offering wins up to 5,000x (or 15,000x in the 1000 version), this high-volatility masterpiece captivates players worldwide.
 

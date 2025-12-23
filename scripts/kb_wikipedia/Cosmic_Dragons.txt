@@ -1,6 +1,11 @@
 Title: Cosmic Dragons
 Source: Social Casino Knowledge Base
 License: Internal
+Theme: Fantasy
+VIP Level: gold
+Game Type: slot
+RTP: 96.50
+Volatility: high
 
 Cosmic Dragons takes the beloved dragon theme into the far reaches of space, featuring magnificent space-dwelling dragons that soar through nebulae and guard celestial treasures. This visually spectacular slot combines fantasy and sci-fi elements for a truly unique experience.
 
