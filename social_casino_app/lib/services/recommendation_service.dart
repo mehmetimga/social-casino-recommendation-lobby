@@ -66,6 +66,7 @@ class RecommendationService {
     required String userId,
     String? placement,
     int? limit,
+    String? vipLevel,
   }) async {
     try {
       final queryParams = <String, dynamic>{
@@ -76,6 +77,9 @@ class RecommendationService {
       }
       if (limit != null) {
         queryParams['limit'] = limit;
+      }
+      if (vipLevel != null) {
+        queryParams['vipLevel'] = vipLevel;
       }
 
       final response = await _dio.get('/v1/recommendations', queryParameters: queryParams);

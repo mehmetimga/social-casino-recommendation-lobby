@@ -46,6 +46,7 @@ _$GameImpl _$$GameImplFromJson(Map<String, dynamic> json) => _$GameImpl(
   maxBet: (json['maxBet'] as num?)?.toDouble() ?? 100,
   rtp: (json['rtp'] as num?)?.toDouble(),
   volatility: $enumDecodeNullable(_$VolatilityEnumMap, json['volatility']),
+  minVipLevel: $enumDecodeNullable(_$VipLevelEnumMap, json['minVipLevel']),
   badges: (json['badges'] as List<dynamic>?)
       ?.map((e) => $enumDecode(_$BadgeTypeEnumMap, e))
       .toList(),
@@ -73,6 +74,7 @@ Map<String, dynamic> _$$GameImplToJson(_$GameImpl instance) =>
       'maxBet': instance.maxBet,
       'rtp': instance.rtp,
       'volatility': _$VolatilityEnumMap[instance.volatility],
+      'minVipLevel': _$VipLevelEnumMap[instance.minVipLevel],
       'badges': instance.badges?.map((e) => _$BadgeTypeEnumMap[e]!).toList(),
       'status': _$GameStatusEnumMap[instance.status]!,
       'createdAt': instance.createdAt,
@@ -90,6 +92,13 @@ const _$VolatilityEnumMap = {
   Volatility.low: 'low',
   Volatility.medium: 'medium',
   Volatility.high: 'high',
+};
+
+const _$VipLevelEnumMap = {
+  VipLevel.bronze: 'bronze',
+  VipLevel.silver: 'silver',
+  VipLevel.gold: 'gold',
+  VipLevel.platinum: 'platinum',
 };
 
 const _$BadgeTypeEnumMap = {

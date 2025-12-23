@@ -16,6 +16,7 @@ class ChatContext with _$ChatContext {
     String? currentPage,
     String? currentGame,
     String? gameSlug,
+    String? vipLevel,
   }) = _ChatContext;
 
   factory ChatContext.fromJson(Map<String, dynamic> json) =>

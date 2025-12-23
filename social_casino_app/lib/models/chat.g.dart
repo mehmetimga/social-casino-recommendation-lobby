@@ -11,6 +11,7 @@ _$ChatContextImpl _$$ChatContextImplFromJson(Map<String, dynamic> json) =>
       currentPage: json['currentPage'] as String?,
       currentGame: json['currentGame'] as String?,
       gameSlug: json['gameSlug'] as String?,
+      vipLevel: json['vipLevel'] as String?,
     );
 
 Map<String, dynamic> _$$ChatContextImplToJson(_$ChatContextImpl instance) =>
@@ -18,6 +19,7 @@ Map<String, dynamic> _$$ChatContextImplToJson(_$ChatContextImpl instance) =>
       'currentPage': instance.currentPage,
       'currentGame': instance.currentGame,
       'gameSlug': instance.gameSlug,
+      'vipLevel': instance.vipLevel,
     };
 
 _$ChatSessionImpl _$$ChatSessionImplFromJson(Map<String, dynamic> json) =>

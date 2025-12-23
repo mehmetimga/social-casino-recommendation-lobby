@@ -89,11 +89,16 @@ class ChatNotifier extends StateNotifier<ChatState> {
       state = state.copyWith(isLoading: true, clearError: true);
 
       try {
+        // Include vipLevel in context when creating session
+        final contextWithVip = state.context != null
+            ? state.context!.copyWith(vipLevel: userState.vipLevel.name)
+            : ChatContext(vipLevel: userState.vipLevel.name);
+
         final session = await chatService.createSession(
           userId: userState.userId,
-          context: state.context,
+          context: contextWithVip,
         );
-        state = state.copyWith(session: session);
+        state = state.copyWith(session: session, context: contextWithVip);
       } catch (e) {
         state = state.copyWith(
           isLoading: false,
@@ -151,10 +156,12 @@ class ChatNotifier extends StateNotifier<ChatState> {
   /// Open chat with a specific game context
   /// Updates context without clearing chat history
   Future<void> openWithGame(String gameSlug, String gameTitle) async {
+    final userState = _ref.read(userProvider);
     final newContext = ChatContext(
       currentPage: 'game',
       currentGame: gameTitle,
       gameSlug: gameSlug,
+      vipLevel: userState.vipLevel.name,
     );
 
     // Update local context state

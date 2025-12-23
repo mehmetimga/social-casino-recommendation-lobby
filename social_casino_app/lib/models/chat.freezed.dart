@@ -24,6 +24,7 @@ mixin _$ChatContext {
   String? get currentPage => throw _privateConstructorUsedError;
   String? get currentGame => throw _privateConstructorUsedError;
   String? get gameSlug => throw _privateConstructorUsedError;
+  String? get vipLevel => throw _privateConstructorUsedError;
 
   /// Serializes this ChatContext to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -42,7 +43,12 @@ abstract class $ChatContextCopyWith<$Res> {
     $Res Function(ChatContext) then,
   ) = _$ChatContextCopyWithImpl<$Res, ChatContext>;
   @useResult
-  $Res call({String? currentPage, String? currentGame, String? gameSlug});
+  $Res call({
+    String? currentPage,
+    String? currentGame,
+    String? gameSlug,
+    String? vipLevel,
+  });
 }
 
 /// @nodoc
@@ -63,6 +69,7 @@ class _$ChatContextCopyWithImpl<$Res, $Val extends ChatContext>
     Object? currentPage = freezed,
     Object? currentGame = freezed,
     Object? gameSlug = freezed,
+    Object? vipLevel = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -77,6 +84,10 @@ class _$ChatContextCopyWithImpl<$Res, $Val extends ChatContext>
             gameSlug: freezed == gameSlug
                 ? _value.gameSlug
                 : gameSlug // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            vipLevel: freezed == vipLevel
+                ? _value.vipLevel
+                : vipLevel // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -93,7 +104,12 @@ abstract class _$$ChatContextImplCopyWith<$Res>
   ) = __$$ChatContextImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? currentPage, String? currentGame, String? gameSlug});
+  $Res call({
+    String? currentPage,
+    String? currentGame,
+    String? gameSlug,
+    String? vipLevel,
+  });
 }
 
 /// @nodoc
@@ -113,6 +129,7 @@ class __$$ChatContextImplCopyWithImpl<$Res>
     Object? currentPage = freezed,
     Object? currentGame = freezed,
     Object? gameSlug = freezed,
+    Object? vipLevel = freezed,
   }) {
     return _then(
       _$ChatContextImpl(
@@ -128,6 +145,10 @@ class __$$ChatContextImplCopyWithImpl<$Res>
             ? _value.gameSlug
             : gameSlug // ignore: cast_nullable_to_non_nullable
                   as String?,
+        vipLevel: freezed == vipLevel
+            ? _value.vipLevel
+            : vipLevel // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -136,7 +157,12 @@ class __$$ChatContextImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ChatContextImpl implements _ChatContext {
-  const _$ChatContextImpl({this.currentPage, this.currentGame, this.gameSlug});
+  const _$ChatContextImpl({
+    this.currentPage,
+    this.currentGame,
+    this.gameSlug,
+    this.vipLevel,
+  });
 
   factory _$ChatContextImpl.fromJson(Map<String, dynamic> json) =>
       _$$ChatContextImplFromJson(json);
@@ -147,10 +173,12 @@ class _$ChatContextImpl implements _ChatContext {
   final String? currentGame;
   @override
   final String? gameSlug;
+  @override
+  final String? vipLevel;
 
   @override
   String toString() {
-    return 'ChatContext(currentPage: $currentPage, currentGame: $currentGame, gameSlug: $gameSlug)';
+    return 'ChatContext(currentPage: $currentPage, currentGame: $currentGame, gameSlug: $gameSlug, vipLevel: $vipLevel)';
   }
 
   @override
@@ -163,13 +191,15 @@ class _$ChatContextImpl implements _ChatContext {
             (identical(other.currentGame, currentGame) ||
                 other.currentGame == currentGame) &&
             (identical(other.gameSlug, gameSlug) ||
-                other.gameSlug == gameSlug));
+                other.gameSlug == gameSlug) &&
+            (identical(other.vipLevel, vipLevel) ||
+                other.vipLevel == vipLevel));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, currentPage, currentGame, gameSlug);
+      Object.hash(runtimeType, currentPage, currentGame, gameSlug, vipLevel);
 
   /// Create a copy of ChatContext
   /// with the given fields replaced by the non-null parameter values.
@@ -190,6 +220,7 @@ abstract class _ChatContext implements ChatContext {
     final String? currentPage,
     final String? currentGame,
     final String? gameSlug,
+    final String? vipLevel,
   }) = _$ChatContextImpl;
 
   factory _ChatContext.fromJson(Map<String, dynamic> json) =
@@ -201,6 +232,8 @@ abstract class _ChatContext implements ChatContext {
   String? get currentGame;
   @override
   String? get gameSlug;
+  @override
+  String? get vipLevel;
 
   /// Create a copy of ChatContext
   /// with the given fields replaced by the non-null parameter values.

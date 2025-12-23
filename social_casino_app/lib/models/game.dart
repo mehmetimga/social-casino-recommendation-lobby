@@ -44,6 +44,17 @@ enum Volatility {
   high,
 }
 
+enum VipLevel {
+  @JsonValue('bronze')
+  bronze,
+  @JsonValue('silver')
+  silver,
+  @JsonValue('gold')
+  gold,
+  @JsonValue('platinum')
+  platinum,
+}
+
 @freezed
 class GameTag with _$GameTag {
   const factory GameTag({
@@ -84,6 +95,7 @@ class Game with _$Game {
     @Default(100) double maxBet,
     double? rtp,
     Volatility? volatility,
+    VipLevel? minVipLevel,
     List<BadgeType>? badges,
     required GameStatus status,
     required String createdAt,

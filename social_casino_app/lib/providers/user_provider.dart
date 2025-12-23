@@ -1,27 +1,33 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import '../models/game.dart';
 import '../models/recommendation.dart';
 import 'services_provider.dart';
 
 const _userIdKey = 'user_id';
+const _vipLevelKey = 'vip_level';
 
 /// User state
 class UserState {
   final String? userId;
+  final VipLevel vipLevel;
   final bool isInitialized;
 
   const UserState({
     this.userId,
+    this.vipLevel = VipLevel.bronze,
     this.isInitialized = false,
   });
 
   UserState copyWith({
     String? userId,
+    VipLevel? vipLevel,
     bool? isInitialized,
   }) {
     return UserState(
       userId: userId ?? this.userId,
+      vipLevel: vipLevel ?? this.vipLevel,
       isInitialized: isInitialized ?? this.isInitialized,
     );
   }
@@ -44,7 +50,21 @@ class UserNotifier extends StateNotifier<UserState> {
       await prefs.setString(_userIdKey, userId);
     }
 
-    state = state.copyWith(userId: userId, isInitialized: true);
+    // Load VIP level from storage (default to bronze)
+    final vipLevelStr = prefs.getString(_vipLevelKey) ?? 'bronze';
+    final vipLevel = VipLevel.values.firstWhere(
+      (e) => e.name == vipLevelStr,
+      orElse: () => VipLevel.bronze,
+    );
+
+    state = state.copyWith(userId: userId, vipLevel: vipLevel, isInitialized: true);
+  }
+
+  /// Set the user's VIP level
+  Future<void> setVipLevel(VipLevel level) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_vipLevelKey, level.name);
+    state = state.copyWith(vipLevel: level);
   }
 
   /// Track an impression event

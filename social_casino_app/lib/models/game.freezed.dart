@@ -354,6 +354,7 @@ mixin _$Game {
   double get maxBet => throw _privateConstructorUsedError;
   double? get rtp => throw _privateConstructorUsedError;
   Volatility? get volatility => throw _privateConstructorUsedError;
+  VipLevel? get minVipLevel => throw _privateConstructorUsedError;
   List<BadgeType>? get badges => throw _privateConstructorUsedError;
   GameStatus get status => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
@@ -391,6 +392,7 @@ abstract class $GameCopyWith<$Res> {
     double maxBet,
     double? rtp,
     Volatility? volatility,
+    VipLevel? minVipLevel,
     List<BadgeType>? badges,
     GameStatus status,
     String createdAt,
@@ -433,6 +435,7 @@ class _$GameCopyWithImpl<$Res, $Val extends Game>
     Object? maxBet = null,
     Object? rtp = freezed,
     Object? volatility = freezed,
+    Object? minVipLevel = freezed,
     Object? badges = freezed,
     Object? status = null,
     Object? createdAt = null,
@@ -508,6 +511,10 @@ class _$GameCopyWithImpl<$Res, $Val extends Game>
                 ? _value.volatility
                 : volatility // ignore: cast_nullable_to_non_nullable
                       as Volatility?,
+            minVipLevel: freezed == minVipLevel
+                ? _value.minVipLevel
+                : minVipLevel // ignore: cast_nullable_to_non_nullable
+                      as VipLevel?,
             badges: freezed == badges
                 ? _value.badges
                 : badges // ignore: cast_nullable_to_non_nullable
@@ -580,6 +587,7 @@ abstract class _$$GameImplCopyWith<$Res> implements $GameCopyWith<$Res> {
     double maxBet,
     double? rtp,
     Volatility? volatility,
+    VipLevel? minVipLevel,
     List<BadgeType>? badges,
     GameStatus status,
     String createdAt,
@@ -621,6 +629,7 @@ class __$$GameImplCopyWithImpl<$Res>
     Object? maxBet = null,
     Object? rtp = freezed,
     Object? volatility = freezed,
+    Object? minVipLevel = freezed,
     Object? badges = freezed,
     Object? status = null,
     Object? createdAt = null,
@@ -696,6 +705,10 @@ class __$$GameImplCopyWithImpl<$Res>
             ? _value.volatility
             : volatility // ignore: cast_nullable_to_non_nullable
                   as Volatility?,
+        minVipLevel: freezed == minVipLevel
+            ? _value.minVipLevel
+            : minVipLevel // ignore: cast_nullable_to_non_nullable
+                  as VipLevel?,
         badges: freezed == badges
             ? _value._badges
             : badges // ignore: cast_nullable_to_non_nullable
@@ -738,6 +751,7 @@ class _$GameImpl implements _Game {
     this.maxBet = 100,
     this.rtp,
     this.volatility,
+    this.minVipLevel,
     final List<BadgeType>? badges,
     required this.status,
     required this.createdAt,
@@ -802,6 +816,8 @@ class _$GameImpl implements _Game {
   final double? rtp;
   @override
   final Volatility? volatility;
+  @override
+  final VipLevel? minVipLevel;
   final List<BadgeType>? _badges;
   @override
   List<BadgeType>? get badges {
@@ -821,7 +837,7 @@ class _$GameImpl implements _Game {
 
   @override
   String toString() {
-    return 'Game(id: $id, slug: $slug, title: $title, provider: $provider, type: $type, tags: $tags, thumbnail: $thumbnail, heroImage: $heroImage, gallery: $gallery, shortDescription: $shortDescription, fullDescription: $fullDescription, popularityScore: $popularityScore, jackpotAmount: $jackpotAmount, minBet: $minBet, maxBet: $maxBet, rtp: $rtp, volatility: $volatility, badges: $badges, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Game(id: $id, slug: $slug, title: $title, provider: $provider, type: $type, tags: $tags, thumbnail: $thumbnail, heroImage: $heroImage, gallery: $gallery, shortDescription: $shortDescription, fullDescription: $fullDescription, popularityScore: $popularityScore, jackpotAmount: $jackpotAmount, minBet: $minBet, maxBet: $maxBet, rtp: $rtp, volatility: $volatility, minVipLevel: $minVipLevel, badges: $badges, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -856,6 +872,8 @@ class _$GameImpl implements _Game {
             (identical(other.rtp, rtp) || other.rtp == rtp) &&
             (identical(other.volatility, volatility) ||
                 other.volatility == volatility) &&
+            (identical(other.minVipLevel, minVipLevel) ||
+                other.minVipLevel == minVipLevel) &&
             const DeepCollectionEquality().equals(other._badges, _badges) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.createdAt, createdAt) ||
@@ -885,6 +903,7 @@ class _$GameImpl implements _Game {
     maxBet,
     rtp,
     volatility,
+    minVipLevel,
     const DeepCollectionEquality().hash(_badges),
     status,
     createdAt,
@@ -924,6 +943,7 @@ abstract class _Game implements Game {
     final double maxBet,
     final double? rtp,
     final Volatility? volatility,
+    final VipLevel? minVipLevel,
     final List<BadgeType>? badges,
     required final GameStatus status,
     required final String createdAt,
@@ -966,6 +986,8 @@ abstract class _Game implements Game {
   double? get rtp;
   @override
   Volatility? get volatility;
+  @override
+  VipLevel? get minVipLevel;
   @override
   List<BadgeType>? get badges;
   @override

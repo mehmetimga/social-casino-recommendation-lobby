@@ -124,6 +124,7 @@ final recommendationsProvider = FutureProvider.family<List<Game>, int>((ref, lim
     final slugs = await recommendationService.getRecommendations(
       userId: userState.userId!,
       limit: limit,
+      vipLevel: userState.vipLevel.name,
     );
 
     if (slugs.isNotEmpty) {
