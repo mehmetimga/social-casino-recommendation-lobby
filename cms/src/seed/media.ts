@@ -12,6 +12,10 @@ export const bannerImages = [
   'lighting-roulette.png',
   'black-jack.png',
   'lions-wolf-bonus.png',
+  'blade-runner-blackjack.png',
+  'blade-runner-casino.png',
+  'neon-nexus-roulette.png',
+  'serengeti_spin_safari.png',
 ]
 
 // Game images mapping: slug -> image prefix (141 games total)
