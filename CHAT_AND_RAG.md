@@ -505,17 +505,82 @@ Provides targeted response
 
 ## Knowledge Base Sources
 
-### Current KB Structure
+### Current KB Structure (61 files)
 
 ```
 scripts/kb_wikipedia/
-├── slots.txt              # General slots information
-├── progressive_jackpots.txt
-├── table_games.txt
-├── rtp_explained.txt
-├── volatility_guide.txt
-├── game_providers.txt
-└── responsible_gaming.txt
+├── # Table Game Guides
+│   ├── Baccarat_Guide.txt
+│   ├── Blackjack_Guide.txt
+│   ├── Craps_Guide.txt
+│   ├── Poker_Guide.txt
+│   └── Roulette_Guide.txt
+│
+├── # Educational Guides
+│   ├── Slot_Basics.txt
+│   ├── RTP_Guide.txt
+│   ├── Volatility_Explained.txt
+│   ├── Progressive_Jackpots.txt
+│   ├── Casino_Bonuses.txt
+│   ├── Game_Providers.txt
+│   ├── Mobile_Gaming.txt
+│   ├── Slot_Tournaments.txt
+│   └── Responsible_Gaming.txt
+│
+├── # Live Casino
+│   ├── Live_Blackjack.txt
+│   ├── Live_Baccarat.txt
+│   ├── Live_Game_Shows.txt
+│   ├── Lightning_Roulette.txt
+│   ├── Crazy_Time.txt
+│   ├── Dream_Catcher.txt
+│   └── Monopoly_Live.txt
+│
+├── # Instant/Crash Games
+│   ├── Aviator_Game.txt
+│   ├── Plinko.txt
+│   └── Mines_Game.txt
+│
+├── # Popular Slots (Real Games)
+│   ├── Mega_Moolah.txt
+│   ├── Starburst.txt
+│   ├── Book_of_Dead.txt
+│   ├── Gates_of_Olympus.txt
+│   ├── Sweet_Bonanza.txt
+│   ├── Gonzo_Quest.txt
+│   ├── Big_Bass_Bonanza.txt
+│   ├── Wolf_Gold.txt
+│   ├── Dead_or_Alive_2.txt
+│   ├── Razor_Shark.txt
+│   ├── The_Dog_House.txt
+│   ├── Money_Train_Series.txt
+│   ├── Jammin_Jars.txt
+│   ├── Bonanza_Megaways.txt
+│   ├── Reactoonz.txt
+│   ├── Buffalo_Series.txt
+│   ├── Rise_of_Olympus.txt
+│   ├── Fruit_Party.txt
+│   ├── Legacy_of_Dead.txt
+│   ├── Wanted_Dead_or_Wild.txt
+│   ├── Eye_of_Horus.txt
+│   └── Sugar_Rush.txt
+│
+└── # Custom/Internal Slots
+    ├── Diamond_Stars.txt
+    ├── Ancient_Dynasty.txt
+    ├── Ancient_Gems.txt
+    ├── Ancient_Stars.txt
+    ├── Blazing_Carnival.txt
+    ├── Cleopatras_Golden_Empire.txt
+    ├── Cosmic_Dragons.txt
+    ├── Magic_Lion.txt
+    ├── Mystic_Olympus.txt
+    ├── Pharaohs_Fortune_Deluxe.txt
+    ├── Sacred_Dynasty.txt
+    ├── Sapphire_Ocean.txt
+    ├── Scarab_Queen.txt
+    ├── Silver_Dynasty.txt
+    └── Sun_of_Egypt.txt
 ```
 
 ### KB File Format
@@ -546,21 +611,26 @@ Famous Progressive Jackpot Games:
 ### Adding New KB Content
 
 1. **Create text file** in `scripts/kb_wikipedia/`
-2. **Format:** Plain text, well-structured
-3. **Run ingestion:**
+2. **Format:** Plain text, well-structured with title header
+3. **Run ingestion** (from host machine with Docker running):
    ```bash
-   cd services/chat
-   go run cmd/ingest/main.go
+   cd services/chat && \
+   POSTGRES_URL="postgres://casino:casino_secret@localhost:5433/casino_db?sslmode=disable" \
+   QDRANT_URL="http://localhost:6333" \
+   OLLAMA_URL="http://localhost:11434" \
+   go run cmd/ingest/main.go /path/to/scripts/kb_wikipedia
    ```
 4. **Verify:**
    ```bash
-   # Check PostgreSQL
+   # Check PostgreSQL for documents and chunks
    docker exec casino-postgres psql -U casino -d casino_db \
-     -c "SELECT COUNT(*) FROM kb_chunks"
+     -c "SELECT COUNT(*) as docs FROM kb_documents; SELECT COUNT(*) as chunks FROM kb_chunks;"
 
-   # Check Qdrant
-   curl http://localhost:6333/collections/kb_chunks
+   # Check Qdrant collection
+   curl http://localhost:6333/collections/knowledge
    ```
+
+**Note:** The ingestion script skips already-ingested files based on filename. To re-ingest a file, delete its record from `kb_documents` table first.
 
 ## Performance Optimizations
 

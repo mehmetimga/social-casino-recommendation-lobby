@@ -159,7 +159,8 @@ social-casino-recommendation-lobby/
 ### Recommendation Service (port 8081)
 - `POST /v1/events` - Track user events
 - `POST /v1/feedback/rating` - Submit game rating
-- `GET /v1/recommendations?userId=&limit=` - Get personalized recommendations
+- `POST /v1/feedback/review` - Submit game review with sentiment analysis
+- `GET /v1/recommendations?userId=&limit=&vipLevel=` - Get personalized recommendations (VIP-filtered)
 
 ### Chat Service (port 8082)
 - `POST /v1/chat/sessions` - Create chat session

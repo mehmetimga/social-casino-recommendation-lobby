@@ -628,10 +628,13 @@ Stores chat message history.
   "title": "Diamond Stars",
   "provider": "NetEnt",
   "type": "slot",
+  "minVipLevel": "bronze",
   "tags": ["progressive", "high-volatility"],
   "description": "A classic slot game with..."
 }
 ```
+
+**VIP Level Values:** `bronze`, `silver`, `gold`, `platinum` (used for filtering recommendations)
 
 **Vector Generation**:
 ```
@@ -778,13 +781,21 @@ Get user's review for a specific game.
 
 **Response**: `200 OK` or `404 Not Found`
 
-#### GET /v1/recommendations?userId={id}&placement={placement}&limit={n}
-Get personalized game recommendations.
+#### GET /v1/recommendations?userId={id}&placement={placement}&limit={n}&vipLevel={level}
+Get personalized game recommendations filtered by VIP level.
 
 **Query Parameters**:
 - `userId`: User identifier (required)
 - `placement`: UI placement identifier (optional)
 - `limit`: Number of recommendations (default: 10)
+- `vipLevel`: User's VIP tier - `bronze`, `silver`, `gold`, `platinum` (default: bronze)
+
+**VIP Level Filtering**:
+Games have a `minVipLevel` requirement. Recommendations only include games the user can access based on their VIP tier:
+- `bronze`: Can access bronze-only games
+- `silver`: Can access bronze + silver games
+- `gold`: Can access bronze + silver + gold games
+- `platinum`: Can access all games
 
 **Response**: `200 OK`
 ```json
@@ -801,7 +812,8 @@ Get personalized game recommendations.
 1. Fetch user vector from Qdrant
 2. If no vector: return empty (frontend shows popular)
 3. Search similar games using cosine similarity
-4. Return top N game slugs
+4. Filter results by VIP level (games where minVipLevel ≤ user's vipLevel)
+5. Return top N game slugs
 
 ### Chat Service API (Port 8082)
 

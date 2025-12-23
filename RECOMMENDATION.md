@@ -106,10 +106,14 @@ Stores game embeddings based on game content:
   "title": "Diamond Stars",
   "provider": "NetEnt",
   "type": "slot",
+  "minVipLevel": "bronze",
   "tags": ["progressive", "high-volatility"],
   "description": "A classic slot game with..."
 }
 ```
+
+**VIP Level Values:** `bronze`, `silver`, `gold`, `platinum`
+Games with higher `minVipLevel` are exclusive to users of that tier or above.
 
 **How Game Vectors Are Created:**
 1. Game data is fetched from CMS
@@ -659,8 +663,8 @@ GET /v1/feedback/review?userId=user-123&gameSlug=diamond-stars
 
 ### Recommendations
 ```bash
-# Get personalized recommendations
-GET /v1/recommendations?userId=user-123&placement=homepage-suggested&limit=10
+# Get personalized recommendations (with VIP level filtering)
+GET /v1/recommendations?userId=user-123&placement=homepage-suggested&limit=10&vipLevel=gold
 
 Response:
 {
@@ -672,6 +676,14 @@ Response:
   ]
 }
 ```
+
+**VIP Level Parameter:**
+- `bronze` (default): Only bronze-tier games
+- `silver`: Bronze + silver games
+- `gold`: Bronze + silver + gold games
+- `platinum`: All games including platinum exclusives
+
+Games have a `minVipLevel` metadata field. The recommendation service filters results to only include games the user's VIP tier can access.
 
 ## Monitoring & Metrics
 
