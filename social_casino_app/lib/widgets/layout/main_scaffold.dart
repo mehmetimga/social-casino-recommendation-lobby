@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme/app_colors.dart';
+import '../../models/game.dart';
 import '../../providers/lobby_provider.dart';
 import '../chat/chat_widget.dart';
 import '../search/search_modal.dart';
@@ -74,6 +75,16 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     );
   }
 
+  // Get game type from current route for category-specific search
+  GameType? _getGameTypeFromRoute(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+    if (location.contains('slots')) return GameType.slot;
+    if (location.contains('live-casino')) return GameType.live;
+    if (location.contains('table-games')) return GameType.table;
+    if (location.contains('instant-win')) return GameType.instant;
+    return null; // My Casino or home - search all games
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedIndex = _getSelectedBottomIndex(context);
@@ -86,7 +97,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
             children: [
               // Top App Bar (pinned) - Logo + Login/Join + Search
               AppHeader(
-                onSearchTap: () => showSearchModal(context),
+                onSearchTap: () => showSearchModal(context, gameType: _getGameTypeFromRoute(context)),
                 onMenuTap: () => showCasinoMenu(context),
                 onRefreshTap: _refreshLobby,
               ),

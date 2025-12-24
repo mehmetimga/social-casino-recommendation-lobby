@@ -93,6 +93,29 @@ export const cmsApi = {
       .filter((g): g is Game => g !== undefined);
   },
 
+  async searchGames(query: string, type?: GameType, limit = 20): Promise<Game[]> {
+    let url = `/games?where[status][equals]=enabled&limit=${limit}`;
+
+    // Filter by type if specified
+    if (type) {
+      url += `&where[type][equals]=${type}`;
+    }
+
+    const response = await apiClient.cms.get<PaginatedResponse<Game>>(url);
+
+    // Client-side filter for query (PayloadCMS doesn't support OR queries well)
+    if (query) {
+      const lowerQuery = query.toLowerCase();
+      return response.docs.filter(
+        (game) =>
+          game.title.toLowerCase().includes(lowerQuery) ||
+          game.provider.toLowerCase().includes(lowerQuery)
+      );
+    }
+
+    return response.docs;
+  },
+
   // Promotions
   async getPromotions(placement?: string): Promise<Promotion[]> {
     let query = '/promotions?where[status][equals]=live&sort=-priority';

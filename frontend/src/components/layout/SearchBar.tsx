@@ -1,31 +1,41 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'react-router-dom';
 import { cmsApi } from '../../api/cms';
 import { getMediaUrl } from '../../api/client';
-import { Game } from '../../types/game';
+import { Game, GameType } from '../../types/game';
+import { useGamePlay } from '../../context/GamePlayContext';
 
 interface SearchBarProps {
   onClose?: () => void;
+  gameType?: GameType;
 }
 
-export default function SearchBar({ onClose }: SearchBarProps) {
+// Map route paths to game types
+const routeToGameType: Record<string, GameType> = {
+  '/slots': 'slot',
+  '/live-casino': 'live',
+  '/table-games': 'table',
+  '/instant-win': 'instant',
+};
+
+export default function SearchBar({ onClose, gameType }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const { openGameDialog } = useGamePlay();
+
+  // Determine the game type based on current route or prop
+  const currentGameType = gameType || routeToGameType[location.pathname];
 
   const { data: games, isLoading } = useQuery({
-    queryKey: ['games', 'search', query],
-    queryFn: () => cmsApi.getGames({ limit: 10 }),
+    queryKey: ['games', 'search', query, currentGameType],
+    queryFn: () => cmsApi.searchGames(query, currentGameType, 20),
     enabled: query.length > 1,
   });
-
-  // Filter games by search query
-  const filteredGames = games?.docs.filter((game) =>
-    game.title.toLowerCase().includes(query.toLowerCase()) ||
-    game.provider.toLowerCase().includes(query.toLowerCase())
-  ) || [];
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -46,8 +56,24 @@ export default function SearchBar({ onClose }: SearchBarProps) {
     setQuery('');
     setIsOpen(false);
     onClose?.();
-    // TODO: Navigate to game or open modal
-    console.log('Selected game:', game.slug);
+    // Open the game play dialog
+    openGameDialog(game);
+  };
+
+  // Get placeholder text based on category
+  const getPlaceholder = () => {
+    switch (currentGameType) {
+      case 'slot':
+        return 'Search slots...';
+      case 'live':
+        return 'Search live casino...';
+      case 'table':
+        return 'Search table games...';
+      case 'instant':
+        return 'Search instant win...';
+      default:
+        return 'Search all games...';
+    }
   };
 
   return (
@@ -62,7 +88,7 @@ export default function SearchBar({ onClose }: SearchBarProps) {
             setQuery(e.target.value);
             setIsOpen(e.target.value.length > 1);
           }}
-          placeholder="Search games..."
+          placeholder={getPlaceholder()}
           className="w-full pl-10 pr-10 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-casino-purple"
         />
         {query && (
@@ -85,9 +111,9 @@ export default function SearchBar({ onClose }: SearchBarProps) {
             <div className="p-4 text-center text-gray-400">
               Searching...
             </div>
-          ) : filteredGames.length > 0 ? (
+          ) : games && games.length > 0 ? (
             <div className="max-h-80 overflow-y-auto">
-              {filteredGames.map((game) => (
+              {games.map((game) => (
                 <button
                   key={game.id}
                   onClick={() => handleGameClick(game)}
@@ -98,9 +124,12 @@ export default function SearchBar({ onClose }: SearchBarProps) {
                     alt={game.title}
                     className="w-12 h-12 rounded object-cover"
                   />
-                  <div className="text-left">
+                  <div className="text-left flex-1">
                     <div className="text-white font-medium">{game.title}</div>
                     <div className="text-sm text-gray-400">{game.provider}</div>
+                  </div>
+                  <div className="text-xs text-gray-500 capitalize px-2 py-1 bg-white/5 rounded">
+                    {game.type}
                   </div>
                 </button>
               ))}

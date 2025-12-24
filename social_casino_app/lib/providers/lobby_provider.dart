@@ -144,8 +144,27 @@ final gameBySlugProvider = FutureProvider.family<Game?, String>((ref, slug) asyn
   return cmsService.getGame(slug);
 });
 
-/// Search games provider
-final searchGamesProvider = FutureProvider.family<List<Game>, String>((ref, query) async {
+/// Search query with optional type filter
+class SearchQuery {
+  final String query;
+  final GameType? type;
+
+  const SearchQuery({required this.query, this.type});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SearchQuery &&
+          runtimeType == other.runtimeType &&
+          query == other.query &&
+          type == other.type;
+
+  @override
+  int get hashCode => query.hashCode ^ type.hashCode;
+}
+
+/// Search games provider with optional type filter
+final searchGamesProvider = FutureProvider.family<List<Game>, SearchQuery>((ref, searchQuery) async {
   final cmsService = ref.watch(cmsServiceProvider);
-  return cmsService.searchGames(query, limit: 30);
+  return cmsService.searchGames(searchQuery.query, type: searchQuery.type, limit: 30);
 });

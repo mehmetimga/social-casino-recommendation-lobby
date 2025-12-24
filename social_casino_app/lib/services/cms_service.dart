@@ -91,18 +91,33 @@ class CmsService {
     return result.docs;
   }
 
-  /// Search games by title
-  Future<List<Game>> searchGames(String query, {int limit = 20}) async {
-    if (query.isEmpty) return [];
-
+  /// Search games by title and provider
+  /// Optionally filter by game type (slot, live, table, instant)
+  Future<List<Game>> searchGames(String query, {GameType? type, int limit = 20}) async {
     try {
-      final response = await _dio.get('/api/games', queryParameters: {
-        'where[title][contains]': query,
+      final queryParams = <String, dynamic>{
         'where[status][equals]': 'enabled',
         'sort': '-popularityScore',
         'limit': limit,
-      });
+      };
+
+      // Filter by type if specified
+      if (type != null) {
+        queryParams['where[type][equals]'] = type.name;
+      }
+
+      final response = await _dio.get('/api/games', queryParameters: queryParams);
       final paginated = PaginatedGames.fromJson(response.data);
+
+      // Client-side filter for query (search both title and provider)
+      if (query.isNotEmpty) {
+        final lowerQuery = query.toLowerCase();
+        return paginated.docs.where((game) =>
+          game.title.toLowerCase().contains(lowerQuery) ||
+          game.provider.toLowerCase().contains(lowerQuery)
+        ).toList();
+      }
+
       return paginated.docs;
     } on DioException catch (e) {
       throw ApiException(

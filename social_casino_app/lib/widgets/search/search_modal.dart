@@ -7,7 +7,9 @@ import '../lobby/game_card.dart';
 import '../game/play_modal.dart';
 
 class SearchModal extends ConsumerStatefulWidget {
-  const SearchModal({super.key});
+  final GameType? gameType;
+
+  const SearchModal({super.key, this.gameType});
 
   @override
   ConsumerState<SearchModal> createState() => _SearchModalState();
@@ -21,6 +23,21 @@ class _SearchModalState extends ConsumerState<SearchModal> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  String _getPlaceholder() {
+    switch (widget.gameType) {
+      case GameType.slot:
+        return 'Search slots...';
+      case GameType.live:
+        return 'Search live casino...';
+      case GameType.table:
+        return 'Search table games...';
+      case GameType.instant:
+        return 'Search instant win...';
+      default:
+        return 'Search all games...';
+    }
   }
 
   @override
@@ -63,7 +80,7 @@ class _SearchModalState extends ConsumerState<SearchModal> {
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Search games...',
+                        hintText: _getPlaceholder(),
                         hintStyle: TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 14,
@@ -177,7 +194,8 @@ class _SearchModalState extends ConsumerState<SearchModal> {
   }
 
   Widget _buildSearchResults() {
-    final gamesAsync = ref.watch(searchGamesProvider(_searchQuery));
+    final searchQuery = SearchQuery(query: _searchQuery, type: widget.gameType);
+    final gamesAsync = ref.watch(searchGamesProvider(searchQuery));
 
     return gamesAsync.when(
       loading: () => const Center(
@@ -239,11 +257,11 @@ class _SearchModalState extends ConsumerState<SearchModal> {
   }
 }
 
-void showSearchModal(BuildContext context) {
+void showSearchModal(BuildContext context, {GameType? gameType}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) => const SearchModal(),
+    builder: (context) => SearchModal(gameType: gameType),
   );
 }
