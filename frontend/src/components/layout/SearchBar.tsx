@@ -22,6 +22,7 @@ const routeToGameType: Record<string, GameType> = {
 
 export default function SearchBar({ onClose, gameType }: SearchBarProps) {
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,10 +32,18 @@ export default function SearchBar({ onClose, gameType }: SearchBarProps) {
   // Determine the game type based on current route or prop
   const currentGameType = gameType || routeToGameType[location.pathname];
 
+  // Debounce search query - wait 300ms after user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
   const { data: games, isLoading } = useQuery({
-    queryKey: ['games', 'search', query, currentGameType],
-    queryFn: () => cmsApi.searchGames(query, currentGameType, 20),
-    enabled: query.length > 1,
+    queryKey: ['games', 'search', debouncedQuery, currentGameType],
+    queryFn: () => cmsApi.searchGames(debouncedQuery, currentGameType),
+    enabled: debouncedQuery.length > 1,
   });
 
   useEffect(() => {
@@ -104,41 +113,46 @@ export default function SearchBar({ onClose, gameType }: SearchBarProps) {
         )}
       </div>
 
-      {/* Search Results Dropdown */}
+      {/* Search Results Dropdown - Fixed positioning to avoid stacking context issues */}
       {isOpen && query.length > 1 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-casino-bg-secondary border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
-          {isLoading ? (
-            <div className="p-4 text-center text-gray-400">
-              Searching...
-            </div>
-          ) : games && games.length > 0 ? (
-            <div className="max-h-80 overflow-y-auto">
-              {games.map((game) => (
-                <button
-                  key={game.id}
-                  onClick={() => handleGameClick(game)}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-white/5 transition-colors"
-                >
-                  <img
-                    src={getMediaUrl(game.thumbnail?.sizes?.thumbnail?.url || game.thumbnail?.url)}
-                    alt={game.title}
-                    className="w-12 h-12 rounded object-cover"
-                  />
-                  <div className="text-left flex-1">
-                    <div className="text-white font-medium">{game.title}</div>
-                    <div className="text-sm text-gray-400">{game.provider}</div>
-                  </div>
-                  <div className="text-xs text-gray-500 capitalize px-2 py-1 bg-white/5 rounded">
-                    {game.type}
-                  </div>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 text-center text-gray-400">
-              No games found
-            </div>
-          )}
+        <div
+          className="fixed left-0 right-0 mx-auto max-w-7xl px-4 z-[9999]"
+          style={{ top: containerRef.current ? containerRef.current.getBoundingClientRect().bottom + 8 + 'px' : '120px' }}
+        >
+          <div className="bg-casino-bg-secondary border border-white/10 rounded-lg shadow-2xl overflow-hidden">
+            {isLoading ? (
+              <div className="p-4 text-center text-gray-400">
+                Searching...
+              </div>
+            ) : games && games.length > 0 ? (
+              <div className="max-h-80 overflow-y-auto">
+                {games.map((game) => (
+                  <button
+                    key={game.id}
+                    onClick={() => handleGameClick(game)}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-white/5 transition-colors"
+                  >
+                    <img
+                      src={getMediaUrl(game.thumbnail?.sizes?.thumbnail?.url || game.thumbnail?.url)}
+                      alt={game.title}
+                      className="w-12 h-12 rounded object-cover"
+                    />
+                    <div className="text-left flex-1">
+                      <div className="text-white font-medium">{game.title}</div>
+                      <div className="text-sm text-gray-400">{game.provider}</div>
+                    </div>
+                    <div className="text-xs text-gray-500 capitalize px-2 py-1 bg-white/5 rounded">
+                      {game.type}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 text-center text-gray-400">
+                No games found
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

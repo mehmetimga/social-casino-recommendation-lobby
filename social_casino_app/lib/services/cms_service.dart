@@ -91,7 +91,7 @@ class CmsService {
     return result.docs;
   }
 
-  /// Search games by title and provider
+  /// Search games by title (server-side)
   /// Optionally filter by game type (slot, live, table, instant)
   Future<List<Game>> searchGames(String query, {GameType? type, int limit = 20}) async {
     try {
@@ -106,18 +106,13 @@ class CmsService {
         queryParams['where[type][equals]'] = type.name;
       }
 
-      final response = await _dio.get('/api/games', queryParameters: queryParams);
-      final paginated = PaginatedGames.fromJson(response.data);
-
-      // Client-side filter for query (search both title and provider)
+      // Server-side search by title using PayloadCMS 'like' operator (case-insensitive partial match)
       if (query.isNotEmpty) {
-        final lowerQuery = query.toLowerCase();
-        return paginated.docs.where((game) =>
-          game.title.toLowerCase().contains(lowerQuery) ||
-          game.provider.toLowerCase().contains(lowerQuery)
-        ).toList();
+        queryParams['where[title][like]'] = query;
       }
 
+      final response = await _dio.get('/api/games', queryParameters: queryParams);
+      final paginated = PaginatedGames.fromJson(response.data);
       return paginated.docs;
     } on DioException catch (e) {
       throw ApiException(

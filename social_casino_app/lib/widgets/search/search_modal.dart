@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../config/theme/app_colors.dart';
@@ -18,11 +19,26 @@ class SearchModal extends ConsumerStatefulWidget {
 class _SearchModalState extends ConsumerState<SearchModal> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  String _debouncedQuery = '';
+  Timer? _debounceTimer;
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() => _searchQuery = value);
+
+    // Cancel previous timer
+    _debounceTimer?.cancel();
+
+    // Start new timer - wait 300ms after user stops typing
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      setState(() => _debouncedQuery = value);
+    });
   }
 
   String _getPlaceholder() {
@@ -105,9 +121,7 @@ class _SearchModalState extends ConsumerState<SearchModal> {
                               )
                             : null,
                       ),
-                      onChanged: (value) {
-                        setState(() => _searchQuery = value);
-                      },
+                      onChanged: _onSearchChanged,
                     ),
                   ),
                 ),
@@ -128,7 +142,7 @@ class _SearchModalState extends ConsumerState<SearchModal> {
           ),
           // Search results
           Expanded(
-            child: _searchQuery.isEmpty
+            child: _debouncedQuery.isEmpty
                 ? _buildRecentSearches()
                 : _buildSearchResults(),
           ),
@@ -194,7 +208,7 @@ class _SearchModalState extends ConsumerState<SearchModal> {
   }
 
   Widget _buildSearchResults() {
-    final searchQuery = SearchQuery(query: _searchQuery, type: widget.gameType);
+    final searchQuery = SearchQuery(query: _debouncedQuery, type: widget.gameType);
     final gamesAsync = ref.watch(searchGamesProvider(searchQuery));
 
     return gamesAsync.when(

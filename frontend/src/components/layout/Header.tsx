@@ -24,7 +24,7 @@ export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-md border-b border-white/10">
+    <header className="sticky top-0 z-[999] bg-black/95 backdrop-blur-md border-b border-white/10 isolate">
       <div className="container-casino">
         {/* Main Header */}
         <div className="flex items-center justify-between h-16">
@@ -104,7 +104,7 @@ export default function Header() {
 
         {/* Search Bar (expandable) */}
         {isSearchOpen && (
-          <div className="py-3 border-t border-white/10">
+          <div className="py-3 border-t border-white/10 relative z-[200]">
             <SearchBar onClose={() => setIsSearchOpen(false)} />
           </div>
         )}
