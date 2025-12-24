@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme/app_colors.dart';
+import '../../providers/lobby_provider.dart';
 import '../chat/chat_widget.dart';
 import '../search/search_modal.dart';
 import '../menu/casino_menu_drawer.dart';
 import 'app_header.dart';
 import 'category_tab_bar.dart';
 
-class MainScaffold extends StatefulWidget {
+class MainScaffold extends ConsumerStatefulWidget {
   final Widget child;
 
   const MainScaffold({super.key, required this.child});
 
   @override
-  State<MainScaffold> createState() => _MainScaffoldState();
+  ConsumerState<MainScaffold> createState() => _MainScaffoldState();
 }
 
-class _MainScaffoldState extends State<MainScaffold> {
+class _MainScaffoldState extends ConsumerState<MainScaffold> {
   int _getSelectedBottomIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
     switch (location) {
@@ -50,6 +52,28 @@ class _MainScaffoldState extends State<MainScaffold> {
     }
   }
 
+  void _refreshLobby() {
+    // Invalidate all lobby-related providers to force refresh
+    ref.invalidate(lobbyLayoutTabsProvider);
+    ref.invalidate(currentLobbyLayoutProvider);
+    ref.invalidate(lobbyLayoutProvider);
+    ref.invalidate(popularGamesProvider);
+    ref.invalidate(newGamesProvider);
+    ref.invalidate(jackpotGamesProvider);
+    ref.invalidate(heroPromotionsProvider);
+    ref.invalidate(recommendationsProvider);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Lobby refreshed'),
+        backgroundColor: AppColors.casinoGreen,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedIndex = _getSelectedBottomIndex(context);
@@ -64,6 +88,7 @@ class _MainScaffoldState extends State<MainScaffold> {
               AppHeader(
                 onSearchTap: () => showSearchModal(context),
                 onMenuTap: () => showCasinoMenu(context),
+                onRefreshTap: _refreshLobby,
               ),
               // Category Tab Bar (pinned) - Layout categories
               const CategoryTabBar(),

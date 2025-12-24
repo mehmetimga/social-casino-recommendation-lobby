@@ -8,6 +8,7 @@ class AppHeader extends StatelessWidget {
   final VoidCallback? onLogoutTap;
   final VoidCallback? onSearchTap;
   final VoidCallback? onMenuTap;
+  final VoidCallback? onRefreshTap;
 
   const AppHeader({
     super.key,
@@ -17,6 +18,7 @@ class AppHeader extends StatelessWidget {
     this.onLogoutTap,
     this.onSearchTap,
     this.onMenuTap,
+    this.onRefreshTap,
   });
 
   @override
@@ -146,6 +148,23 @@ class AppHeader extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Refresh button
+              GestureDetector(
+                onTap: onRefreshTap,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.pillBg,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.refresh,
+                    color: AppColors.textSecondary,
+                    size: 18,
                   ),
                 ),
               ),
