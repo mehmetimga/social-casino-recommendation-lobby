@@ -224,6 +224,58 @@ const promotionsData: PromotionSeedData[] = [
     priority: 45,
     bannerIndex: 11,
   },
+  {
+    slug: 'casino-royal-007',
+    title: 'Casino Royal 007',
+    subtitle: 'License to Win - High Stakes Elegance',
+    description: 'Step into the world of international espionage and high-stakes glamour. Experience the thrill of secret agent casino action with premium baccarat and exclusive VIP tables.',
+    showOverlay: false,
+    ctaText: 'Go Royal',
+    ctaLink: {
+      type: 'category',
+      category: 'table',
+    },
+    status: 'live',
+    placement: 'hero',
+    priority: 40,
+    bannerIndex: 12,
+  },
+  {
+    slug: 'casino-royal-007-gemini',
+    title: 'Casino Royal 007 Gemini',
+    subtitle: 'Double Agent, Double Wins',
+    description: 'The ultimate spy casino experience returns with twin jackpots. Play as a double agent where every bet could unlock classified rewards and secret multipliers.',
+    showOverlay: false,
+    ctaText: 'Join Mission',
+    ctaLink: {
+      type: 'category',
+      category: 'table',
+    },
+    countdown: {
+      enabled: true,
+      label: 'Mission ends in',
+    },
+    status: 'live',
+    placement: 'hero',
+    priority: 35,
+    bannerIndex: 13,
+  },
+  {
+    slug: 'casino-gemini-007-roulette',
+    title: 'Gemini 007 Roulette',
+    subtitle: 'Spin the Wheel of Destiny',
+    description: 'Where spy thriller meets classic roulette. Watch the golden wheel spin with exclusive 007 multipliers and secret bonus sectors that only agents can unlock.',
+    showOverlay: false,
+    ctaText: 'Spin Now',
+    ctaLink: {
+      type: 'category',
+      category: 'table',
+    },
+    status: 'live',
+    placement: 'hero',
+    priority: 30,
+    bannerIndex: 14,
+  },
 ]
 
 export async function seedPromotions(payload: Payload): Promise<void> {

@@ -16,6 +16,9 @@ export const bannerImages = [
   'blade-runner-casino.png',
   'neon-nexus-roulette.png',
   'serengeti_spin_safari.png',
+  'casino-royal-007-ana.png',
+  'casino-royal-007-ana-gemini.png',
+  'casino-gemini-007-roulette.png',
 ]
 
 // Game images mapping: slug -> image prefix (141 games total)
@@ -181,6 +184,11 @@ export const gameImageMap: Record<string, string> = {
   'mighty-freya': 'vswaysmfreya',
   'modern-fruits': 'vswaysmodfr',
   'pearls-ways': 'vswayspearls',
+
+  // Casino Royal 007 Themed Games
+  'casino-royal-007-baccarat': 'casino-royal-007-baccarat',
+  'casino-royal-007-gemini-blackjack': 'casino-royal-007-gemini-blackjack',
+  'gemini-007-roulette': 'gemini-007-roulette',
 }
 
 // Additional game images are now included in gameImageMap above
