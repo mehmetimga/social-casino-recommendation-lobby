@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../config/theme/app_colors.dart';
+import '../../providers/lobby_provider.dart';
 
-class CasinoMenuDrawer extends StatelessWidget {
+class CasinoMenuDrawer extends ConsumerWidget {
   const CasinoMenuDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Material(
       color: AppColors.casinoBg,
       child: Container(
@@ -127,6 +129,11 @@ class CasinoMenuDrawer extends StatelessWidget {
                     title: 'Settings',
                     items: [
                       _MenuItem(
+                        icon: Icons.refresh,
+                        title: 'Refresh Lobby',
+                        onTap: () => _refreshLobby(context, ref),
+                      ),
+                      _MenuItem(
                         icon: Icons.notifications_outlined,
                         title: 'Notifications',
                         onTap: () => _showComingSoon(context, 'Notifications'),
@@ -183,6 +190,29 @@ class CasinoMenuDrawer extends StatelessWidget {
         backgroundColor: AppColors.casinoBgSecondary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  void _refreshLobby(BuildContext context, WidgetRef ref) {
+    // Invalidate all lobby-related providers to force refresh
+    ref.invalidate(lobbyLayoutTabsProvider);
+    ref.invalidate(currentLobbyLayoutProvider);
+    ref.invalidate(lobbyLayoutProvider);
+    ref.invalidate(popularGamesProvider);
+    ref.invalidate(newGamesProvider);
+    ref.invalidate(jackpotGamesProvider);
+    ref.invalidate(heroPromotionsProvider);
+    ref.invalidate(recommendationsProvider);
+
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Lobby refreshed'),
+        backgroundColor: AppColors.casinoGreen,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
