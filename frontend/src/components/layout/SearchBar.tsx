@@ -27,7 +27,7 @@ export default function SearchBar({ onClose, gameType }: SearchBarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-  const { openGameDialog } = useGamePlay();
+  const { openGameInfo } = useGamePlay();
 
   // Determine the game type based on current route or prop
   const currentGameType = gameType || routeToGameType[location.pathname];
@@ -65,8 +65,8 @@ export default function SearchBar({ onClose, gameType }: SearchBarProps) {
     setQuery('');
     setIsOpen(false);
     onClose?.();
-    // Open the game play dialog
-    openGameDialog(game);
+    // Open the game info dialog (same as mobile behavior)
+    openGameInfo(game);
   };
 
   // Get placeholder text based on category
