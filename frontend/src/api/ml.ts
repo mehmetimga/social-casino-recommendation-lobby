@@ -101,12 +101,26 @@ export async function fetchEmbeddings(
   return response.json();
 }
 
+export async function rebuildGraph(): Promise<{ status: string; num_users: number; num_games: number; num_edges: number }> {
+  const response = await fetch(`${ML_API_URL}/v1/rebuild`, {
+    method: 'POST',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to rebuild graph: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
 export async function fetchGraph(
   maxNodes: number = 200,
   maxEdges: number = 500,
-  includeWeights: boolean = true
+  includeWeights: boolean = true,
+  autoRebuild: boolean = true
 ): Promise<GraphResponse> {
-  const response = await fetch(`${ML_API_URL}/v1/viz/graph`, {
+  // First try to fetch the graph
+  let response = await fetch(`${ML_API_URL}/v1/viz/graph`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -120,7 +134,34 @@ export async function fetchGraph(
     throw new Error(`Failed to fetch graph: ${response.statusText}`);
   }
 
-  return response.json();
+  let data: GraphResponse = await response.json();
+
+  // If graph is empty and autoRebuild is enabled, try to rebuild from database
+  if (autoRebuild && data.nodes.length === 0) {
+    try {
+      await rebuildGraph();
+      
+      // Retry fetching graph after rebuild
+      response = await fetch(`${ML_API_URL}/v1/viz/graph`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          max_nodes: maxNodes,
+          max_edges: maxEdges,
+          include_weights: includeWeights,
+        }),
+      });
+
+      if (response.ok) {
+        data = await response.json();
+      }
+    } catch (e) {
+      // Rebuild failed, return original empty response
+      console.warn('Graph rebuild failed:', e);
+    }
+  }
+
+  return data;
 }
 
 export async function fetchCollections(): Promise<{ collections: CollectionInfo[] }> {

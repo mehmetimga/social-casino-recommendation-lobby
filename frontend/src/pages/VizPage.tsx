@@ -67,8 +67,8 @@ function Point3D({ point, scale = 1 }: { point: EmbeddingPoint; scale?: number }
 
   return (
     <mesh position={position}>
-      <sphereGeometry args={[0.03, 16, 16]} />
-      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.3} />
+      <sphereGeometry args={[0.015, 12, 12]} />
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.2} />
     </mesh>
   );
 }
@@ -87,7 +87,7 @@ function Embedding3DCanvas({
     return (
       <div 
         style={{ width, height }} 
-        className="bg-slate-900 flex items-center justify-center text-gray-500"
+        className="bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-200 rounded"
       >
         Load 3D embeddings to view
       </div>
@@ -95,16 +95,20 @@ function Embedding3DCanvas({
   }
 
   return (
-    <div style={{ width, height }} className="bg-slate-900 rounded">
-      <Canvas>
+    <div style={{ width, height }} className="bg-white rounded border border-gray-200">
+      <Canvas style={{ background: '#f9fafb' }}>
         <PerspectiveCamera makeDefault position={[3, 2, 3]} />
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        <ambientLight intensity={0.7} />
+        <pointLight position={[10, 10, 10]} intensity={0.8} />
+        <pointLight position={[-10, -10, -10]} intensity={0.4} />
         
-        {/* Grid helper */}
-        <gridHelper args={[4, 20, '#1f2937', '#1f2937']} />
-        <axesHelper args={[2]} />
+        {/* Grid helper - darker gray for better visibility */}
+        <gridHelper args={[4, 20, '#8b919a', '#b0b5bd']} />
+        
+        {/* Bold XYZ axes */}
+        <Line points={[[0, 0, 0], [2, 0, 0]]} color="#ef4444" lineWidth={3} />
+        <Line points={[[0, 0, 0], [0, 2, 0]]} color="#22c55e" lineWidth={3} />
+        <Line points={[[0, 0, 0], [0, 0, 2]]} color="#3b82f6" lineWidth={3} />
         
         {/* Points */}
         <Suspense fallback={null}>
@@ -125,14 +129,14 @@ function Embedding3DCanvas({
       </Canvas>
       
       {/* Legend overlay */}
-      <div className="absolute bottom-4 left-4 flex gap-4 text-sm bg-black/50 rounded px-3 py-2 backdrop-blur-sm">
+      <div className="absolute bottom-4 left-4 flex gap-4 text-sm bg-white/90 rounded px-3 py-2 backdrop-blur-sm border border-gray-200 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <span className="text-white">Users</span>
+          <span className="text-gray-700">Users</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-emerald-500" />
-          <span className="text-white">Games</span>
+          <span className="text-gray-700">Games</span>
         </div>
         <span className="text-gray-400 text-xs ml-2">Drag to rotate • Scroll to zoom</span>
       </div>
@@ -152,8 +156,8 @@ function GraphNode3D({
   
   return (
     <mesh position={position}>
-      <sphereGeometry args={[0.05, 16, 16]} />
-      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.4} />
+      <sphereGeometry args={[0.025, 12, 12]} />
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.2} />
     </mesh>
   );
 }
@@ -169,10 +173,10 @@ function GraphEdge3D({
   return (
     <Line
       points={[start, end]}
-      color="#4b5563"
+      color="#9ca3af"
       lineWidth={1}
       transparent
-      opacity={0.3}
+      opacity={0.5}
     />
   );
 }
@@ -191,7 +195,7 @@ function Graph3DCanvas({
     return (
       <div 
         style={{ width, height }} 
-        className="bg-slate-900 flex items-center justify-center text-gray-500"
+        className="bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-200 rounded"
       >
         Load graph to view 3D visualization
       </div>
@@ -217,16 +221,20 @@ function Graph3DCanvas({
   });
 
   return (
-    <div style={{ width, height }} className="bg-slate-900 rounded relative">
-      <Canvas>
+    <div style={{ width, height }} className="bg-white rounded border border-gray-200 relative">
+      <Canvas style={{ background: '#f9fafb' }}>
         <PerspectiveCamera makeDefault position={[4, 3, 4]} />
-        <ambientLight intensity={0.6} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        <ambientLight intensity={0.7} />
+        <pointLight position={[10, 10, 10]} intensity={0.8} />
+        <pointLight position={[-10, -10, -10]} intensity={0.4} />
         
-        {/* Grid helper */}
-        <gridHelper args={[6, 20, '#1f2937', '#1f2937']} />
-        <axesHelper args={[3]} />
+        {/* Grid helper - darker gray for better visibility */}
+        <gridHelper args={[6, 20, '#8b919a', '#b0b5bd']} />
+        
+        {/* Bold XYZ axes */}
+        <Line points={[[0, 0, 0], [3, 0, 0]]} color="#ef4444" lineWidth={3} />
+        <Line points={[[0, 0, 0], [0, 3, 0]]} color="#22c55e" lineWidth={3} />
+        <Line points={[[0, 0, 0], [0, 0, 3]]} color="#3b82f6" lineWidth={3} />
         
         {/* Edges */}
         <Suspense fallback={null}>
@@ -271,14 +279,14 @@ function Graph3DCanvas({
       </Canvas>
       
       {/* Legend overlay */}
-      <div className="absolute bottom-4 left-4 flex flex-wrap gap-3 text-sm bg-black/50 rounded px-3 py-2 backdrop-blur-sm">
+      <div className="absolute bottom-4 left-4 flex flex-wrap gap-3 text-sm bg-white/90 rounded px-3 py-2 backdrop-blur-sm border border-gray-200 shadow-sm">
         {data.stats.node_types?.map((type) => (
           <div key={type} className="flex items-center gap-2">
             <div 
               className="w-3 h-3 rounded-full" 
               style={{ backgroundColor: NODE_COLORS[type] || '#6b7280' }}
             />
-            <span className="text-white capitalize">{type}</span>
+            <span className="text-gray-700 capitalize">{type}</span>
           </div>
         ))}
         <span className="text-gray-400 text-xs ml-2">Drag to rotate • Scroll to zoom</span>
@@ -367,31 +375,48 @@ function EmbeddingCanvas({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear
-    ctx.fillStyle = '#0a0a0f';
+    // Clear - white background
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
+
+    // Draw grid lines (darker gray) - before transform for fixed grid
+    const gridSpacing = 50;
+    ctx.strokeStyle = '#b0b5bd';
+    ctx.lineWidth = 1;
+    
+    // Vertical grid lines
+    for (let x = 0; x <= width; x += gridSpacing) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+    
+    // Horizontal grid lines
+    for (let y = 0; y <= height; y += gridSpacing) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    // Draw center axis lines (darker)
+    ctx.strokeStyle = '#8b919a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(width / 2, 0);
+    ctx.lineTo(width / 2, height);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.stroke();
 
     // Apply zoom and pan transform
     ctx.save();
     ctx.translate(width / 2 + pan.x, height / 2 + pan.y);
     ctx.scale(zoom, zoom);
     ctx.translate(-width / 2, -height / 2);
-
-    // Draw grid lines
-    ctx.strokeStyle = '#1f2937';
-    ctx.lineWidth = 0.5 / zoom;
-    for (let i = 0; i <= 10; i++) {
-      const x = (width / 10) * i;
-      const y = (height / 10) * i;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
 
     // Transform coordinates from [-1, 1] to canvas space with padding
     const padding = 40;
@@ -424,7 +449,7 @@ function EmbeddingCanvas({
 
       // Draw label for hovered point
       if (isHovered && point.label) {
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#1f2937';
         ctx.font = `${12 / zoom}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.fillText(point.label, x, y - 12 / zoom);
@@ -579,14 +604,62 @@ function GraphCanvas({
   // Draw
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !data || nodePositions.size === 0) return;
+    if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear
-    ctx.fillStyle = '#0a0a0f';
+    // Clear - white background
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
+
+    // Draw grid lines (darker gray)
+    const gridSpacing = 50;
+    ctx.strokeStyle = '#b0b5bd';
+    ctx.lineWidth = 1;
+    
+    // Vertical grid lines
+    for (let x = 0; x <= width; x += gridSpacing) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+    
+    // Horizontal grid lines
+    for (let y = 0; y <= height; y += gridSpacing) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    // Draw axis lines (darker)
+    ctx.strokeStyle = '#8b919a';
+    ctx.lineWidth = 1.5;
+    // Center vertical axis
+    ctx.beginPath();
+    ctx.moveTo(width / 2, 0);
+    ctx.lineTo(width / 2, height);
+    ctx.stroke();
+    // Center horizontal axis
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.stroke();
+
+    // If no data or empty nodes, show a message
+    if (!data || data.nodes.length === 0 || nodePositions.size === 0) {
+      ctx.fillStyle = '#6b7280';
+      ctx.font = 'bold 18px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const message = data 
+        ? 'No graph data available. Train a model first.' 
+        : 'Click "Load Graph" to visualize the graph structure.';
+      ctx.fillText(message, width / 2, height / 2);
+      return;
+    }
 
     // Apply zoom and pan transform
     ctx.save();
@@ -603,7 +676,7 @@ function GraphCanvas({
       ctx.beginPath();
       ctx.moveTo(posA.x, posA.y);
       ctx.lineTo(posB.x, posB.y);
-      ctx.strokeStyle = edge.weight ? `rgba(100, 116, 139, ${Math.min(edge.weight * 0.3, 0.6)})` : 'rgba(100, 116, 139, 0.3)';
+      ctx.strokeStyle = edge.weight ? `rgba(100, 116, 139, ${Math.min(edge.weight * 0.3, 0.6)})` : 'rgba(100, 116, 139, 0.4)';
       ctx.lineWidth = 1 / zoom;
       ctx.stroke();
     });
@@ -631,7 +704,7 @@ function GraphCanvas({
 
       // Label for hovered
       if (isHovered && node.label) {
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#1f2937';
         ctx.font = `${11 / zoom}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.fillText(node.label, pos.x, pos.y - 14 / zoom);
@@ -784,15 +857,51 @@ export default function VizPage() {
   // Handle wheel zoom for embeddings
   const handleEmbeddingWheel = (e: React.WheelEvent) => {
     e.preventDefault();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const canvasWidth = rect.width;
+    const canvasHeight = rect.height;
+    
+    // Calculate mouse position relative to canvas center
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
+    
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setEmbeddingZoom(z => Math.min(Math.max(z * delta, 0.2), 5));
+    const newZoom = Math.min(Math.max(embeddingZoom * delta, 0.2), 5);
+    const zoomRatio = newZoom / embeddingZoom;
+    
+    // Adjust pan to zoom towards mouse position
+    const newPanX = mouseX - centerX - (mouseX - centerX - embeddingPan.x) * zoomRatio;
+    const newPanY = mouseY - centerY - (mouseY - centerY - embeddingPan.y) * zoomRatio;
+    
+    setEmbeddingZoom(newZoom);
+    setEmbeddingPan({ x: newPanX, y: newPanY });
   };
   
-  // Handle wheel zoom for graph
+  // Handle wheel zoom for graph - zoom towards mouse position
   const handleGraphWheel = (e: React.WheelEvent) => {
     e.preventDefault();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const canvasWidth = rect.width;
+    const canvasHeight = rect.height;
+    
+    // Calculate mouse position relative to canvas center
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
+    
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setGraphZoom(z => Math.min(Math.max(z * delta, 0.2), 5));
+    const newZoom = Math.min(Math.max(graphZoom * delta, 0.2), 5);
+    const zoomRatio = newZoom / graphZoom;
+    
+    // Adjust pan to zoom towards mouse position
+    const newPanX = mouseX - centerX - (mouseX - centerX - graphPan.x) * zoomRatio;
+    const newPanY = mouseY - centerY - (mouseY - centerY - graphPan.y) * zoomRatio;
+    
+    setGraphZoom(newZoom);
+    setGraphPan({ x: newPanX, y: newPanY });
   };
   
   // Track which canvas is being panned
