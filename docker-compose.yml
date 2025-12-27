@@ -167,6 +167,7 @@ services:
       VITE_CMS_URL: ${VITE_CMS_URL:-http://localhost:3001}
       VITE_RECOMMENDATION_URL: ${VITE_RECOMMENDATION_URL:-http://localhost:8081}
       VITE_CHAT_URL: ${VITE_CHAT_URL:-http://localhost:8082}
+      VITE_ML_URL: ${VITE_ML_URL:-http://localhost:8083}
     volumes:
       - ./frontend:/app
       - /app/node_modules

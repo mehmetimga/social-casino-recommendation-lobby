@@ -15,10 +15,10 @@ WORKDIR /app
 # Upgrade pip
 RUN pip install --upgrade pip
 
-# Install PyTorch first (required for torch-geometric)
+# Install PyTorch first (CPU version)
 RUN pip install --no-cache-dir torch>=2.0.0
 
-# Install remaining dependencies
+# Install remaining dependencies (includes torch-geometric which works without optional deps)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 

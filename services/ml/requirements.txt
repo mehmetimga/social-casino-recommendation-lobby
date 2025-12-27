@@ -1,0 +1,33 @@
+# ML Service Dependencies
+
+# Web Framework
+fastapi>=0.109.0
+uvicorn>=0.27.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# PyTorch Geometric (NOTE: torch must be installed first in Dockerfile)
+torch-geometric>=2.4.0
+
+# Database Clients
+psycopg2-binary>=2.9.9
+asyncpg>=0.29.0
+qdrant-client>=1.7.0
+
+# ML/Data Processing
+numpy>=1.26.0
+pandas>=2.1.0
+scikit-learn>=1.4.0
+
+# Visualization (for t-SNE, UMAP projections)
+umap-learn>=0.5.5
+
+# Logging
+structlog>=24.1.0
+
+# HTTP Client (for CMS API calls)
+httpx>=0.26.0
+
+# Metrics
+prometheus-fastapi-instrumentator>=6.0.0
+

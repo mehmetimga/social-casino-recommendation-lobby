@@ -1,10 +1,11 @@
 """FastAPI routes for ML service."""
 
-from typing import Optional
+from typing import Optional, Literal
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 import structlog
 import torch
+import numpy as np
 
 from app.config import get_settings
 from app.services.graph_builder import GraphBuilder, GraphData
@@ -924,5 +925,494 @@ async def load_hgt_model():
             
     except Exception as e:
         logger.error("Failed to load HGT model", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ========================================
+# VISUALIZATION ENDPOINTS
+# ========================================
+
+def _compute_2d_projection(embeddings: np.ndarray, method: str = "tsne") -> np.ndarray:
+    """Compute 2D projection of high-dimensional embeddings."""
+    if embeddings.shape[0] < 2:
+        return np.zeros((embeddings.shape[0], 2))
+    
+    if method == "tsne":
+        from sklearn.manifold import TSNE
+        perplexity = min(30, embeddings.shape[0] - 1)
+        tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42, max_iter=500)
+        return tsne.fit_transform(embeddings)
+    elif method == "umap":
+        try:
+            import umap
+            n_neighbors = min(15, embeddings.shape[0] - 1)
+            reducer = umap.UMAP(n_components=2, n_neighbors=n_neighbors, random_state=42)
+            return reducer.fit_transform(embeddings)
+        except ImportError:
+            # Fallback to PCA if UMAP not installed
+            from sklearn.decomposition import PCA
+            pca = PCA(n_components=2)
+            return pca.fit_transform(embeddings)
+    else:  # PCA
+        from sklearn.decomposition import PCA
+        pca = PCA(n_components=2)
+        return pca.fit_transform(embeddings)
+
+
+class VizEmbeddingsRequest(BaseModel):
+    """Request for embedding visualization."""
+    projection: Literal["tsne", "umap", "pca"] = Field(default="tsne")
+    include_users: bool = Field(default=True)
+    include_games: bool = Field(default=True)
+    max_points: int = Field(default=500, ge=10, le=5000)
+
+
+class VizEmbeddingPoint(BaseModel):
+    """Single point in the embedding visualization."""
+    id: str
+    type: str  # "user" or "game"
+    x: float
+    y: float
+    label: Optional[str] = None
+    metadata: Optional[dict] = None
+
+
+class VizEmbeddingsResponse(BaseModel):
+    """Response with embedding visualization data."""
+    points: list[VizEmbeddingPoint]
+    stats: dict
+    projection_method: str
+
+
+class VizGraphRequest(BaseModel):
+    """Request for graph visualization."""
+    max_nodes: int = Field(default=200, ge=10, le=1000)
+    max_edges: int = Field(default=500, ge=10, le=5000)
+    include_weights: bool = Field(default=True)
+
+
+class VizGraphNode(BaseModel):
+    """Node in graph visualization."""
+    id: str
+    type: str  # "user", "game", "provider", etc.
+    label: Optional[str] = None
+    size: Optional[float] = None  # Node importance/degree
+    color: Optional[str] = None
+
+
+class VizGraphEdge(BaseModel):
+    """Edge in graph visualization."""
+    source: str
+    target: str
+    type: str  # Edge type
+    weight: Optional[float] = None
+
+
+class VizGraphResponse(BaseModel):
+    """Response with graph visualization data."""
+    nodes: list[VizGraphNode]
+    edges: list[VizGraphEdge]
+    stats: dict
+
+
+@router.post("/viz/embeddings", response_model=VizEmbeddingsResponse)
+async def get_embedding_visualization(request: VizEmbeddingsRequest):
+    """Get 2D projection of embeddings for visualization.
+    
+    Returns user and game embeddings projected to 2D using t-SNE, UMAP, or PCA.
+    Like the Reddit embedding visualization from Jure Leskovec's demo.
+    """
+    embedding_service = get_embedding_service()
+    
+    points = []
+    all_embeddings = []
+    all_ids = []
+    all_types = []
+    all_labels = []
+    
+    # Collect embeddings from Qdrant
+    try:
+        from qdrant_client import QdrantClient
+        from qdrant_client.http.models import ScrollRequest
+        
+        settings = get_settings()
+        client = QdrantClient(host=settings.qdrant_host, port=settings.qdrant_port)
+        
+        # Get user embeddings
+        if request.include_users:
+            try:
+                user_points, _ = client.scroll(
+                    collection_name="lightgcn_users",
+                    limit=request.max_points // 2 if request.include_games else request.max_points,
+                    with_vectors=True,
+                    with_payload=True
+                )
+                for point in user_points:
+                    all_embeddings.append(point.vector)
+                    user_id = point.payload.get("user_id", str(point.id))
+                    all_ids.append(f"user:{user_id}")
+                    all_types.append("user")
+                    all_labels.append(user_id[:8] + "..." if len(user_id) > 8 else user_id)
+            except Exception as e:
+                logger.warning(f"Could not load user embeddings: {e}")
+        
+        # Get game embeddings
+        if request.include_games:
+            try:
+                game_points, _ = client.scroll(
+                    collection_name="lightgcn_games",
+                    limit=request.max_points // 2 if request.include_users else request.max_points,
+                    with_vectors=True,
+                    with_payload=True
+                )
+                for point in game_points:
+                    all_embeddings.append(point.vector)
+                    game_slug = point.payload.get("game_slug", str(point.id))
+                    all_ids.append(f"game:{game_slug}")
+                    all_types.append("game")
+                    all_labels.append(game_slug)
+            except Exception as e:
+                logger.warning(f"Could not load game embeddings: {e}")
+        
+    except Exception as e:
+        logger.error(f"Failed to connect to Qdrant: {e}")
+        raise HTTPException(status_code=503, detail="Could not connect to vector database")
+    
+    if not all_embeddings:
+        return VizEmbeddingsResponse(
+            points=[],
+            stats={"total_points": 0, "num_users": 0, "num_games": 0},
+            projection_method=request.projection
+        )
+    
+    # Compute 2D projection
+    embeddings_array = np.array(all_embeddings)
+    projected = _compute_2d_projection(embeddings_array, method=request.projection)
+    
+    # Normalize to [-1, 1] range for easier frontend rendering
+    projected = (projected - projected.min(axis=0)) / (projected.max(axis=0) - projected.min(axis=0) + 1e-10)
+    projected = projected * 2 - 1  # Scale to [-1, 1]
+    
+    # Build response
+    for i in range(len(all_ids)):
+        points.append(VizEmbeddingPoint(
+            id=all_ids[i],
+            type=all_types[i],
+            x=float(projected[i, 0]),
+            y=float(projected[i, 1]),
+            label=all_labels[i]
+        ))
+    
+    num_users = sum(1 for t in all_types if t == "user")
+    num_games = sum(1 for t in all_types if t == "game")
+    
+    return VizEmbeddingsResponse(
+        points=points,
+        stats={
+            "total_points": len(points),
+            "num_users": num_users,
+            "num_games": num_games,
+            "embedding_dim": embeddings_array.shape[1] if embeddings_array.shape[0] > 0 else 0
+        },
+        projection_method=request.projection
+    )
+
+
+@router.post("/viz/graph", response_model=VizGraphResponse)
+async def get_graph_visualization(request: VizGraphRequest):
+    """Get graph structure for visualization.
+    
+    Returns nodes and edges from the LightGCN bipartite graph or HGT heterogeneous graph.
+    """
+    nodes = []
+    edges = []
+    
+    # Try HGT graph first (richer structure)
+    if _state.get("hgt_graph") is not None:
+        graph = _state["hgt_graph"]
+        from app.models.hgt import NodeType, EdgeType
+        
+        node_colors = {
+            NodeType.USER: "#3b82f6",      # blue
+            NodeType.GAME: "#10b981",      # green
+            NodeType.PROVIDER: "#f59e0b",  # amber
+            NodeType.PROMOTION: "#ef4444", # red
+            NodeType.DEVICE: "#8b5cf6",    # purple
+            NodeType.BADGE: "#ec4899"      # pink
+        }
+        
+        node_count = 0
+        for node_type in NodeType:
+            type_nodes = graph.num_nodes.get(node_type, 0)
+            if type_nodes == 0:
+                continue
+            
+            # Get mapping for this type
+            if node_type == NodeType.USER:
+                mapping = graph.user_id_to_idx
+            elif node_type == NodeType.GAME:
+                mapping = graph.game_slug_to_idx
+            elif node_type == NodeType.PROVIDER:
+                mapping = graph.provider_to_idx
+            elif node_type == NodeType.PROMOTION:
+                mapping = graph.promotion_to_idx
+            elif node_type == NodeType.DEVICE:
+                mapping = graph.device_to_idx
+            elif node_type == NodeType.BADGE:
+                mapping = graph.badge_to_idx
+            else:
+                continue
+            
+            # Add nodes (limit per type)
+            limit_per_type = request.max_nodes // len([n for n in NodeType if graph.num_nodes.get(n, 0) > 0])
+            for name, idx in list(mapping.items())[:limit_per_type]:
+                nodes.append(VizGraphNode(
+                    id=f"{node_type.value}:{name}",
+                    type=node_type.value,
+                    label=name[:20] if len(name) > 20 else name,
+                    color=node_colors.get(node_type, "#6b7280")
+                ))
+                node_count += 1
+                if node_count >= request.max_nodes:
+                    break
+            
+            if node_count >= request.max_nodes:
+                break
+        
+        # Add edges
+        node_ids = {n.id for n in nodes}
+        edge_count = 0
+        
+        for edge_type, edge_index in graph.edge_index.items():
+            src_type, _, dst_type = edge_type
+            
+            src_mapping = _get_mapping_for_type(graph, src_type)
+            dst_mapping = _get_mapping_for_type(graph, dst_type)
+            
+            if src_mapping is None or dst_mapping is None:
+                continue
+            
+            src_idx_to_id = {v: k for k, v in src_mapping.items()}
+            dst_idx_to_id = {v: k for k, v in dst_mapping.items()}
+            
+            # Get weights if available
+            weights = graph.edge_weight.get(edge_type)
+            
+            for i in range(edge_index.shape[1]):
+                src_idx = edge_index[0, i].item()
+                dst_idx = edge_index[1, i].item()
+                
+                src_name = src_idx_to_id.get(src_idx)
+                dst_name = dst_idx_to_id.get(dst_idx)
+                
+                if src_name is None or dst_name is None:
+                    continue
+                
+                src_id = f"{src_type.value}:{src_name}"
+                dst_id = f"{dst_type.value}:{dst_name}"
+                
+                if src_id in node_ids and dst_id in node_ids:
+                    weight = weights[i].item() if weights is not None else None
+                    edges.append(VizGraphEdge(
+                        source=src_id,
+                        target=dst_id,
+                        type=edge_type[1].value if hasattr(edge_type[1], 'value') else str(edge_type[1]),
+                        weight=weight if request.include_weights else None
+                    ))
+                    edge_count += 1
+                    if edge_count >= request.max_edges:
+                        break
+            
+            if edge_count >= request.max_edges:
+                break
+        
+        return VizGraphResponse(
+            nodes=nodes,
+            edges=edges,
+            stats={
+                "total_nodes": len(nodes),
+                "total_edges": len(edges),
+                "node_types": list({n.type for n in nodes}),
+                "edge_types": list({e.type for e in edges}),
+                "graph_type": "heterogeneous"
+            }
+        )
+    
+    # Fallback to LightGCN bipartite graph
+    elif _state.get("graph_data") is not None:
+        graph_data = _state["graph_data"]
+        
+        # Add user nodes
+        user_limit = min(request.max_nodes // 2, graph_data.num_users)
+        for user_id, idx in list(graph_data.user_id_to_idx.items())[:user_limit]:
+            nodes.append(VizGraphNode(
+                id=f"user:{user_id}",
+                type="user",
+                label=user_id[:8] + "..." if len(user_id) > 8 else user_id,
+                color="#3b82f6"
+            ))
+        
+        # Add game nodes
+        game_limit = min(request.max_nodes // 2, graph_data.num_games)
+        for game_slug, idx in list(graph_data.game_slug_to_idx.items())[:game_limit]:
+            nodes.append(VizGraphNode(
+                id=f"game:{game_slug}",
+                type="game",
+                label=game_slug,
+                color="#10b981"
+            ))
+        
+        # Add edges
+        node_ids = {n.id for n in nodes}
+        idx_to_user = {v: k for k, v in graph_data.user_id_to_idx.items()}
+        idx_to_game = {v: k for k, v in graph_data.game_slug_to_idx.items()}
+        
+        edge_index = graph_data.edge_index
+        edge_weight = graph_data.edge_weight
+        
+        edge_count = 0
+        for i in range(edge_index.shape[1]):
+            src_idx = edge_index[0, i].item()
+            dst_idx = edge_index[1, i].item() - graph_data.num_users  # Adjust for bipartite indexing
+            
+            if src_idx < graph_data.num_users:
+                # User -> Game edge
+                user_id = idx_to_user.get(src_idx)
+                game_slug = idx_to_game.get(dst_idx)
+                
+                if user_id and game_slug:
+                    src_id = f"user:{user_id}"
+                    dst_id = f"game:{game_slug}"
+                    
+                    if src_id in node_ids and dst_id in node_ids:
+                        weight = edge_weight[i].item() if edge_weight is not None else None
+                        edges.append(VizGraphEdge(
+                            source=src_id,
+                            target=dst_id,
+                            type="interaction",
+                            weight=weight if request.include_weights else None
+                        ))
+                        edge_count += 1
+                        if edge_count >= request.max_edges:
+                            break
+        
+        return VizGraphResponse(
+            nodes=nodes,
+            edges=edges,
+            stats={
+                "total_nodes": len(nodes),
+                "total_edges": len(edges),
+                "node_types": ["user", "game"],
+                "edge_types": ["interaction"],
+                "graph_type": "bipartite"
+            }
+        )
+    
+    else:
+        return VizGraphResponse(
+            nodes=[],
+            edges=[],
+            stats={
+                "total_nodes": 0,
+                "total_edges": 0,
+                "message": "No graph data loaded. Train a model first."
+            }
+        )
+
+
+def _get_mapping_for_type(graph, node_type):
+    """Get the ID mapping for a node type."""
+    from app.models.hgt import NodeType
+    
+    if node_type == NodeType.USER:
+        return graph.user_id_to_idx
+    elif node_type == NodeType.GAME:
+        return graph.game_slug_to_idx
+    elif node_type == NodeType.PROVIDER:
+        return graph.provider_to_idx
+    elif node_type == NodeType.PROMOTION:
+        return graph.promotion_to_idx
+    elif node_type == NodeType.DEVICE:
+        return graph.device_to_idx
+    elif node_type == NodeType.BADGE:
+        return graph.badge_to_idx
+    return None
+
+
+@router.get("/viz/collections")
+async def get_vector_collections():
+    """Get information about all vector collections in Qdrant."""
+    try:
+        from qdrant_client import QdrantClient
+        
+        settings = get_settings()
+        client = QdrantClient(host=settings.qdrant_host, port=settings.qdrant_port)
+        
+        collections = client.get_collections().collections
+        
+        result = []
+        for coll in collections:
+            info = client.get_collection(coll.name)
+            
+            # Handle different qdrant-client versions
+            points_count = getattr(info, 'points_count', 0)
+            vectors_count = getattr(info, 'vectors_count', points_count)
+            
+            # Get vector size from config
+            vector_size = None
+            try:
+                if hasattr(info.config, 'params') and hasattr(info.config.params, 'vectors'):
+                    vectors = info.config.params.vectors
+                    if hasattr(vectors, 'size'):
+                        vector_size = vectors.size
+                    elif isinstance(vectors, dict) and '' in vectors:
+                        vector_size = vectors[''].size
+            except Exception:
+                pass
+            
+            result.append({
+                "name": coll.name,
+                "vectors_count": vectors_count,
+                "points_count": points_count,
+                "status": info.status.value if hasattr(info.status, 'value') else str(info.status),
+                "vector_size": vector_size
+            })
+        
+        return {"collections": result}
+        
+    except Exception as e:
+        logger.error(f"Failed to get collections: {e}")
+        raise HTTPException(status_code=503, detail=str(e))
+
+
+@router.get("/viz/sample_embeddings/{collection_name}")
+async def get_sample_embeddings(collection_name: str, limit: int = 10):
+    """Get sample embeddings from a collection."""
+    try:
+        from qdrant_client import QdrantClient
+        
+        settings = get_settings()
+        client = QdrantClient(host=settings.qdrant_host, port=settings.qdrant_port)
+        
+        points, _ = client.scroll(
+            collection_name=collection_name,
+            limit=limit,
+            with_vectors=True,
+            with_payload=True
+        )
+        
+        result = []
+        for point in points:
+            result.append({
+                "id": str(point.id),
+                "payload": point.payload,
+                "vector_preview": point.vector[:5] if point.vector else None,  # First 5 dims
+                "vector_dim": len(point.vector) if point.vector else 0
+            })
+        
+        return {"collection": collection_name, "samples": result}
+        
+    except Exception as e:
+        logger.error(f"Failed to get samples: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
