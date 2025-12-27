@@ -932,36 +932,37 @@ async def load_hgt_model():
 # VISUALIZATION ENDPOINTS
 # ========================================
 
-def _compute_2d_projection(embeddings: np.ndarray, method: str = "tsne") -> np.ndarray:
-    """Compute 2D projection of high-dimensional embeddings."""
+def _compute_projection(embeddings: np.ndarray, method: str = "tsne", n_components: int = 2) -> np.ndarray:
+    """Compute N-dimensional projection of high-dimensional embeddings."""
     if embeddings.shape[0] < 2:
-        return np.zeros((embeddings.shape[0], 2))
+        return np.zeros((embeddings.shape[0], n_components))
     
     if method == "tsne":
         from sklearn.manifold import TSNE
         perplexity = min(30, embeddings.shape[0] - 1)
-        tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42, max_iter=500)
+        tsne = TSNE(n_components=n_components, perplexity=perplexity, random_state=42, max_iter=500)
         return tsne.fit_transform(embeddings)
     elif method == "umap":
         try:
             import umap
             n_neighbors = min(15, embeddings.shape[0] - 1)
-            reducer = umap.UMAP(n_components=2, n_neighbors=n_neighbors, random_state=42)
+            reducer = umap.UMAP(n_components=n_components, n_neighbors=n_neighbors, random_state=42)
             return reducer.fit_transform(embeddings)
         except ImportError:
             # Fallback to PCA if UMAP not installed
             from sklearn.decomposition import PCA
-            pca = PCA(n_components=2)
+            pca = PCA(n_components=n_components)
             return pca.fit_transform(embeddings)
     else:  # PCA
         from sklearn.decomposition import PCA
-        pca = PCA(n_components=2)
+        pca = PCA(n_components=n_components)
         return pca.fit_transform(embeddings)
 
 
 class VizEmbeddingsRequest(BaseModel):
     """Request for embedding visualization."""
     projection: Literal["tsne", "umap", "pca"] = Field(default="tsne")
+    dimensions: Literal[2, 3] = Field(default=2, description="2D or 3D projection")
     include_users: bool = Field(default=True)
     include_games: bool = Field(default=True)
     max_points: int = Field(default=500, ge=10, le=5000)
@@ -973,6 +974,7 @@ class VizEmbeddingPoint(BaseModel):
     type: str  # "user" or "game"
     x: float
     y: float
+    z: Optional[float] = None  # For 3D projections
     label: Optional[str] = None
     metadata: Optional[dict] = None
 
@@ -982,6 +984,7 @@ class VizEmbeddingsResponse(BaseModel):
     points: list[VizEmbeddingPoint]
     stats: dict
     projection_method: str
+    dimensions: int = 2  # 2 or 3
 
 
 class VizGraphRequest(BaseModel):
@@ -1082,12 +1085,13 @@ async def get_embedding_visualization(request: VizEmbeddingsRequest):
         return VizEmbeddingsResponse(
             points=[],
             stats={"total_points": 0, "num_users": 0, "num_games": 0},
-            projection_method=request.projection
+            projection_method=request.projection,
+            dimensions=request.dimensions
         )
     
-    # Compute 2D projection
+    # Compute N-dimensional projection (2D or 3D)
     embeddings_array = np.array(all_embeddings)
-    projected = _compute_2d_projection(embeddings_array, method=request.projection)
+    projected = _compute_projection(embeddings_array, method=request.projection, n_components=request.dimensions)
     
     # Normalize to [-1, 1] range for easier frontend rendering
     projected = (projected - projected.min(axis=0)) / (projected.max(axis=0) - projected.min(axis=0) + 1e-10)
@@ -1095,13 +1099,16 @@ async def get_embedding_visualization(request: VizEmbeddingsRequest):
     
     # Build response
     for i in range(len(all_ids)):
-        points.append(VizEmbeddingPoint(
-            id=all_ids[i],
-            type=all_types[i],
-            x=float(projected[i, 0]),
-            y=float(projected[i, 1]),
-            label=all_labels[i]
-        ))
+        point_data = {
+            "id": all_ids[i],
+            "type": all_types[i],
+            "x": float(projected[i, 0]),
+            "y": float(projected[i, 1]),
+            "label": all_labels[i]
+        }
+        if request.dimensions == 3:
+            point_data["z"] = float(projected[i, 2])
+        points.append(VizEmbeddingPoint(**point_data))
     
     num_users = sum(1 for t in all_types if t == "user")
     num_games = sum(1 for t in all_types if t == "game")
@@ -1114,7 +1121,8 @@ async def get_embedding_visualization(request: VizEmbeddingsRequest):
             "num_games": num_games,
             "embedding_dim": embeddings_array.shape[1] if embeddings_array.shape[0] > 0 else 0
         },
-        projection_method=request.projection
+        projection_method=request.projection,
+        dimensions=request.dimensions
     )
 
 

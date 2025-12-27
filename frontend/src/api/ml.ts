@@ -10,6 +10,7 @@ export interface EmbeddingPoint {
   type: 'user' | 'game' | string;
   x: number;
   y: number;
+  z?: number;  // For 3D projections
   label: string | null;
   metadata?: Record<string, unknown>;
 }
@@ -23,6 +24,7 @@ export interface EmbeddingsResponse {
     embedding_dim: number;
   };
   projection_method: string;
+  dimensions: number;  // 2 or 3
 }
 
 export interface GraphNode {
@@ -75,6 +77,7 @@ export interface MLStatus {
 
 export async function fetchEmbeddings(
   projection: 'tsne' | 'umap' | 'pca' = 'tsne',
+  dimensions: 2 | 3 = 2,
   includeUsers: boolean = true,
   includeGames: boolean = true,
   maxPoints: number = 500
@@ -84,6 +87,7 @@ export async function fetchEmbeddings(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       projection,
+      dimensions,
       include_users: includeUsers,
       include_games: includeGames,
       max_points: maxPoints,

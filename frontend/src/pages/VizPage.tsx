@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera, Line } from '@react-three/drei';
 import { 
   fetchEmbeddings, 
   fetchGraph, 
@@ -9,7 +11,8 @@ import {
   type EmbeddingsResponse, 
   type GraphResponse, 
   type CollectionInfo,
-  type MLStatus
+  type MLStatus,
+  type EmbeddingPoint
 } from '../api/ml';
 
 // Icons for controls
@@ -52,6 +55,237 @@ const NODE_COLORS: Record<string, string> = {
   device: '#8b5cf6',    // purple
   badge: '#ec4899',     // pink
 };
+
+// 3D Point component for Three.js scene
+function Point3D({ point, scale = 1 }: { point: EmbeddingPoint; scale?: number }) {
+  const color = NODE_COLORS[point.type] || '#6b7280';
+  const position: [number, number, number] = [
+    (point.x || 0) * scale,
+    (point.y || 0) * scale,
+    (point.z || 0) * scale
+  ];
+
+  return (
+    <mesh position={position}>
+      <sphereGeometry args={[0.03, 16, 16]} />
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.3} />
+    </mesh>
+  );
+}
+
+// 3D Embedding visualization component
+function Embedding3DCanvas({ 
+  data, 
+  width, 
+  height 
+}: { 
+  data: EmbeddingsResponse | null; 
+  width: number; 
+  height: number;
+}) {
+  if (!data || data.dimensions !== 3) {
+    return (
+      <div 
+        style={{ width, height }} 
+        className="bg-slate-900 flex items-center justify-center text-gray-500"
+      >
+        Load 3D embeddings to view
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ width, height }} className="bg-slate-900 rounded">
+      <Canvas>
+        <PerspectiveCamera makeDefault position={[3, 2, 3]} />
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} intensity={1} />
+        <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        
+        {/* Grid helper */}
+        <gridHelper args={[4, 20, '#1f2937', '#1f2937']} />
+        <axesHelper args={[2]} />
+        
+        {/* Points */}
+        <Suspense fallback={null}>
+          {data.points.map((point) => (
+            <Point3D key={point.id} point={point} scale={1.5} />
+          ))}
+        </Suspense>
+        
+        {/* Orbit controls for rotation */}
+        <OrbitControls 
+          enableDamping 
+          dampingFactor={0.05}
+          enablePan
+          enableZoom
+          minDistance={1}
+          maxDistance={10}
+        />
+      </Canvas>
+      
+      {/* Legend overlay */}
+      <div className="absolute bottom-4 left-4 flex gap-4 text-sm bg-black/50 rounded px-3 py-2 backdrop-blur-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-blue-500" />
+          <span className="text-white">Users</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-emerald-500" />
+          <span className="text-white">Games</span>
+        </div>
+        <span className="text-gray-400 text-xs ml-2">Drag to rotate • Scroll to zoom</span>
+      </div>
+    </div>
+  );
+}
+
+// 3D Graph Node component
+function GraphNode3D({ 
+  node, 
+  position 
+}: { 
+  node: { id: string; type: string; label: string | null }; 
+  position: [number, number, number];
+}) {
+  const color = NODE_COLORS[node.type] || '#6b7280';
+  
+  return (
+    <mesh position={position}>
+      <sphereGeometry args={[0.05, 16, 16]} />
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.4} />
+    </mesh>
+  );
+}
+
+// 3D Edge component using Line from drei
+function GraphEdge3D({ 
+  start, 
+  end 
+}: { 
+  start: [number, number, number]; 
+  end: [number, number, number];
+}) {
+  return (
+    <Line
+      points={[start, end]}
+      color="#4b5563"
+      lineWidth={1}
+      transparent
+      opacity={0.3}
+    />
+  );
+}
+
+// 3D Graph visualization component
+function Graph3DCanvas({ 
+  data, 
+  width, 
+  height 
+}: { 
+  data: GraphResponse | null; 
+  width: number; 
+  height: number;
+}) {
+  if (!data || data.nodes.length === 0) {
+    return (
+      <div 
+        style={{ width, height }} 
+        className="bg-slate-900 flex items-center justify-center text-gray-500"
+      >
+        Load graph to view 3D visualization
+      </div>
+    );
+  }
+
+  // Create a simple force-directed layout in 3D
+  // Use a deterministic layout based on node index
+  const nodePositions: Map<string, [number, number, number]> = new Map();
+  const scale = 2;
+  
+  data.nodes.forEach((node, i) => {
+    // Distribute nodes in a 3D sphere using golden ratio
+    const phi = Math.acos(1 - 2 * (i + 0.5) / data.nodes.length);
+    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+    const r = scale * Math.cbrt((i + 1) / data.nodes.length);
+    
+    const x = r * Math.sin(phi) * Math.cos(theta);
+    const y = r * Math.sin(phi) * Math.sin(theta);
+    const z = r * Math.cos(phi);
+    
+    nodePositions.set(node.id, [x, y, z]);
+  });
+
+  return (
+    <div style={{ width, height }} className="bg-slate-900 rounded relative">
+      <Canvas>
+        <PerspectiveCamera makeDefault position={[4, 3, 4]} />
+        <ambientLight intensity={0.6} />
+        <pointLight position={[10, 10, 10]} intensity={1} />
+        <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        
+        {/* Grid helper */}
+        <gridHelper args={[6, 20, '#1f2937', '#1f2937']} />
+        <axesHelper args={[3]} />
+        
+        {/* Edges */}
+        <Suspense fallback={null}>
+          {data.edges.slice(0, 500).map((edge, i) => {
+            const startPos = nodePositions.get(edge.source);
+            const endPos = nodePositions.get(edge.target);
+            if (!startPos || !endPos) return null;
+            return (
+              <GraphEdge3D 
+                key={`edge-${i}`} 
+                start={startPos} 
+                end={endPos} 
+              />
+            );
+          })}
+        </Suspense>
+        
+        {/* Nodes */}
+        <Suspense fallback={null}>
+          {data.nodes.map((node) => {
+            const pos = nodePositions.get(node.id);
+            if (!pos) return null;
+            return (
+              <GraphNode3D 
+                key={node.id} 
+                node={node} 
+                position={pos} 
+              />
+            );
+          })}
+        </Suspense>
+        
+        {/* Orbit controls for rotation */}
+        <OrbitControls 
+          enableDamping 
+          dampingFactor={0.05}
+          enablePan
+          enableZoom
+          minDistance={2}
+          maxDistance={15}
+        />
+      </Canvas>
+      
+      {/* Legend overlay */}
+      <div className="absolute bottom-4 left-4 flex flex-wrap gap-3 text-sm bg-black/50 rounded px-3 py-2 backdrop-blur-sm">
+        {data.stats.node_types?.map((type) => (
+          <div key={type} className="flex items-center gap-2">
+            <div 
+              className="w-3 h-3 rounded-full" 
+              style={{ backgroundColor: NODE_COLORS[type] || '#6b7280' }}
+            />
+            <span className="text-white capitalize">{type}</span>
+          </div>
+        ))}
+        <span className="text-gray-400 text-xs ml-2">Drag to rotate • Scroll to zoom</span>
+      </div>
+    </div>
+  );
+}
 
 // Canvas controls component
 function CanvasControls({ 
@@ -224,22 +458,28 @@ function EmbeddingCanvas({
     const centerY = height / 2;
 
     // Find closest point
-    let closest: typeof data.points[0] | null = null;
+    let closestPoint: EmbeddingPoint | null = null;
     let closestDist = 20 / zoom; // Max distance threshold
 
-    data.points.forEach((point) => {
+    for (const point of data.points) {
       const x = centerX + point.x * scaleX;
       const y = centerY - point.y * scaleY;
       const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
       if (dist < closestDist) {
         closestDist = dist;
-        closest = point;
+        closestPoint = point;
       }
-    });
+    }
 
-    if (closest) {
-      setHoveredPoint(closest.id);
-      onHover(closest);
+    if (closestPoint) {
+      setHoveredPoint(closestPoint.id);
+      onHover({
+        id: closestPoint.id,
+        type: closestPoint.type,
+        label: closestPoint.label,
+        x: closestPoint.x,
+        y: closestPoint.y
+      });
     } else {
       setHoveredPoint(null);
       onHover(null);
@@ -450,6 +690,8 @@ export default function VizPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [projection, setProjection] = useState<'tsne' | 'umap' | 'pca'>('tsne');
+  const [dimensions, setDimensions] = useState<2 | 3>(2);
+  const [graphDimensions, setGraphDimensions] = useState<2 | 3>(2);
   const [hoveredPoint, setHoveredPoint] = useState<{
     id: string;
     type: string;
@@ -631,7 +873,7 @@ export default function VizPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchEmbeddings(projection, true, true, 500);
+      const data = await fetchEmbeddings(projection, dimensions, true, true, 500);
       setEmbeddings(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load embeddings');
@@ -783,8 +1025,33 @@ export default function VizPage() {
             >
               {!isEmbeddingFullscreen && (
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold text-gray-800">Embedding Space (2D Projection)</h2>
-                  <div className="flex gap-2">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Embedding Space ({dimensions}D Projection)
+                  </h2>
+                  <div className="flex gap-2 items-center">
+                    {/* 2D/3D Toggle */}
+                    <div className="flex bg-gray-100 rounded p-0.5">
+                      <button
+                        onClick={() => setDimensions(2)}
+                        className={`px-3 py-1 text-sm rounded transition-colors ${
+                          dimensions === 2 
+                            ? 'bg-white text-gray-800 shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                      >
+                        2D
+                      </button>
+                      <button
+                        onClick={() => setDimensions(3)}
+                        className={`px-3 py-1 text-sm rounded transition-colors ${
+                          dimensions === 3 
+                            ? 'bg-white text-gray-800 shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                      >
+                        3D
+                      </button>
+                    </div>
                     <select
                       value={projection}
                       onChange={(e) => setProjection(e.target.value as 'tsne' | 'umap' | 'pca')}
@@ -804,30 +1071,53 @@ export default function VizPage() {
                   </div>
                 </div>
               )}
-              <div 
-                className="relative cursor-grab active:cursor-grabbing"
-                onWheel={handleEmbeddingWheel}
-                onMouseDown={(e) => handlePanStart(e, 'embedding')}
-                onMouseMove={handlePanMove}
-                onMouseUp={handlePanEnd}
-                onMouseLeave={handlePanEnd}
-              >
-                <EmbeddingCanvas 
-                  data={embeddings} 
-                  width={isEmbeddingFullscreen ? windowSize.width : 800} 
-                  height={isEmbeddingFullscreen ? windowSize.height : 500}
-                  zoom={embeddingZoom}
-                  pan={embeddingPan}
-                  onHover={setHoveredPoint}
-                />
-                <CanvasControls
-                  zoom={embeddingZoom}
-                  onZoomIn={handleEmbeddingZoomIn}
-                  onZoomOut={handleEmbeddingZoomOut}
-                  onReset={handleEmbeddingReset}
-                  onFullscreen={toggleEmbeddingFullscreen}
-                  isFullscreen={isEmbeddingFullscreen}
-                />
+              <div className="relative">
+                {dimensions === 2 ? (
+                  <div 
+                    className="cursor-grab active:cursor-grabbing"
+                    onWheel={handleEmbeddingWheel}
+                    onMouseDown={(e) => handlePanStart(e, 'embedding')}
+                    onMouseMove={handlePanMove}
+                    onMouseUp={handlePanEnd}
+                    onMouseLeave={handlePanEnd}
+                  >
+                    <EmbeddingCanvas 
+                      data={embeddings} 
+                      width={isEmbeddingFullscreen ? windowSize.width : 800} 
+                      height={isEmbeddingFullscreen ? windowSize.height : 500}
+                      zoom={embeddingZoom}
+                      pan={embeddingPan}
+                      onHover={setHoveredPoint}
+                    />
+                  </div>
+                ) : (
+                  <Embedding3DCanvas 
+                    data={embeddings}
+                    width={isEmbeddingFullscreen ? windowSize.width : 800}
+                    height={isEmbeddingFullscreen ? windowSize.height : 500}
+                  />
+                )}
+                {dimensions === 2 ? (
+                  <CanvasControls
+                    zoom={embeddingZoom}
+                    onZoomIn={handleEmbeddingZoomIn}
+                    onZoomOut={handleEmbeddingZoomOut}
+                    onReset={handleEmbeddingReset}
+                    onFullscreen={toggleEmbeddingFullscreen}
+                    isFullscreen={isEmbeddingFullscreen}
+                  />
+                ) : (
+                  /* Fullscreen button for 3D mode */
+                  <div className="absolute top-2 right-2 bg-white/90 rounded-lg p-1 backdrop-blur-sm border border-gray-200 shadow-sm">
+                    <button
+                      onClick={toggleEmbeddingFullscreen}
+                      className="p-2 hover:bg-gray-100 rounded transition-colors text-gray-600 hover:text-gray-800"
+                      title={isEmbeddingFullscreen ? "Exit Fullscreen (Esc)" : "Fullscreen (F)"}
+                    >
+                      {isEmbeddingFullscreen ? <ExitFullscreenIcon /> : <FullscreenIcon />}
+                    </button>
+                  </div>
+                )}
                 {/* Fullscreen legend overlay */}
                 {isEmbeddingFullscreen && (
                   <div className="absolute bottom-4 left-4 flex gap-4 text-sm bg-black/50 rounded px-3 py-2 backdrop-blur-sm">
@@ -932,41 +1222,91 @@ export default function VizPage() {
             >
               {!isGraphFullscreen && (
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold text-gray-800">Graph Structure</h2>
-                  <button
-                    onClick={loadGraph}
-                    disabled={loading}
-                    className="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1 rounded text-sm font-medium"
-                  >
-                    {loading ? 'Loading...' : 'Load Graph'}
-                  </button>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Graph Structure ({graphDimensions}D)
+                  </h2>
+                  <div className="flex gap-2 items-center">
+                    {/* 2D/3D Toggle */}
+                    <div className="flex bg-gray-100 rounded p-0.5">
+                      <button
+                        onClick={() => setGraphDimensions(2)}
+                        className={`px-3 py-1 text-sm rounded transition-colors ${
+                          graphDimensions === 2 
+                            ? 'bg-white text-gray-800 shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                      >
+                        2D
+                      </button>
+                      <button
+                        onClick={() => setGraphDimensions(3)}
+                        className={`px-3 py-1 text-sm rounded transition-colors ${
+                          graphDimensions === 3 
+                            ? 'bg-white text-gray-800 shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                      >
+                        3D
+                      </button>
+                    </div>
+                    <button
+                      onClick={loadGraph}
+                      disabled={loading}
+                      className="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1 rounded text-sm font-medium"
+                    >
+                      {loading ? 'Loading...' : 'Load Graph'}
+                    </button>
+                  </div>
                 </div>
               )}
-              <div 
-                className="relative cursor-grab active:cursor-grabbing"
-                onWheel={handleGraphWheel}
-                onMouseDown={(e) => handlePanStart(e, 'graph')}
-                onMouseMove={handlePanMove}
-                onMouseUp={handlePanEnd}
-                onMouseLeave={handlePanEnd}
-              >
-                <GraphCanvas 
-                  data={graph} 
-                  width={isGraphFullscreen ? windowSize.width : 800} 
-                  height={isGraphFullscreen ? windowSize.height : 500}
-                  zoom={graphZoom}
-                  pan={graphPan}
-                />
-                <CanvasControls
-                  zoom={graphZoom}
-                  onZoomIn={handleGraphZoomIn}
-                  onZoomOut={handleGraphZoomOut}
-                  onReset={handleGraphReset}
-                  onFullscreen={toggleGraphFullscreen}
-                  isFullscreen={isGraphFullscreen}
-                />
-                {/* Fullscreen legend overlay */}
-                {isGraphFullscreen && graph && (
+              <div className="relative">
+                {graphDimensions === 2 ? (
+                  <div 
+                    className="cursor-grab active:cursor-grabbing"
+                    onWheel={handleGraphWheel}
+                    onMouseDown={(e) => handlePanStart(e, 'graph')}
+                    onMouseMove={handlePanMove}
+                    onMouseUp={handlePanEnd}
+                    onMouseLeave={handlePanEnd}
+                  >
+                    <GraphCanvas 
+                      data={graph} 
+                      width={isGraphFullscreen ? windowSize.width : 800} 
+                      height={isGraphFullscreen ? windowSize.height : 500}
+                      zoom={graphZoom}
+                      pan={graphPan}
+                    />
+                  </div>
+                ) : (
+                  <Graph3DCanvas 
+                    data={graph}
+                    width={isGraphFullscreen ? windowSize.width : 800}
+                    height={isGraphFullscreen ? windowSize.height : 500}
+                  />
+                )}
+                {graphDimensions === 2 ? (
+                  <CanvasControls
+                    zoom={graphZoom}
+                    onZoomIn={handleGraphZoomIn}
+                    onZoomOut={handleGraphZoomOut}
+                    onReset={handleGraphReset}
+                    onFullscreen={toggleGraphFullscreen}
+                    isFullscreen={isGraphFullscreen}
+                  />
+                ) : (
+                  /* Fullscreen button for 3D mode */
+                  <div className="absolute top-2 right-2 bg-white/90 rounded-lg p-1 backdrop-blur-sm border border-gray-200 shadow-sm">
+                    <button
+                      onClick={toggleGraphFullscreen}
+                      className="p-2 hover:bg-gray-100 rounded transition-colors text-gray-600 hover:text-gray-800"
+                      title={isGraphFullscreen ? "Exit Fullscreen (Esc)" : "Fullscreen (F)"}
+                    >
+                      {isGraphFullscreen ? <ExitFullscreenIcon /> : <FullscreenIcon />}
+                    </button>
+                  </div>
+                )}
+                {/* Fullscreen legend overlay for 2D */}
+                {isGraphFullscreen && graphDimensions === 2 && graph && (
                   <div className="absolute bottom-4 left-4 flex gap-4 text-sm bg-black/50 rounded px-3 py-2 backdrop-blur-sm">
                     {graph.stats.node_types?.map((type) => (
                       <div key={type} className="flex items-center gap-2">
