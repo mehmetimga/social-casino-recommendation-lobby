@@ -101,6 +101,7 @@ services:
       QDRANT_URL: http://qdrant:6333
       OLLAMA_URL: http://host.docker.internal:11434
       CMS_URL: http://cms:3001
+      ML_URL: http://ml:8083
     ports:
       - "8081:8081"
     depends_on:
@@ -126,6 +127,33 @@ services:
     depends_on:
       - postgres
       - qdrant
+    networks:
+      - casino-network
+
+  # ML Service (Python - LightGCN/TGN/HGT)
+  ml:
+    build:
+      context: ./services/ml
+      dockerfile: Dockerfile
+    container_name: casino-ml
+    environment:
+      ML_POSTGRES_HOST: postgres
+      ML_POSTGRES_PORT: 5432
+      ML_POSTGRES_USER: ${POSTGRES_USER:-casino}
+      ML_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-casino_secret}
+      ML_POSTGRES_DB: ${POSTGRES_DB:-casino_db}
+      ML_QDRANT_HOST: qdrant
+      ML_QDRANT_PORT: 6333
+      ML_CMS_URL: http://cms:3001
+      ML_DEBUG: ${ML_DEBUG:-false}
+    volumes:
+      - ml_models:/app/models
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres
+      - qdrant
+    # For GPU support, use docker-compose.gpu.yml override
     networks:
       - casino-network
 
@@ -159,3 +187,4 @@ volumes:
   qdrant_data:
   ollama_data:
   cms_media:
+  ml_models:

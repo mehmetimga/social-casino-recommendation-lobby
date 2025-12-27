@@ -45,52 +45,105 @@ The Social Casino Recommendation Lobby is a full-stack web and mobile applicatio
 ## Architecture Diagram
 
 ```
-┌────────────────────────────────────────────────────────────────────────────┐
-│                              CLIENT LAYER                                    │
-│  ┌────────────────────────────────┐    ┌────────────────────────────────┐  │
-│  │   React Web Frontend           │    │   Flutter Mobile App           │  │
-│  │   (Vite + TypeScript)          │    │   (iOS + Android)              │  │
-│  │   • Game Lobby                 │    │   • Game Lobby                 │  │
-│  │   • Chat Widget                │    │   • PlayModal with SafeArea    │  │
-│  │   • Reviews                    │    │   • Chat Assistant             │  │
-│  │                                │    │   • Reviews & Ratings          │  │
-│  └─────────────┬──────────────────┘    └─────────────┬──────────────────┘  │
-└────────────────┼─────────────────────────────────────┼──────────────────────┘
-                 └──────────────────┬──────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────┐
+│                               CLIENT LAYER                                      │
+│  ┌─────────────────────────────────┐    ┌─────────────────────────────────┐    │
+│  │   React Web Frontend            │    │   Flutter Mobile App            │    │
+│  │   (Vite + TypeScript)           │    │   (iOS + Android)               │    │
+│  │   • Game Lobby                  │    │   • Game Lobby                  │    │
+│  │   • Chat Widget                 │    │   • PlayModal with SafeArea     │    │
+│  │   • Reviews                     │    │   • Chat Assistant              │    │
+│  └──────────────┬──────────────────┘    └──────────────┬──────────────────┘    │
+└─────────────────┼───────────────────────────────────────┼──────────────────────┘
+                  └─────────────────┬─────────────────────┘
                                     │ HTTP/REST APIs
-┌───────────────────────┴─────────────────────────────────────────────┐
-│                        APPLICATION LAYER                             │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌───────────────────┐ │
-│  │ Recommendation   │  │   Chat + RAG     │  │   PayloadCMS      │ │
-│  │   Service (Go)   │  │  Service (Go)    │  │  (Node.js/Next)   │ │
-│  │                  │  │                  │  │                   │ │
-│  │ • Events         │  │ • Sessions       │  │ • Game CRUD       │ │
-│  │ • Feedback       │  │ • Messages       │  │ • Media Upload    │ │
-│  │ • Vector Mgmt    │  │ • RAG Pipeline   │  │ • Admin Panel     │ │
-│  └────────┬─────────┘  └────────┬─────────┘  └────────┬──────────┘ │
-└───────────┼──────────────────────┼─────────────────────┼────────────┘
-            │                      │                     │
-┌───────────┴──────────────────────┴─────────────────────┴────────────┐
-│                          DATA LAYER                                  │
-│  ┌─────────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
-│  │   PostgreSQL    │  │   MongoDB    │  │   Qdrant (Vector DB) │   │
-│  │                 │  │              │  │                      │   │
-│  │ • user_events   │  │ • games      │  │ • games collection   │   │
-│  │ • user_ratings  │  │ • media      │  │ • users collection   │   │
-│  │ • user_reviews  │  │ • payload    │  │ • knowledge chunks   │   │
-│  │ • chat_sessions │  │              │  │                      │   │
-│  │ • preferences   │  │              │  │ 768-dim vectors      │   │
-│  └─────────────────┘  └──────────────┘  └──────────────────────┘   │
-└───────────────────────────────────┬──────────────────────────────────┘
-                                    │
-┌───────────────────────────────────┴──────────────────────────────────┐
-│                        AI/ML LAYER                                    │
-│  ┌─────────────────────────────────────────────────────────────────┐ │
-│  │                    Ollama (Local LLM)                            │ │
-│  │  • nomic-embed-text (Embeddings - 768 dimensions)               │ │
-│  │  • llama3.2:3b (Chat & Sentiment Analysis)                      │ │
-│  └─────────────────────────────────────────────────────────────────┘ │
-└───────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────┴────────────────────────────────────────────┐
+│                           APPLICATION LAYER                                     │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐  ┌────────────┐ │
+│  │ Recommendation   │  │   Chat + RAG     │  │  PayloadCMS  │  │ ML Service │ │
+│  │   Service (Go)   │  │  Service (Go)    │  │ (Node/Next)  │  │  (Python)  │ │
+│  │                  │  │                  │  │              │  │            │ │
+│  │ • Events         │  │ • Sessions       │  │ • Game CRUD  │  │ • LightGCN │ │
+│  │ • Feedback       │  │ • Messages       │  │ • Media      │  │ • TGN      │ │
+│  │ • GNN Cascade    │  │ • RAG Pipeline   │  │ • Admin      │  │ • HGT      │ │
+│  └────────┬─────────┘  └────────┬─────────┘  └──────┬───────┘  └─────┬──────┘ │
+└───────────┼──────────────────────┼──────────────────┼────────────────┼─────────┘
+            │                      │                  │                │
+┌───────────┴──────────────────────┴──────────────────┴────────────────┴─────────┐
+│                             DATA LAYER                                          │
+│  ┌─────────────────┐  ┌──────────────┐  ┌───────────────────────────────────┐  │
+│  │   PostgreSQL    │  │   MongoDB    │  │       Qdrant (Vector DB)          │  │
+│  │                 │  │              │  │                                   │  │
+│  │ • user_events   │  │ • games      │  │ • games (content embeddings)      │  │
+│  │ • user_ratings  │  │ • media      │  │ • users (preference vectors)      │  │
+│  │ • user_reviews  │  │ • promotions │  │ • lightgcn_users (GNN)            │  │
+│  │ • chat_sessions │  │              │  │ • lightgcn_games (GNN)            │  │
+│  │ • preferences   │  │              │  │ • hgt_users (HGT)                 │  │
+│  └─────────────────┘  └──────────────┘  │ • hgt_games (HGT)                 │  │
+│                                          │ • knowledge (RAG chunks)          │  │
+│                                          └───────────────────────────────────┘  │
+└─────────────────────────────────────────┬───────────────────────────────────────┘
+                                          │
+┌─────────────────────────────────────────┴───────────────────────────────────────┐
+│                              AI/ML LAYER                                         │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                         Ollama (Local LLM)                                 │  │
+│  │  • nomic-embed-text (Content Embeddings - 768 dimensions)                 │  │
+│  │  • llama3.2:3b (Chat & Sentiment Analysis)                                │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────────────────────┐  │
+│  │                    GNN Models (PyTorch - ML Service)                       │  │
+│  │  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐                      │  │
+│  │  │  LightGCN   │   │     TGN     │   │     HGT     │                      │  │
+│  │  │ Bipartite   │   │  Temporal   │   │ Heterogen.  │                      │  │
+│  │  │ Collab Filt │   │  Sessions   │   │ Cold-Start  │                      │  │
+│  │  └─────────────┘   └─────────────┘   └─────────────┘                      │  │
+│  └───────────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### GNN-Based Recommendation Cascade
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                        RECOMMENDATION CASCADE                                    │
+│                                                                                  │
+│  Request: GET /v1/recommendations?userId=user-123                                │
+│                            │                                                     │
+│                            ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │ 1. TGN (Temporal Graph Networks)                                         │   │
+│  │    ├─ Check: Is TGN trained? Is user in active session?                  │   │
+│  │    ├─ If yes: Return session-aware recommendations                       │   │
+│  │    └─ If no: Fall through to HGT                                         │   │
+│  └──────────────────────────────┬──────────────────────────────────────────┘   │
+│                                 │ Fallback                                       │
+│                                 ▼                                                │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │ 2. HGT (Heterogeneous Graph Transformer)                                  │   │
+│  │    ├─ Check: Is HGT trained?                                              │   │
+│  │    ├─ If user exists: Return personalized recommendations                 │   │
+│  │    ├─ If NEW user: Return cold-start recommendations (meta-paths)        │   │
+│  │    └─ If no: Fall through to LightGCN                                     │   │
+│  └──────────────────────────────┬──────────────────────────────────────────┘   │
+│                                 │ Fallback                                       │
+│                                 ▼                                                │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │ 3. LightGCN (Collaborative Filtering)                                     │   │
+│  │    ├─ Check: Is LightGCN trained? Does user have embedding?              │   │
+│  │    ├─ If yes: Return collaborative filtering recommendations              │   │
+│  │    └─ If no: Fall through to Content-Based                                │   │
+│  └──────────────────────────────┬──────────────────────────────────────────┘   │
+│                                 │ Fallback                                       │
+│                                 ▼                                                │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │ 4. Content-Based (Text Embeddings)                                        │   │
+│  │    ├─ Get user preference vector from Qdrant                              │   │
+│  │    ├─ Search similar games via cosine similarity                          │   │
+│  │    └─ If no vector: Return empty (frontend shows popular games)           │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                  │
+└─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -139,16 +192,35 @@ The Social Casino Recommendation Lobby is a full-stack web and mobile applicatio
 - Track user events (impressions, clicks, game_time)
 - Manage ratings and reviews
 - Perform sentiment analysis on review text
+- **Orchestrate GNN recommendation cascade (TGN → HGT → LightGCN → Content)**
 - Calculate user preference vectors
 - Generate personalized recommendations
-- Manage game vectors in Qdrant
 
 **Key Features**:
 - RESTful API with Chi router
+- **GNN-based recommendation cascade**
 - Asynchronous user vector updates
 - Time-decay weighted scoring
 - Sentiment-adjusted recommendations
 - Cosine similarity search
+
+### 2b. ML Service (Python)
+**Technology**: Python 3.11, FastAPI, PyTorch, PyTorch Geometric
+**Port**: 8083
+**Responsibilities**:
+- Train and serve GNN models (LightGCN, TGN, HGT)
+- Build and manage graph structures
+- Store GNN embeddings in Qdrant
+- Provide real-time session tracking (TGN)
+- Handle cold-start users (HGT)
+
+**Key Features**:
+- **LightGCN**: Collaborative filtering via bipartite graph
+- **TGN**: Session-aware recommendations with memory
+- **HGT**: Heterogeneous graph with multi-type relationships
+- BPR loss training
+- GPU acceleration (optional)
+- Model checkpointing and loading
 
 ### 3. Chat + RAG Service (Go)
 **Technology**: Go 1.25, Chi router, PostgreSQL, Qdrant, Ollama
@@ -298,6 +370,16 @@ The Social Casino Recommendation Lobby is a full-stack web and mobile applicatio
 | Ollama | Latest | Local LLM runtime |
 | nomic-embed-text | Latest | Embedding model (768-dim) |
 | llama3.2:3b | Latest | Chat model (3B params) |
+| PyTorch | 2.2.2 | ML framework |
+| PyTorch Geometric | 2.5.3 | GNN library |
+| FastAPI | 0.110.0 | ML service framework |
+
+### GNN Models
+| Model | Type | Purpose |
+|-------|------|---------|
+| LightGCN | Collaborative | Bipartite user-game graph for collaborative filtering |
+| TGN | Temporal | Session-aware recommendations with memory |
+| HGT | Heterogeneous | Multi-type graphs (users, games, providers, promos) |
 
 ### DevOps
 | Technology | Version | Purpose |
@@ -318,10 +400,12 @@ Frontend requests games from CMS
     ↓
 Frontend requests recommendations from Recommendation Service
     ↓
-Recommendation Service:
-  1. Checks if user vector exists in Qdrant
-  2. If exists: Searches similar games using cosine similarity
-  3. If not: Returns empty (frontend shows popular games)
+Recommendation Service (GNN Cascade):
+  1. Try TGN: If trained + user has active session → session-aware recs
+  2. Try HGT: If trained → personalized or cold-start recs
+  3. Try LightGCN: If trained + user has embedding → collaborative recs
+  4. Fallback: Get user vector from Qdrant → cosine similarity search
+  5. No personalization: Return empty (frontend shows popular)
     ↓
 Frontend displays personalized game list
     ↓
@@ -329,7 +413,10 @@ User scrolls → IntersectionObserver tracks impressions
     ↓
 Frontend sends impression events to Recommendation Service
     ↓
-Recommendation Service stores events in PostgreSQL
+Recommendation Service:
+  1. Stores events in PostgreSQL
+  2. Triggers ML Service to update TGN session memory
+  3. Triggers async user vector update
 ```
 
 ### 2. Game Play Flow
@@ -1167,6 +1254,73 @@ func (s *RecommendationService) GetRecommendations(userID string, limit int) ([]
 }
 ```
 
+### ML Service Architecture (GNN)
+
+#### Directory Structure
+```
+services/ml/
+├── app/
+│   ├── api/
+│   │   └── routes.py           # FastAPI endpoints
+│   ├── models/
+│   │   ├── lightgcn.py         # LightGCN model
+│   │   ├── tgn.py              # TGN model
+│   │   └── hgt.py              # HGT model
+│   ├── services/
+│   │   ├── graph_builder.py    # Bipartite graph builder
+│   │   ├── hgt_builder.py      # Heterogeneous graph builder
+│   │   ├── trainer.py          # LightGCN trainer
+│   │   ├── tgn_trainer.py      # TGN trainer
+│   │   ├── hgt_trainer.py      # HGT trainer
+│   │   ├── session_service.py  # TGN session tracking
+│   │   └── embedding_service.py # Qdrant sync
+│   ├── config.py               # Configuration
+│   └── main.py                 # FastAPI app
+├── requirements.txt
+└── Dockerfile
+```
+
+#### GNN Models
+
+**1. LightGCN (Collaborative Filtering)**
+- Bipartite user-game graph
+- Message passing through graph layers
+- BPR (Bayesian Personalized Ranking) loss
+- Captures "users who liked X also liked Y" patterns
+
+**2. TGN (Temporal Graph Networks)**
+- Session-aware recommendations
+- Memory module for user state
+- Time encoding for temporal patterns
+- Real-time interaction updates
+
+**3. HGT (Heterogeneous Graph Transformer)**
+- Multi-type nodes: Users, Games, Providers, Promotions, Badges
+- Type-specific attention mechanisms
+- Cold-start handling via meta-paths
+- Provider-aware recommendations
+
+#### Training Flow
+```python
+# Train LightGCN
+@router.post("/v1/train")
+async def train_lightgcn(request: TrainRequest):
+    # 1. Build user-game bipartite graph from PostgreSQL
+    graph = await graph_builder.build_graph(request.lookback_days)
+    
+    # 2. Initialize LightGCN model
+    model = LightGCN(num_users, num_games, embedding_dim=64)
+    
+    # 3. Train with BPR loss
+    for epoch in range(request.num_epochs):
+        loss = train_epoch(model, graph)
+    
+    # 4. Sync embeddings to Qdrant
+    embedding_service.sync_to_qdrant(model)
+    
+    return {"status": "trained", "final_loss": loss}
+```
+
 ### Chat Service Architecture
 
 #### Directory Structure
@@ -1378,6 +1532,7 @@ services:
   # Backend Services
   recommendation: # Port 8081
   chat:          # Port 8082
+  ml:            # Port 8083 (GNN Models)
 
   # Frontend
   frontend:      # Port 5173
@@ -1390,7 +1545,28 @@ volumes:
   mongodb_data:
   qdrant_data:
   cms_media:
+  ml_models:     # GNN model checkpoints
 ```
+
+### ML Service Container
+
+```dockerfile
+FROM python:3.11-slim  # or nvidia/cuda for GPU
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install torch==2.2.2 && pip install -r requirements.txt
+
+COPY app/ ./app/
+EXPOSE 8083
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8083"]
+```
+
+**Environment Variables**:
+- `POSTGRES_HOST`: postgres
+- `QDRANT_HOST`: qdrant
+- `EMBEDDING_DIM`: 64 (GNN embedding dimension)
+- `USE_GPU`: false (set true for GPU acceleration)
 
 ### Container Configuration
 
@@ -1703,8 +1879,28 @@ social-casino-recommendation-lobby/
 │   │   │   ├── model/
 │   │   │   ├── repository/
 │   │   │   └── service/
+│   │   │       ├── ml_client.go   # GNN service client
+│   │   │       └── recommendation.go
 │   │   ├── go.mod
 │   │   ├── go.sum
+│   │   └── Dockerfile
+│   │
+│   ├── ml/                        # ML/GNN service (Python)
+│   │   ├── app/
+│   │   │   ├── api/
+│   │   │   │   └── routes.py      # FastAPI endpoints
+│   │   │   ├── models/
+│   │   │   │   ├── lightgcn.py    # Collaborative filtering
+│   │   │   │   ├── tgn.py         # Temporal graph networks
+│   │   │   │   └── hgt.py         # Heterogeneous graph transformer
+│   │   │   ├── services/
+│   │   │   │   ├── graph_builder.py
+│   │   │   │   ├── hgt_builder.py
+│   │   │   │   ├── trainer.py
+│   │   │   │   └── session_service.py
+│   │   │   ├── config.py
+│   │   │   └── main.py
+│   │   ├── requirements.txt
 │   │   └── Dockerfile
 │   │
 │   └── chat/                      # Chat + RAG service (Go)
@@ -1943,10 +2139,19 @@ This architecture provides a solid foundation for a scalable, AI-powered casino 
 ### Key Strengths
 - **Microservices architecture**: Independent, scalable services
 - **AI-powered features**: Recommendations, chat, sentiment analysis
-- **Modern tech stack**: React, Flutter, Go, Qdrant, Ollama
+- **Graph Neural Networks**: LightGCN, TGN, HGT for advanced recommendations
+- **Modern tech stack**: React, Flutter, Go, Python, PyTorch, Qdrant, Ollama
 - **Cross-platform**: Web and native mobile (iOS/Android)
 - **Developer-friendly**: Docker Compose, clear APIs, good documentation
-- **Extensible design**: Easy to add new features
+- **Extensible design**: Easy to add new features and models
+
+### GNN-Powered Recommendations
+The recommendation system now uses a cascade of Graph Neural Network models:
+- **LightGCN**: Baseline collaborative filtering from user-game interactions
+- **TGN**: Session-aware recommendations with temporal memory
+- **HGT**: Heterogeneous graphs for cold-start handling and provider-aware recommendations
+
+See [GNN_RECOMMENDATION.md](./GNN_RECOMMENDATION.md) for detailed documentation.
 
 ### Next Steps
 1. Implement authentication & authorization
@@ -1959,3 +2164,11 @@ This architecture provides a solid foundation for a scalable, AI-powered casino 
 8. Performance testing & optimization
 9. Security audit & penetration testing
 10. Load testing & scaling validation
+
+### Future GNN Improvements
+- **ContextGCN**: Context-aware recommendations (time of day, device)
+- **PinSage-style sampling**: Efficient training on large graphs
+- **Multi-task learning**: Joint optimization of clicks, play time, ratings
+- **Knowledge graph enhancement**: External game metadata integration
+- **Real-time incremental updates**: Update embeddings without full retraining
+- **Attention-based fusion**: Learn optimal model combination weights

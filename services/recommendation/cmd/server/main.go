@@ -34,6 +34,29 @@ func main() {
 	embeddingService := service.NewEmbeddingService(cfg.OllamaURL)
 	recommendationService := service.NewRecommendationService(postgresRepo, qdrantRepo, embeddingService)
 
+	// Initialize ML client for LightGCN and TGN recommendations
+	mlClient := service.NewMLClient(cfg.MLURL)
+	recommendationService.SetMLClient(mlClient)
+	
+	// Check if ML services are available and enable them
+	// This is done in background to not block startup
+	go func() {
+		if mlClient.IsHealthy(nil) {
+			log.Println("ML service is healthy, enabling LightGCN recommendations")
+			recommendationService.EnableLightGCN(true)
+			
+			// Also check if TGN is available
+			if mlClient.IsTGNAvailable(nil) {
+				log.Println("TGN is trained, enabling session-aware recommendations")
+				recommendationService.EnableTGN(true)
+			} else {
+				log.Println("TGN not trained yet, session-aware recommendations disabled")
+			}
+		} else {
+			log.Println("ML service not available, using content-based recommendations only")
+		}
+	}()
+
 	// Initialize handlers
 	eventsHandler := handler.NewEventsHandler(postgresRepo, recommendationService)
 	feedbackHandler := handler.NewFeedbackHandler(postgresRepo, recommendationService, embeddingService)

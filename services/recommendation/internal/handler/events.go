@@ -80,6 +80,15 @@ func (h *EventsHandler) TrackEvent(w http.ResponseWriter, r *http.Request) {
 		go h.recommendationService.UpdateUserVector(req.UserID)
 	}
 
+	// Notify ML services (TGN for session tracking, LightGCN for future updates)
+	go h.recommendationService.NotifyInteraction(
+		req.UserID,
+		req.GameSlug,
+		string(req.EventType),
+		req.DurationSeconds,
+		nil, // No rating for events
+	)
+
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }

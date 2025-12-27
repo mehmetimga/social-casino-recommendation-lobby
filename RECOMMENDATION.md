@@ -2,21 +2,80 @@
 
 ## Overview
 
-The recommendation system uses a hybrid approach combining **collaborative filtering** (user behavior patterns) and **content-based filtering** (game similarity) to provide personalized game recommendations. The system leverages **Qdrant vector database** for semantic similarity search and **PostgreSQL** for tracking user interactions.
+The recommendation system uses a **hybrid approach** combining multiple strategies:
+
+1. **Graph Neural Networks (GNNs)**: LightGCN, TGN, and HGT for collaborative filtering
+2. **Content-based filtering**: Text embeddings for game similarity
+3. **Behavioral signals**: User events, ratings, and reviews
+
+The system uses a **cascade architecture** that tries each model in order, falling back to simpler methods when needed.
+
+> **Detailed GNN Documentation**: See [GNN_RECOMMENDATION.md](./GNN_RECOMMENDATION.md) for in-depth coverage of LightGCN, TGN, and HGT architectures.
 
 ## Architecture
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Frontend  │────▶│ Recommendation│────▶│  PostgreSQL │
-│   (React)   │     │   Service     │     │  (Events)   │
-└─────────────┘     │   (Go)        │     └─────────────┘
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐     ┌─────────────┐
-                    │    Qdrant    │◀────│   Ollama    │
-                    │  (Vectors)   │     │ (Embeddings)│
-                    └──────────────┘     └─────────────┘
+┌─────────────┐     ┌──────────────────────┐     ┌─────────────┐
+│   Frontend  │────▶│   Recommendation     │────▶│  PostgreSQL │
+│ (React/App) │     │   Service (Go)       │     │  (Events)   │
+└─────────────┘     │                      │     └─────────────┘
+                    │  ┌────────────────┐  │
+                    │  │  GNN Cascade:  │  │     ┌─────────────┐
+                    │  │  1. TGN        │  │────▶│ ML Service  │
+                    │  │  2. HGT        │  │     │  (Python)   │
+                    │  │  3. LightGCN   │  │     │  PyTorch    │
+                    │  │  4. Content    │  │     └─────────────┘
+                    │  └────────────────┘  │
+                    └──────────┬───────────┘
+                               │
+                    ┌──────────▼──────────┐     ┌─────────────┐
+                    │       Qdrant        │◀────│   Ollama    │
+                    │     (Vectors)       │     │ (Embeddings)│
+                    │  • games            │     └─────────────┘
+                    │  • users            │
+                    │  • lightgcn_*       │
+                    │  • hgt_*            │
+                    └─────────────────────┘
+```
+
+## Recommendation Cascade
+
+The system tries models in order, falling back on failure:
+
+```
+Request: GET /v1/recommendations?userId=user-123
+                    │
+                    ▼
+┌──────────────────────────────────────────────────────────────┐
+│ 1. TGN (Temporal Graph Networks)                              │
+│    • Condition: Trained AND user has active session           │
+│    • Best for: Mid-session recommendations, temporal patterns │
+│    • Fallback: → HGT                                          │
+└──────────────────────┬───────────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│ 2. HGT (Heterogeneous Graph Transformer)                      │
+│    • Condition: Trained                                       │
+│    • Best for: Cold-start users, provider-aware, promotions   │
+│    • Fallback: → LightGCN                                     │
+└──────────────────────┬───────────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│ 3. LightGCN (Collaborative Filtering)                         │
+│    • Condition: Trained AND user has embedding                │
+│    • Best for: Users with history, collaborative patterns     │
+│    • Fallback: → Content-Based                                │
+└──────────────────────┬───────────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────────┐
+│ 4. Content-Based (Text Embeddings)                            │
+│    • Condition: User has preference vector in Qdrant          │
+│    • Best for: New games without interaction data             │
+│    • Fallback: → Return empty (frontend shows popular)        │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ## Data Storage
@@ -732,6 +791,239 @@ Games have a `minVipLevel` metadata field. The recommendation service filters re
 3. Review game vector quality (re-ingest games)
 4. Add more interaction data
 
+## LightGCN Collaborative Filtering (Phase 1)
+
+In addition to the content-based approach, the system now includes **LightGCN** (Light Graph Convolutional Network) for collaborative filtering.
+
+### Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   PostgreSQL    │───▶│   ML Service    │───▶│     Qdrant      │
+│  (Interactions) │    │   (LightGCN)    │    │   (Embeddings)  │
+└─────────────────┘    └────────┬────────┘    └─────────────────┘
+                                │
+                                ▼
+                    ┌─────────────────────┐
+                    │  Go Recommendation  │
+                    │      Service        │
+                    └─────────────────────┘
+```
+
+### How It Works
+
+LightGCN builds a **user-game bipartite graph** from interaction data and learns embeddings through graph convolution:
+
+1. **Graph Construction**: User events, ratings, and reviews become weighted edges
+2. **Embedding Learning**: LightGCN propagates embeddings through the graph
+3. **Recommendation**: Find games with similar embeddings to user's preference
+
+### Key Benefits
+
+- **Collaborative filtering**: Captures "users who played X also liked Y" patterns
+- **Better cold-start**: Graph propagation helps new users with limited interactions
+- **Complementary**: Works alongside content-based recommendations
+
+### ML Service Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/train` | POST | Train/retrain the LightGCN model |
+| `/v1/recommend` | POST | Get recommendations for a user |
+| `/v1/embedding/user/{id}` | GET | Get user embedding |
+| `/v1/embedding/game/{slug}` | GET | Get game embedding |
+| `/v1/status` | GET | Get service status |
+
+### Training the Model
+
+```bash
+curl -X POST http://localhost:8083/v1/train \
+  -H "Content-Type: application/json" \
+  -d '{
+    "lookback_days": 30,
+    "num_epochs": 100,
+    "batch_size": 1024
+  }'
+```
+
+### Hybrid Recommendations
+
+The system can combine both approaches:
+
+```go
+// Content-based: 40% weight
+// Collaborative (LightGCN): 60% weight
+recommendations = GetHybridRecommendations(userID, placement, limit, vipLevel)
+```
+
+### Qdrant Collections
+
+New collections for LightGCN embeddings:
+- `lightgcn_users`: User embeddings (768-dim)
+- `lightgcn_games`: Game embeddings (768-dim)
+
+## TGN Session-Aware Recommendations (Phase 2)
+
+TGN (Temporal Graph Networks) adds **session-aware recommendations** by tracking temporal patterns.
+
+### How TGN Works
+
+1. **Memory Module**: Each user has a memory vector that evolves with interactions
+2. **Time Encoding**: Captures temporal patterns (time since last play, session duration)
+3. **Temporal Attention**: Weighs recent session interactions more heavily
+4. **Real-time Updates**: Memory updates as user plays games
+
+### TGN API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/tgn/train` | POST | Train the TGN model |
+| `/v1/tgn/recommend` | POST | Get session-aware recommendations |
+| `/v1/tgn/interaction` | POST | Add interaction to session |
+| `/v1/tgn/session/{user_id}` | GET | Get session information |
+
+### Training TGN
+
+```bash
+curl -X POST http://localhost:8083/v1/tgn/train \
+  -H "Content-Type: application/json" \
+  -d '{"lookback_days": 30, "num_epochs": 50}'
+```
+
+### Recommendation Cascade
+
+The system tries recommendations in this order:
+1. **TGN** (session-aware) - Uses current session context
+2. **HGT** (heterogeneous) - Uses multi-type graph with cold-start handling
+3. **LightGCN** (collaborative) - Uses learned embeddings
+4. **Content-based** (fallback) - Uses text embeddings
+
+## HGT Heterogeneous Recommendations (Phase 3)
+
+HGT (Heterogeneous Graph Transformer) handles **multiple node and edge types** for rich relationship modeling.
+
+### Node Types
+
+| Type | Description |
+|------|-------------|
+| `USER` | Platform users |
+| `GAME` | Games in the catalog |
+| `PROVIDER` | Game providers/studios (e.g., NetEnt, Pragmatic) |
+| `PROMOTION` | Promotional campaigns |
+| `DEVICE` | Device types (mobile, desktop, tablet) |
+| `BADGE` | Game badges/labels (e.g., "new", "hot", "jackpot") |
+
+### Edge Types
+
+| Edge | Connects | Description |
+|------|----------|-------------|
+| `PLAYED` | User → Game | Weighted by interaction strength |
+| `RATED` | User → Game | Weighted by rating value |
+| `MADE_BY` | Game → Provider | Links game to its provider |
+| `FEATURES` | Promotion → Game | Games featured in promotions |
+| `USES` | User → Device | Tracks user's devices |
+| `HAS_BADGE` | Game → Badge | Game's badges/labels |
+
+### HGT API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/hgt/train` | POST | Train the HGT model |
+| `/v1/hgt/recommend` | POST | Get heterogeneous recommendations |
+| `/v1/hgt/similar_games` | POST | Get games similar to a given game |
+| `/v1/hgt/provider_games` | POST | Get games by provider |
+| `/v1/hgt/status` | GET | Get HGT service status |
+
+### Training HGT
+
+```bash
+curl -X POST http://localhost:8083/v1/hgt/train \
+  -H "Content-Type: application/json" \
+  -d '{
+    "lookback_days": 30,
+    "num_epochs": 100,
+    "batch_size": 256,
+    "cms_url": "http://cms:3001"
+  }'
+```
+
+### Getting HGT Recommendations
+
+```bash
+curl -X POST http://localhost:8083/v1/hgt/recommend \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "user-123",
+    "limit": 10,
+    "exclude_games": [],
+    "provider_filter": null
+  }'
+```
+
+### Finding Similar Games
+
+Uses HGT embeddings that incorporate provider, badges, and user interactions:
+
+```bash
+curl -X POST http://localhost:8083/v1/hgt/similar_games \
+  -H "Content-Type: application/json" \
+  -d '{
+    "game_slug": "mega-moolah",
+    "limit": 10
+  }'
+```
+
+### Provider-Specific Recommendations
+
+Get games from a specific provider, optionally personalized:
+
+```bash
+curl -X POST http://localhost:8083/v1/hgt/provider_games \
+  -H "Content-Type: application/json" \
+  -d '{
+    "provider": "NetEnt",
+    "user_id": "user-123",
+    "limit": 10
+  }'
+```
+
+### Cold-Start Handling
+
+HGT provides special handling for new users without interaction history:
+
+1. **Meta-path aggregation**: New users get embeddings from connected nodes (device, similar users)
+2. **Popular games fallback**: Uses game embedding norms as popularity proxy
+3. **Device-based similarity**: Users with same device get similar recommendations
+
+### How HGT Differs from LightGCN
+
+| Aspect | LightGCN | HGT |
+|--------|----------|-----|
+| Node types | Users, Games only | Users, Games, Providers, Promotions, Devices, Badges |
+| Edge types | Single (interaction) | Multiple (played, rated, made_by, features, etc.) |
+| Attention | No attention | Type-specific attention |
+| Cold-start | Limited | Better via meta-paths |
+| Provider-aware | No | Yes (games share provider info) |
+
+### HGT Graph Construction
+
+The HGT graph is built from two sources:
+
+1. **CMS (PayloadCMS)**: Games, providers, badges, promotions
+2. **PostgreSQL**: User interactions (events, ratings, reviews)
+
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│     CMS      │     │    HGT       │     │   Qdrant     │
+│  (metadata)  │────▶│   Builder    │────▶│ (embeddings) │
+└──────────────┘     └──────────────┘     └──────────────┘
+                            │
+┌──────────────┐            │
+│  PostgreSQL  │────────────┘
+│ (interactions)│
+└──────────────┘
+```
+
 ## Conclusion
 
 The recommendation system combines:
@@ -740,5 +1032,12 @@ The recommendation system combines:
 - **Weighted scoring** (events, ratings, reviews)
 - **Time decay** (recent > old)
 - **Real-time updates** (async vector updates)
+- **Collaborative filtering** (LightGCN graph neural network)
+- **Session-aware recommendations** (TGN temporal patterns)
+- **Heterogeneous graph modeling** (HGT multi-type relationships)
 
-This creates a powerful, personalized recommendation engine that learns from user behavior and improves over time.
+This creates a powerful, personalized recommendation engine that:
+- Learns from user behavior over time
+- Adapts to current session context
+- Handles cold-start users gracefully
+- Incorporates rich game metadata (providers, badges, promotions)

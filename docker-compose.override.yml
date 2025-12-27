@@ -1,0 +1,17 @@
+# Override file for local development (CPU-only ML service)
+# This removes the NVIDIA GPU requirement for macOS/non-GPU systems
+
+services:
+  ml:
+    deploy: {}
+    environment:
+      ML_POSTGRES_HOST: postgres
+      ML_POSTGRES_PORT: 5432
+      ML_POSTGRES_USER: ${POSTGRES_USER:-casino}
+      ML_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-casino_secret}
+      ML_POSTGRES_DB: ${POSTGRES_DB:-casino_db}
+      ML_QDRANT_HOST: qdrant
+      ML_QDRANT_PORT: 6333
+      ML_CMS_URL: http://cms:3001
+      ML_DEBUG: ${ML_DEBUG:-true}
+

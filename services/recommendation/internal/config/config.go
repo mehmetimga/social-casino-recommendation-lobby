@@ -8,6 +8,7 @@ type Config struct {
 	QdrantURL   string
 	OllamaURL   string
 	CMSURL      string
+	MLURL       string // ML service URL for LightGCN recommendations
 }
 
 func Load() *Config {
@@ -17,6 +18,7 @@ func Load() *Config {
 		QdrantURL:   getEnv("QDRANT_URL", "http://localhost:6333"),
 		OllamaURL:   getEnv("OLLAMA_URL", "http://localhost:11434"),
 		CMSURL:      getEnv("CMS_URL", "http://localhost:3001"),
+		MLURL:       getEnv("ML_URL", "http://localhost:8083"),
 	}
 }
 
