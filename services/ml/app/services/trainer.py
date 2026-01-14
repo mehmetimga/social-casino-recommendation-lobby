@@ -276,3 +276,4 @@ class LightGCNTrainer:
         inference.compute_embeddings(self.edge_index, self.edge_weight)
         return inference
 
+

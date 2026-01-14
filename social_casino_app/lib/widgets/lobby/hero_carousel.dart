@@ -36,7 +36,8 @@ class HeroCarousel extends StatefulWidget {
 class _HeroCarouselState extends State<HeroCarousel> {
   int _currentIndex = 0;
   Timer? _autoPlayTimer;
-  late PageController _pageController;
+  PageController? _pageController;
+  bool _isDisposed = false;
 
   @override
   void initState() {
@@ -47,8 +48,11 @@ class _HeroCarouselState extends State<HeroCarousel> {
 
   @override
   void dispose() {
+    _isDisposed = true;
     _autoPlayTimer?.cancel();
-    _pageController.dispose();
+    _autoPlayTimer = null;
+    _pageController?.dispose();
+    _pageController = null;
     super.dispose();
   }
 
@@ -62,13 +66,15 @@ class _HeroCarouselState extends State<HeroCarousel> {
   }
 
   void _nextPage() {
-    if (!mounted || widget.promotions.isEmpty) return;
+    if (_isDisposed || !mounted || widget.promotions.isEmpty || _pageController == null) return;
     final nextIndex = (_currentIndex + 1) % widget.promotions.length;
-    _pageController.animateToPage(
-      nextIndex,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    if (_pageController!.hasClients) {
+      _pageController!.animateToPage(
+        nextIndex,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   double _getHeight() {
@@ -86,13 +92,15 @@ class _HeroCarouselState extends State<HeroCarousel> {
   }
 
   void _previousPage() {
-    if (!mounted || widget.promotions.isEmpty) return;
+    if (_isDisposed || !mounted || widget.promotions.isEmpty || _pageController == null) return;
     final prevIndex = (_currentIndex - 1 + widget.promotions.length) % widget.promotions.length;
-    _pageController.animateToPage(
-      prevIndex,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    if (_pageController!.hasClients) {
+      _pageController!.animateToPage(
+        prevIndex,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
@@ -105,6 +113,10 @@ class _HeroCarouselState extends State<HeroCarousel> {
       return const SizedBox.shrink();
     }
 
+    if (_pageController == null) {
+      return SizedBox(height: _getHeight());
+    }
+
     return Column(
       children: [
         SizedBox(
@@ -115,7 +127,9 @@ class _HeroCarouselState extends State<HeroCarousel> {
                 controller: _pageController,
                 itemCount: widget.promotions.length,
                 onPageChanged: (index) {
-                  setState(() => _currentIndex = index);
+                  if (!_isDisposed && mounted) {
+                    setState(() => _currentIndex = index);
+                  }
                 },
                 itemBuilder: (context, index) {
                   return Padding(

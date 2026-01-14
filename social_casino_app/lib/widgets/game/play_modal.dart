@@ -28,9 +28,11 @@ class _PlayModalState extends ConsumerState<PlayModal> {
   bool _showReviewForm = false;
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _reviewKey = GlobalKey();
+  bool _isDisposed = false;
 
   @override
   void dispose() {
+    _isDisposed = true;
     _scrollController.dispose();
     super.dispose();
   }
@@ -40,15 +42,19 @@ class _PlayModalState extends ConsumerState<PlayModal> {
     if (!_showReviewForm) return;
 
     // Scroll to review section after animation
-    Future.delayed(const Duration(milliseconds: 250), () {
-      if (_reviewKey.currentContext != null) {
-        Scrollable.ensureVisible(
-          _reviewKey.currentContext!,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
-        );
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_isDisposed || !mounted) return;
+      Future.delayed(const Duration(milliseconds: 250), () {
+        if (_isDisposed || !mounted) return;
+        if (_reviewKey.currentContext != null) {
+          Scrollable.ensureVisible(
+            _reviewKey.currentContext!,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+          );
+        }
+      });
     });
   }
 

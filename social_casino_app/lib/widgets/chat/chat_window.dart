@@ -13,26 +13,36 @@ class ChatWindow extends ConsumerStatefulWidget {
 }
 
 class _ChatWindowState extends ConsumerState<ChatWindow> {
-  final _scrollController = ScrollController();
+  ScrollController? _scrollController;
+  bool _isDisposed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _isDisposed = true;
+    _scrollController?.dispose();
+    _scrollController = null;
     super.dispose();
   }
 
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        }
-      });
-    }
+    if (_isDisposed || !mounted || _scrollController == null) return;
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_isDisposed || !mounted || _scrollController == null) return;
+      if (_scrollController!.hasClients) {
+        _scrollController!.animateTo(
+          _scrollController!.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
@@ -42,6 +52,7 @@ class _ChatWindowState extends ConsumerState<ChatWindow> {
 
     // Scroll to bottom when new messages arrive
     ref.listen<ChatState>(chatProvider, (previous, next) {
+      if (!mounted || _isDisposed) return;
       if (previous?.messages.length != next.messages.length) {
         _scrollToBottom();
       }
@@ -293,6 +304,8 @@ class _ChatWindowState extends ConsumerState<ChatWindow> {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(16),
+      // Disable scroll position restoration to prevent issues on dispose
+      restorationId: null,
       itemCount: chatState.messages.length + (chatState.isLoading ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == chatState.messages.length && chatState.isLoading) {

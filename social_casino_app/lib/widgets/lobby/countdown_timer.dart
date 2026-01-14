@@ -19,29 +19,42 @@ class CountdownTimer extends StatefulWidget {
 }
 
 class _CountdownTimerState extends State<CountdownTimer> {
-  late Timer _timer;
+  Timer? _timer;
   Duration _remaining = Duration.zero;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
-    _calculateRemaining();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _calculateRemaining());
+    // Calculate initial remaining time without setState (avoid accessing _timer)
+    _remaining = widget.endTime.difference(DateTime.now());
+    if (_remaining.isNegative) {
+      _remaining = Duration.zero;
+    } else {
+      // Only start timer if not expired
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) => _calculateRemaining());
+    }
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _isDisposed = true;
+    _timer?.cancel();
+    _timer = null;
     super.dispose();
   }
 
   void _calculateRemaining() {
+    if (_isDisposed || !mounted) return;
     final now = DateTime.now();
+    final newRemaining = widget.endTime.difference(now);
     setState(() {
-      _remaining = widget.endTime.difference(now);
-      if (_remaining.isNegative) {
+      if (newRemaining.isNegative) {
         _remaining = Duration.zero;
-        _timer.cancel();
+        _timer?.cancel();
+        _timer = null;
+      } else {
+        _remaining = newRemaining;
       }
     });
   }
