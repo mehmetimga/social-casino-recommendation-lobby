@@ -58,7 +58,7 @@ cp .env.example .env
 
 2. Start all services:
 ```bash
-docker-compose up -d
+docker compose up -d --build
 ```
 
 3. Access the applications:
@@ -66,9 +66,79 @@ docker-compose up -d
 - PayloadCMS Admin: http://localhost:3001/admin
 - Recommendation API: http://localhost:8081
 - Chat API: http://localhost:8082
+- ML Service API Docs: http://localhost:8083/docs
 
 ### Default Credentials
-- PayloadCMS Admin: `admin@casino.com` / `admin123`
+- PayloadCMS Admin: `admin@example.com` / `admin123`
+
+## Setting Up on a New Machine
+
+### Option 1: Using the Setup Script (Recommended)
+
+```bash
+# Clone the repository
+git clone <repo-url>
+cd social-casino-recommendation-lobby
+
+# Run the setup script
+./scripts/setup-new-machine.sh
+```
+
+### Option 2: Manual Setup
+
+1. **Start the infrastructure:**
+```bash
+docker compose up -d
+```
+
+2. **Seed the database (if fresh install):**
+```bash
+# The CMS will auto-seed on first run if no data exists
+# Or manually run:
+docker exec casino-cms pnpm tsx seed.ts
+```
+
+3. **Import existing data (if you have an export):**
+```bash
+# Place your export in exports/mongodb/
+./scripts/db-import.sh ./exports/mongodb/<timestamp>
+```
+
+### Database Export/Import
+
+**Export current database:**
+```bash
+./scripts/db-export.sh
+# Creates export in exports/mongodb/<timestamp>/
+```
+
+**Import database:**
+```bash
+./scripts/db-import.sh              # Imports from exports/mongodb/latest
+./scripts/db-import.sh ./path/to/export  # Imports from specific path
+```
+
+### What's Included in Git
+
+| Asset | In Git? | Notes |
+|-------|---------|-------|
+| `casino-images/` | ✅ Yes | 342 game images (AVIF/SVG/PNG) |
+| `casino-banners/` | ✅ Yes | 15 promotional banners |
+| `cms/src/seed/` | ✅ Yes | Seed scripts for games, promotions, layouts |
+| `exports/` | ❌ No | MongoDB exports (binary, ignored) |
+| `cms/media/` | ❌ No | CMS uploaded media (Docker volume) |
+
+### Migration Checklist
+
+When setting up on a new machine:
+
+1. ✅ Clone repository (includes all source images)
+2. ✅ Run `docker compose up -d --build`
+3. ✅ Wait for services to be healthy
+4. ✅ Either:
+   - Run seed: `docker exec casino-cms pnpm tsx seed.ts`
+   - Or import: `./scripts/db-import.sh`
+5. ✅ Access frontend at http://localhost:5173
 
 ## Project Structure
 

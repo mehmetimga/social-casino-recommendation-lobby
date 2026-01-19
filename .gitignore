@@ -41,6 +41,10 @@ ollama_data/
 # CMS media (handled by volume)
 cms/media/
 
+# Database exports (binary files - keep in .gitignore)
+# Use the exports for migration but don't commit them
+exports/
+
 # Go binaries
 *.exe
 *.exe~
